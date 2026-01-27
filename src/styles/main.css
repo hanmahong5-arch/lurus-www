@@ -1,0 +1,386 @@
+@import "tailwindcss";
+
+/* ============================================
+   Lurus Design System - Hand-drawn Paper Theme
+   Based on Golden Ratio (φ = 1.618)
+   ============================================ */
+
+/* Theme Colors */
+@theme {
+  /* Cream/Paper tones */
+  --color-cream-50: #FFFDF7;
+  --color-cream-100: #FEF9E7;
+  --color-cream-200: #FCF4D6;
+  --color-cream-300: #F5E6B8;
+
+  /* Ink/Text tones */
+  --color-ink-900: #2C2416;
+  --color-ink-700: #4A3F2F;
+  --color-ink-500: #6B5D4D;
+  --color-ink-300: #A89B8B;
+  --color-ink-100: #D4CCC0;
+
+  /* Accent */
+  --color-ochre: #C9A227;
+
+  /* Product colors */
+  --color-product-api: #6B8BA4;
+  --color-product-gushen: #7D8B6A;
+  --color-product-switch: #C67B5C;
+  --color-product-docs: #C9A227;
+  --color-product-deaigc: #8B6B7D;
+
+  /* Portal category colors */
+  --color-portal-academic: #8B6B7D;
+  --color-portal-finance: #7D8B6A;
+  --color-portal-ai: #6B8BA4;
+  --color-portal-engineering: #C67B5C;
+  --color-portal-medical: #4A8B6A;
+  --color-portal-legal: #8B4A6A;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Body defaults - cream paper background */
+body {
+  background-color: var(--color-cream-50);
+  color: var(--color-ink-900);
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Subtle paper texture using CSS */
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ============================================
+   Hand-drawn Card Styles
+   ============================================ */
+.card-sketchy {
+  background-color: var(--color-cream-100);
+  border: 2px solid var(--color-ink-300);
+  border-radius: 4px 15px 8px 12px / 12px 8px 15px 4px;
+  box-shadow: 3px 3px 0 var(--color-ink-100);
+  transition: all 0.3s ease;
+}
+
+.card-sketchy:hover {
+  box-shadow: 5px 5px 0 var(--color-ink-100);
+  transform: translate(-2px, -2px);
+}
+
+/* Product-specific card colors */
+.card-api { border-color: var(--color-product-api); }
+.card-gushen { border-color: var(--color-product-gushen); }
+.card-switch { border-color: var(--color-product-switch); }
+.card-docs { border-color: var(--color-product-docs); }
+.card-deaigc { border-color: var(--color-product-deaigc); }
+
+/* ============================================
+   Hand-drawn Button Styles
+   ============================================ */
+.btn-hand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  font-weight: 600;
+  border: 2px solid var(--color-ink-500);
+  border-radius: 3px 10px 5px 12px / 12px 5px 10px 3px;
+  background-color: transparent;
+  color: var(--color-ink-900);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-hand:hover {
+  background-color: var(--color-ink-900);
+  color: var(--color-cream-50);
+  transform: rotate(-1deg);
+}
+
+.btn-hand-primary {
+  background-color: var(--color-ochre);
+  border-color: var(--color-ochre);
+  color: var(--color-cream-50);
+}
+
+.btn-hand-primary:hover {
+  background-color: #B8921F;
+  border-color: #B8921F;
+  transform: rotate(1deg);
+}
+
+/* ============================================
+   Typography - Hand-drawn Style
+   ============================================ */
+.font-hand {
+  font-family: 'Caveat', cursive;
+}
+
+.text-gradient-ochre {
+  background: linear-gradient(135deg, var(--color-ochre), #E0B830);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   Decorative Elements
+   ============================================ */
+
+/* Doodle underline */
+.underline-doodle {
+  position: relative;
+}
+
+.underline-doodle::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 6'%3E%3Cpath d='M0,3 Q25,0 50,3 T100,3' stroke='%23C9A227' stroke-width='2' fill='none'/%3E%3C/svg%3E") repeat-x;
+  background-size: 100px 6px;
+}
+
+/* Corner doodle decoration */
+.doodle-corner {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Cpath d='M5,5 Q20,15 15,30 T25,50 Q40,60 35,75' stroke='%23A89B8B' stroke-width='1.5' fill='none' stroke-dasharray='4,4'/%3E%3Ccircle cx='10' cy='10' r='3' fill='%23C9A227'/%3E%3Ccircle cx='35' cy='55' r='2' fill='%23C9A227'/%3E%3C/svg%3E") no-repeat;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Star burst decoration */
+.doodle-star {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12,2 L14,9 L21,9 L15,14 L17,21 L12,17 L7,21 L9,14 L3,9 L10,9 Z' stroke='%23C9A227' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat center;
+}
+
+/* ============================================
+   Sketchy Border Utilities
+   ============================================ */
+.border-sketchy {
+  border: 2px solid var(--color-ink-300);
+  border-radius: 4px 15px 8px 12px / 12px 8px 15px 4px;
+}
+
+.border-sketchy-light {
+  border: 1.5px solid var(--color-ink-100);
+  border-radius: 4px 15px 8px 12px / 12px 8px 15px 4px;
+}
+
+/* ============================================
+   Custom Scrollbar
+   ============================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--color-cream-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-ink-300);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-ink-500);
+}
+
+/* ============================================
+   Focus Styles
+   ============================================ */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-ochre);
+  border-radius: 4px;
+}
+
+/* Selection styles */
+::selection {
+  background-color: rgba(201, 162, 39, 0.3);
+  color: var(--color-ink-900);
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(1deg);
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 3s ease-in-out infinite;
+}
+
+/* ============================================
+   Transitions
+   ============================================ */
+a, button {
+  transition: all 0.2s ease;
+}
+
+/* ============================================
+   Golden Ratio Layout Helpers
+   ============================================ */
+.w-golden {
+  width: 61.8%;
+}
+
+.w-golden-minor {
+  width: 38.2%;
+}
+
+.min-h-golden-vh {
+  min-height: 61.8vh;
+}
+
+/* Fibonacci gap utilities */
+.gap-fib-3 { gap: 13px; }
+.gap-fib-4 { gap: 21px; }
+.gap-fib-5 { gap: 34px; }
+.gap-fib-6 { gap: 55px; }
+
+/* ============================================
+   Product Color Badges
+   ============================================ */
+.badge-api { background-color: var(--color-product-api); color: white; }
+.badge-gushen { background-color: var(--color-product-gushen); color: white; }
+.badge-switch { background-color: var(--color-product-switch); color: white; }
+.badge-docs { background-color: var(--color-product-docs); color: white; }
+.badge-deaigc { background-color: var(--color-product-deaigc); color: white; }
+
+/* ============================================
+   Portal Link Button Styles
+   ============================================ */
+.portal-link-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1.5px solid;
+  border-radius: 3px 8px 4px 10px / 10px 4px 8px 3px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: var(--color-ink-700);
+  background-color: transparent;
+}
+
+.portal-link-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 2px 2px 0 var(--color-ink-100);
+}
+
+.portal-link-btn-deaigc {
+  background-color: rgba(139, 107, 125, 0.1);
+  border-color: var(--color-product-deaigc);
+}
+
+.portal-link-btn-deaigc:hover {
+  background-color: rgba(139, 107, 125, 0.2);
+}
+
+.portal-link-btn-gushen {
+  background-color: rgba(125, 139, 106, 0.1);
+  border-color: var(--color-product-gushen);
+}
+
+.portal-link-btn-gushen:hover {
+  background-color: rgba(125, 139, 106, 0.2);
+}
+
+/* ============================================
+   Portal Category Link Styles
+   ============================================ */
+.portal-academic {
+  background-color: rgba(139, 107, 125, 0.1);
+  border-color: var(--color-portal-academic);
+}
+
+.portal-academic:hover {
+  background-color: rgba(139, 107, 125, 0.2);
+}
+
+.portal-finance {
+  background-color: rgba(125, 139, 106, 0.1);
+  border-color: var(--color-portal-finance);
+}
+
+.portal-finance:hover {
+  background-color: rgba(125, 139, 106, 0.2);
+}
+
+.portal-ai {
+  background-color: rgba(107, 139, 164, 0.1);
+  border-color: var(--color-portal-ai);
+}
+
+.portal-ai:hover {
+  background-color: rgba(107, 139, 164, 0.2);
+}
+
+.portal-engineering {
+  background-color: rgba(198, 123, 92, 0.1);
+  border-color: var(--color-portal-engineering);
+}
+
+.portal-engineering:hover {
+  background-color: rgba(198, 123, 92, 0.2);
+}
+
+.portal-medical {
+  background-color: rgba(74, 139, 106, 0.1);
+  border-color: var(--color-portal-medical);
+}
+
+.portal-medical:hover {
+  background-color: rgba(74, 139, 106, 0.2);
+}
+
+.portal-legal {
+  background-color: rgba(139, 74, 106, 0.1);
+  border-color: var(--color-portal-legal);
+}
+
+.portal-legal:hover {
+  background-color: rgba(139, 74, 106, 0.2);
+}
