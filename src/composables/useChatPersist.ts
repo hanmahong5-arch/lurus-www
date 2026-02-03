@@ -1,0 +1,115 @@
+/**
+ * Chat persistence composable
+ * Handles localStorage save/restore for chat history
+ */
+
+import { ref, watch, onMounted } from 'vue'
+import type { ChatMessage } from '../types/chat'
+
+const STORAGE_KEY = 'lurus-ai-chat'
+const MAX_MESSAGES = 50
+
+interface PersistedState {
+  messages: Array<{
+    id: string
+    role: 'user' | 'assistant' | 'system'
+    content: string
+    timestamp: string
+    status: 'sending' | 'sent' | 'failed' | 'timeout'
+    isOptimistic?: boolean
+    retryCount?: number
+    errorCode?: string
+  }>
+  model: string
+}
+
+export const useChatPersist = () => {
+  const messages = ref<ChatMessage[]>([])
+  const selectedModel = ref('deepseek-chat')
+  const isRestored = ref(false)
+
+  /**
+   * Restore state from localStorage
+   */
+  const restore = () => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved) {
+        const data: PersistedState = JSON.parse(saved)
+
+        // Convert timestamp strings back to Date objects
+        // Filter out any 'sending' status messages (incomplete from previous session)
+        messages.value = data.messages
+          .filter(m => m.status !== 'sending')
+          .map(m => ({
+            ...m,
+            timestamp: new Date(m.timestamp),
+            // Reset failed messages to allow retry
+            status: m.status === 'failed' || m.status === 'timeout' ? m.status : 'sent'
+          })) as ChatMessage[]
+
+        selectedModel.value = data.model || 'deepseek-chat'
+      }
+    } catch (error) {
+      console.error('Failed to restore chat state:', error)
+      // Clear corrupted data
+      localStorage.removeItem(STORAGE_KEY)
+    }
+    isRestored.value = true
+  }
+
+  /**
+   * Save state to localStorage
+   */
+  const persist = () => {
+    try {
+      const data: PersistedState = {
+        // Only keep last MAX_MESSAGES
+        // Don't persist 'sending' status messages
+        messages: messages.value
+          .filter(m => m.status !== 'sending')
+          .slice(-MAX_MESSAGES)
+          .map(m => ({
+            ...m,
+            timestamp: m.timestamp.toISOString()
+          })) as PersistedState['messages'],
+        model: selectedModel.value
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    } catch (error) {
+      console.error('Failed to persist chat state:', error)
+    }
+  }
+
+  /**
+   * Clear all persisted data
+   */
+  const clear = () => {
+    messages.value = []
+    localStorage.removeItem(STORAGE_KEY)
+  }
+
+  // Restore on mount
+  onMounted(() => {
+    restore()
+  })
+
+  // Auto-save on changes (debounced via Vue's batching)
+  watch(
+    [messages, selectedModel],
+    () => {
+      if (isRestored.value) {
+        persist()
+      }
+    },
+    { deep: true }
+  )
+
+  return {
+    messages,
+    selectedModel,
+    isRestored,
+    clear,
+    persist
+  }
+}

@@ -19,3 +19,7 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+# BMAD (managed at root level only)
+_bmad/
+_bmad-output/
