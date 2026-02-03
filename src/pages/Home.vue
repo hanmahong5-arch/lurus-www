@@ -1,12 +1,23 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import HeroSection from '../components/Hero/HeroSection.vue'
 import PortalLinks from '../components/Portal/PortalLinks.vue'
 import ProductShowcase from '../components/Products/ProductShowcase.vue'
 import FeatureGrid from '../components/Features/FeatureGrid.vue'
+import { useScrollReveal } from '../composables/useScrollReveal'
+import { useTracking } from '../composables/useTracking'
+
+const pageRef = ref<HTMLElement | null>(null)
+useScrollReveal(pageRef)
+
+const { track } = useTracking()
+const trackCta = (label: string) => {
+  track('cta_click', { label })
+}
 </script>
 
 <template>
-  <div>
+  <div ref="pageRef">
     <!-- Hero Section -->
     <HeroSection />
 
@@ -26,21 +37,21 @@ import FeatureGrid from '../components/Features/FeatureGrid.vue'
       <div class="absolute bottom-8 right-8 doodle-corner rotate-180 opacity-30"></div>
 
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 reveal-stagger">
           <div class="text-center px-6 py-8 border-sketchy bg-cream-100 hover:shadow-paper-hover transition-all">
-            <div class="font-hand text-phi-2xl text-ochre mb-2">99.9%</div>
+            <div class="text-phi-2xl text-ochre mb-2 font-bold">99.9%</div>
             <div class="text-ink-500">服务可用性</div>
           </div>
           <div class="text-center px-6 py-8 border-sketchy bg-cream-100 hover:shadow-paper-hover transition-all">
-            <div class="font-hand text-phi-2xl text-product-api mb-2">50+</div>
+            <div class="text-phi-2xl text-product-api mb-2 font-bold">50+</div>
             <div class="text-ink-500">支持模型</div>
           </div>
           <div class="text-center px-6 py-8 border-sketchy bg-cream-100 hover:shadow-paper-hover transition-all">
-            <div class="font-hand text-phi-2xl text-product-gushen mb-2">&lt;100ms</div>
+            <div class="text-phi-2xl text-product-gushen mb-2 font-bold">&lt;100ms</div>
             <div class="text-ink-500">平均延迟</div>
           </div>
           <div class="text-center px-6 py-8 border-sketchy bg-cream-100 hover:shadow-paper-hover transition-all">
-            <div class="font-hand text-phi-2xl text-product-switch mb-2">10M+</div>
+            <div class="text-phi-2xl text-product-switch mb-2 font-bold">10M+</div>
             <div class="text-ink-500">API 调用/天</div>
           </div>
         </div>
@@ -58,8 +69,8 @@ import FeatureGrid from '../components/Features/FeatureGrid.vue'
       <div class="absolute bottom-12 left-12 doodle-corner -scale-y-100 opacity-40"></div>
       <div class="absolute bottom-12 right-12 doodle-corner scale-[-1] opacity-40"></div>
 
-      <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="font-hand text-phi-2xl sm:text-phi-3xl text-ink-900 mb-fib-4">
+      <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal-fade-up">
+        <h2 class="text-phi-2xl sm:text-phi-3xl text-ink-900 mb-fib-4 font-semibold">
           准备好开始了吗？
         </h2>
         <p class="text-phi-xl text-ink-500 mb-fib-6 max-w-2xl mx-auto">
@@ -69,6 +80,7 @@ import FeatureGrid from '../components/Features/FeatureGrid.vue'
           <a
             href="https://api.lurus.cn/register"
             class="btn-hand btn-hand-primary inline-flex items-center justify-center gap-2 text-lg px-10 py-5"
+            @click="trackCta('register')"
           >
             <span>免费注册</span>
             <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,6 +90,7 @@ import FeatureGrid from '../components/Features/FeatureGrid.vue'
           <a
             href="https://api.lurus.cn"
             class="btn-hand inline-flex items-center justify-center gap-2 text-lg px-10 py-5"
+            @click="trackCta('explore')"
           >
             <span>探索更多</span>
           </a>

@@ -54,7 +54,7 @@ body {
 
   /* Subtle paper texture using CSS */
   background-image:
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.021'/%3E%3C/svg%3E");
 }
 
 /* ============================================
@@ -112,7 +112,8 @@ body {
 .btn-hand-primary:hover {
   background-color: #B8921F;
   border-color: #B8921F;
-  transform: rotate(1deg);
+  transform: scale(1.02) rotate(1deg);
+  box-shadow: 0 4px 12px rgba(201, 162, 39, 0.3);
 }
 
 /* ============================================
@@ -217,6 +218,46 @@ body {
 }
 
 /* ============================================
+   Scroll Reveal
+   ============================================ */
+.reveal-fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal-fade-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+.reveal-stagger.is-visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-stagger.is-visible > *:nth-child(2) { transition-delay: 0.1s; }
+.reveal-stagger.is-visible > *:nth-child(3) { transition-delay: 0.2s; }
+.reveal-stagger.is-visible > *:nth-child(4) { transition-delay: 0.3s; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-fade-up,
+  .reveal-stagger > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ============================================
    Animations
    ============================================ */
 @keyframes float {
@@ -294,7 +335,7 @@ a, button {
 .portal-link-btn {
   display: inline-flex;
   align-items: center;
-  padding: 8px 16px;
+  padding: 10px 18px;
   font-size: 14px;
   font-weight: 500;
   border: 1.5px solid;
@@ -303,11 +344,13 @@ a, button {
   text-decoration: none;
   color: var(--color-ink-700);
   background-color: transparent;
+  white-space: nowrap;
 }
 
 .portal-link-btn:hover {
   transform: translateY(-2px);
   box-shadow: 2px 2px 0 var(--color-ink-100);
+  color: var(--color-ink-900);
 }
 
 .portal-link-btn-deaigc {

@@ -1,38 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-
-const typedText = ref('')
-const phrases = ['AI 模型统一网关', 'AI 量化交易平台', '论文润色服务', '智能开发工具']
-let phraseIndex = 0
-let charIndex = 0
-let isDeleting = false
-
-const typeEffect = () => {
-  const currentPhrase = phrases[phraseIndex]
-
-  if (isDeleting) {
-    typedText.value = currentPhrase.substring(0, charIndex - 1)
-    charIndex--
-  } else {
-    typedText.value = currentPhrase.substring(0, charIndex + 1)
-    charIndex++
-  }
-
-  if (!isDeleting && charIndex === currentPhrase.length) {
-    setTimeout(() => { isDeleting = true }, 2000)
-  } else if (isDeleting && charIndex === 0) {
-    isDeleting = false
-    phraseIndex = (phraseIndex + 1) % phrases.length
-  }
-
-  const speed = isDeleting ? 50 : 100
-  setTimeout(typeEffect, speed)
-}
-
-onMounted(() => {
-  typeEffect()
-})
-
 const products = [
   { name: 'Lurus API', color: '#6B8BA4' },
   { name: 'GuShen', color: '#7D8B6A' },
@@ -57,7 +23,7 @@ const products = [
 
       <!-- Floating decorative elements -->
       <div
-        v-for="i in 8"
+        v-for="i in 4"
         :key="i"
         class="absolute w-3 h-3 rounded-full bg-ochre/20 animate-float"
         :style="{
@@ -69,9 +35,9 @@ const products = [
       ></div>
     </div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-fib-7">
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-fib-7 pt-24">
       <!-- Logo Badge -->
-      <div class="inline-flex items-center gap-3 px-6 py-3 border-sketchy bg-cream-100 mb-fib-5 hover:shadow-paper-hover transition-all">
+      <div class="inline-flex items-center gap-3 px-6 py-3 border-sketchy bg-cream-100 mb-fib-6 hover:shadow-paper-hover transition-all">
         <div class="w-10 h-10 rounded-lg bg-ochre flex items-center justify-center border-2 border-ink-300">
           <span class="text-cream-50 font-hand font-bold text-xl">L</span>
         </div>
@@ -80,22 +46,16 @@ const products = [
       </div>
 
       <!-- Main Headline -->
-      <h1 class="font-hand text-phi-2xl sm:text-phi-3xl lg:text-[80px] text-ink-900 mb-fib-4 leading-tight">
-        <span class="block mb-2">构建下一代</span>
-        <span class="relative inline-block min-h-[1.2em]">
-          <span class="text-gradient-ochre underline-doodle">
-            {{ typedText }}
-          </span>
-          <span class="absolute -right-1 top-0 h-full w-[3px] bg-ochre animate-pulse"></span>
-        </span>
+      <h1 class="text-phi-2xl sm:text-phi-3xl lg:text-[80px] text-ink-900 mb-fib-4 leading-tight font-bold">
+        <span class="block mb-2">统一接入全球 AI 模型</span>
+        <span class="text-gradient-ochre font-hand">一个 API，所有模型</span>
       </h1>
 
       <!-- Subheadline -->
       <p class="text-phi-xl text-ink-500 max-w-3xl mx-auto mb-fib-6 leading-relaxed">
-        从 <span class="text-ink-900 font-medium underline-doodle">AI 模型接入</span> 到
-        <span class="text-ink-900 font-medium underline-doodle">量化交易</span>，
-        再到 <span class="text-ink-900 font-medium underline-doodle">论文润色</span>，
-        提供完整的智能化解决方案
+        通过 Lurus API 统一调用主流大模型，内置智能路由与负载均衡，
+        让你专注于 <span class="text-ink-900 font-medium underline-doodle">产品开发</span>，
+        而非 <span class="text-ink-900 font-medium underline-doodle">基础设施</span>
       </p>
 
       <!-- CTA Buttons -->
@@ -104,7 +64,7 @@ const products = [
           href="https://api.lurus.cn"
           class="btn-hand btn-hand-primary inline-flex items-center gap-2"
         >
-          <span>探索产品</span>
+          <span>获取 API Key</span>
           <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
@@ -122,8 +82,8 @@ const products = [
 
       <!-- Product Tags -->
       <div class="relative">
-        <p class="text-sm text-ink-300 mb-fib-4">我们的产品</p>
-        <div class="flex flex-wrap justify-center gap-fib-3">
+        <p class="text-sm text-ink-300 mb-fib-5">我们的产品</p>
+        <div class="flex flex-wrap justify-center gap-fib-4">
           <div
             v-for="product in products"
             :key="product.name"

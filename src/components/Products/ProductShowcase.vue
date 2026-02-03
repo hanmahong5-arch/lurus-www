@@ -1,4 +1,22 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
+const curlCopied = ref(false)
+const curlExample = `curl https://api.lurus.cn/v1/chat/completions \\
+  -H "Authorization: Bearer $LURUS_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"model":"deepseek-chat","messages":[{"role":"user","content":"Hello"}]}'`
+
+const copyCurl = async () => {
+  try {
+    await navigator.clipboard.writeText(curlExample)
+    curlCopied.value = true
+    setTimeout(() => { curlCopied.value = false }, 2000)
+  } catch {
+    // Fallback: no-op on clipboard failure
+  }
+}
+
 interface Product {
   id: string
   name: string
@@ -105,7 +123,7 @@ const gridProducts = products.filter(p => !p.featured)
           <span class="doodle-star mr-2"></span>
           产品矩阵
         </span>
-        <h2 class="font-hand text-phi-2xl sm:text-phi-3xl text-ink-900 mb-fib-4">
+        <h2 class="text-phi-2xl sm:text-phi-3xl text-ink-900 mb-fib-4 font-semibold">
           完整的 <span class="text-gradient-ochre underline-doodle">AI 解决方案</span>
         </h2>
         <p class="text-phi-xl text-ink-500 max-w-2xl mx-auto">
@@ -136,7 +154,7 @@ const gridProducts = products.filter(p => !p.featured)
           <!-- Content -->
           <div class="flex-1 text-center lg:text-left">
             <div class="flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-4 mb-fib-3">
-              <h3 class="font-hand text-phi-2xl text-ink-900 group-hover:text-gradient-ochre transition-colors">
+              <h3 class="text-phi-2xl text-ink-900 group-hover:text-gradient-ochre transition-colors font-semibold">
                 {{ featuredProduct.name }}
               </h3>
               <span class="inline-block px-3 py-1 text-xs font-medium text-cream-50 rounded-full" :style="{ backgroundColor: featuredProduct.bgColor }">
@@ -147,7 +165,7 @@ const gridProducts = products.filter(p => !p.featured)
               {{ featuredProduct.description }}
             </p>
             <!-- Features -->
-            <div class="flex flex-wrap justify-center lg:justify-start gap-fib-2">
+            <div class="flex flex-wrap justify-center lg:justify-start gap-fib-2 mb-fib-4">
               <span
                 v-for="feature in featuredProduct.features"
                 :key="feature"
@@ -156,18 +174,32 @@ const gridProducts = products.filter(p => !p.featured)
                 {{ feature }}
               </span>
             </div>
+
+            <!-- Curl Example -->
+            <div class="relative rounded-lg overflow-hidden" @click.prevent>
+              <div class="flex items-center justify-between px-4 py-2 bg-ink-900 border-b border-ink-700">
+                <span class="text-xs text-ink-300 font-mono">Quick Start</span>
+                <button
+                  @click.prevent="copyCurl"
+                  class="text-xs text-ink-300 hover:text-cream-100 transition-colors px-2 py-1 rounded"
+                >
+                  {{ curlCopied ? '已复制' : '复制' }}
+                </button>
+              </div>
+              <pre class="bg-ink-900 text-cream-100 p-6 font-mono text-sm overflow-x-auto leading-relaxed"><code>{{ curlExample }}</code></pre>
+            </div>
           </div>
 
           <!-- Stats -->
           <div class="text-center px-8 py-6 border-sketchy bg-cream-100">
-            <div class="font-hand text-phi-2xl" :style="{ color: featuredProduct.bgColor }">{{ featuredProduct.stats.value }}</div>
+            <div class="text-phi-2xl font-bold" :style="{ color: featuredProduct.bgColor }">{{ featuredProduct.stats.value }}</div>
             <div class="text-sm text-ink-500 mt-1">{{ featuredProduct.stats.label }}</div>
           </div>
         </div>
       </a>
 
       <!-- Product Grid (4 cards in golden layout) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 reveal-stagger">
         <a
           v-for="product in gridProducts"
           :key="product.id"
@@ -191,13 +223,13 @@ const gridProducts = products.filter(p => !p.featured)
               </div>
               <!-- Stats Badge -->
               <div class="text-right">
-                <div class="font-hand text-xl" :style="{ color: product.bgColor }">{{ product.stats.value }}</div>
+                <div class="text-xl font-bold" :style="{ color: product.bgColor }">{{ product.stats.value }}</div>
                 <div class="text-xs text-ink-300">{{ product.stats.label }}</div>
               </div>
             </div>
 
             <!-- Title & Tagline -->
-            <h3 class="font-hand text-phi-xl text-ink-900 group-hover:text-gradient-ochre transition-colors mb-1">
+            <h3 class="text-phi-xl text-ink-900 group-hover:text-gradient-ochre transition-colors mb-1 font-semibold">
               {{ product.name }}
             </h3>
             <p class="text-sm text-ink-500 mb-fib-3">{{ product.tagline }}</p>

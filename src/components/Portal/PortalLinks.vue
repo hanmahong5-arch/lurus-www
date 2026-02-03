@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import { portalCategories } from '../../data/portalLinks'
+import { useTracking } from '../../composables/useTracking'
+
+const { track } = useTracking()
+const trackPortalClick = (linkName: string, category: string) => {
+  track('portal_click', { link: linkName, category })
+}
 </script>
 
 <template>
@@ -16,7 +22,7 @@ import { portalCategories } from '../../data/portalLinks'
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Section Header -->
       <div class="text-center mb-fib-6">
-        <h2 class="font-hand text-phi-2xl sm:text-phi-3xl text-ink-900 mb-fib-3">
+        <h2 class="text-phi-2xl sm:text-phi-3xl text-ink-900 mb-fib-3 font-semibold">
           知识门户
         </h2>
         <p class="text-phi-xl text-ink-500 max-w-2xl mx-auto">
@@ -26,7 +32,7 @@ import { portalCategories } from '../../data/portalLinks'
 
       <!-- Portal Categories Grid -->
       <!-- Desktop: 3 cols x 2 rows | Tablet: 2 cols x 3 rows | Mobile: 1 col x 6 rows -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-fib-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
         <div
           v-for="category in portalCategories"
           :key="category.id"
@@ -34,27 +40,32 @@ import { portalCategories } from '../../data/portalLinks'
           :style="{ '--category-color': category.color }"
         >
           <!-- Category Header -->
-          <div class="flex items-center gap-3 mb-fib-4">
+          <div class="flex items-center gap-3 mb-5">
             <div
-              class="w-4 h-4 rounded-full"
+              class="w-4 h-4 rounded-full flex-shrink-0"
               :style="{ backgroundColor: category.color }"
             ></div>
-            <h3 class="font-hand text-xl text-ink-900">{{ category.name }}</h3>
+            <h3 class="text-xl text-ink-900 font-semibold">{{ category.name }}</h3>
             <span class="text-sm text-ink-300">{{ category.nameEn }}</span>
           </div>
 
           <!-- Links Grid -->
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-3">
             <a
               v-for="link in category.links"
               :key="link.name"
               :href="link.url"
               target="_blank"
               rel="noopener noreferrer"
-              class="portal-link-btn"
+              class="portal-link-btn group"
               :class="category.colorClass"
+              :title="link.desc"
+              @click="trackPortalClick(link.name, category.id)"
             >
-              {{ link.name }}
+              <span>{{ link.name }}</span>
+              <svg class="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
             </a>
           </div>
         </div>
@@ -71,7 +82,7 @@ import { portalCategories } from '../../data/portalLinks'
   border: 2px solid var(--color-ink-100);
   border-left: 4px solid var(--category-color);
   border-radius: 4px 15px 8px 12px / 12px 8px 15px 4px;
-  padding: 24px;
+  padding: 28px;
   transition: all 0.3s ease;
 }
 

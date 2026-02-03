@@ -66,7 +66,7 @@ const socials = [
 
         <!-- Products Column -->
         <div>
-          <h3 class="font-hand text-phi-xl text-ink-900 mb-fib-4">产品</h3>
+          <h3 class="text-phi-xl text-ink-900 mb-fib-4 font-semibold">产品</h3>
           <ul class="space-y-fib-3">
             <li v-for="item in products" :key="item.name">
               <a
@@ -82,7 +82,7 @@ const socials = [
 
         <!-- Resources Column -->
         <div>
-          <h3 class="font-hand text-phi-xl text-ink-900 mb-fib-4">资源</h3>
+          <h3 class="text-phi-xl text-ink-900 mb-fib-4 font-semibold">资源</h3>
           <ul class="space-y-fib-3">
             <li v-for="item in resources" :key="item.name">
               <a
@@ -97,7 +97,7 @@ const socials = [
 
         <!-- Company Column -->
         <div>
-          <h3 class="font-hand text-phi-xl text-ink-900 mb-fib-4">公司</h3>
+          <h3 class="text-phi-xl text-ink-900 mb-fib-4 font-semibold">公司</h3>
           <ul class="space-y-fib-3">
             <li v-for="item in company" :key="item.name">
               <a

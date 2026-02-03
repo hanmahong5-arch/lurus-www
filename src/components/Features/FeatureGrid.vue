@@ -67,7 +67,7 @@ const getIconPath = (name: string) => {
           <span class="doodle-star mr-2"></span>
           核心优势
         </span>
-        <h2 class="font-hand text-phi-2xl sm:text-phi-3xl text-ink-900 mb-fib-4">
+        <h2 class="text-phi-2xl sm:text-phi-3xl text-ink-900 mb-fib-4 font-semibold">
           为什么选择 <span class="text-gradient-ochre underline-doodle">Lurus</span>
         </h2>
         <p class="text-phi-xl text-ink-500 max-w-2xl mx-auto">
@@ -76,7 +76,7 @@ const getIconPath = (name: string) => {
       </div>
 
       <!-- Feature Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 reveal-stagger">
         <div
           v-for="(feature, index) in features"
           :key="feature.title"
@@ -94,7 +94,7 @@ const getIconPath = (name: string) => {
           </div>
 
           <!-- Content -->
-          <h3 class="font-hand text-phi-xl text-ink-900 mb-3 group-hover:text-gradient-ochre transition-all duration-300">
+          <h3 class="text-phi-xl text-ink-900 mb-3 group-hover:text-gradient-ochre transition-all duration-300 font-semibold">
             {{ feature.title }}
           </h3>
           <p class="text-ink-500 leading-relaxed">
