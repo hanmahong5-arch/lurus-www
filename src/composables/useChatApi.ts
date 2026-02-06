@@ -3,7 +3,7 @@
  * Handles API calls with timeout, retry, and error handling
  */
 
-import type { ChatMessage, ChatApiResponse } from '../types/chat'
+import type { ChatApiResponse } from '../types/chat'
 import { TimeoutError, NetworkError } from '../types/chat'
 
 const API_URL = 'https://api.lurus.cn/v1/chat/completions'

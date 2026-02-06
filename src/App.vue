@@ -7,8 +7,16 @@ import AIChatSidebar from './components/Chat/AIChatSidebar.vue'
 
 <template>
   <div class="min-h-screen flex flex-col bg-surface-dark">
+    <!-- Skip Link for accessibility -->
+    <a
+      href="#main-content"
+      class="skip-link"
+    >
+      跳至主内容
+    </a>
+
     <Navbar />
-    <main class="flex-1">
+    <main id="main-content" class="flex-1" tabindex="-1">
       <RouterView />
     </main>
     <Footer />

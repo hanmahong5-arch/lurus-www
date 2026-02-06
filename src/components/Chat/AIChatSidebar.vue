@@ -27,7 +27,7 @@ const {
   isTyping,
   inputMessage,
   isOnline,
-  canSend,
+  canSend: _canSend,
   hasMessages,
   models,
   quickPrompts,

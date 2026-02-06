@@ -30,6 +30,13 @@ export function useScrollReveal(
       return
     }
 
+    // Skip animations if navigating via anchor (hash in URL)
+    // This ensures fast access for return visitors using bookmarks like #portal
+    if (window.location.hash) {
+      applyVisibleToAll()
+      return
+    }
+
     observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {

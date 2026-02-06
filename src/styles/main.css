@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./fonts.css";
 
 /* ============================================
    Lurus Design System - Hand-drawn Paper Theme
@@ -48,7 +49,7 @@ html {
 body {
   background-color: var(--color-cream-50);
   color: var(--color-ink-900);
-  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Noto Sans SC', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
@@ -110,8 +111,8 @@ body {
 }
 
 .btn-hand-primary:hover {
-  background-color: #B8921F;
-  border-color: #B8921F;
+  background-color: color-mix(in srgb, var(--color-ochre), #000 12%);
+  border-color: color-mix(in srgb, var(--color-ochre), #000 12%);
   transform: scale(1.02) rotate(1deg);
   box-shadow: 0 4px 12px rgba(201, 162, 39, 0.3);
 }
@@ -249,11 +250,28 @@ body {
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
+  /* Disable scroll reveal animations */
   .reveal-fade-up,
   .reveal-stagger > * {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  /* Disable all animations globally */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Ensure elements are visible without animation */
+  .animate-float,
+  .animate-wiggle {
+    animation: none;
   }
 }
 
@@ -426,4 +444,27 @@ a, button {
 
 .portal-legal:hover {
   background-color: rgba(139, 74, 106, 0.2);
+}
+
+/* ============================================
+   Skip Link (Accessibility)
+   ============================================ */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 9999;
+  padding: 12px 24px;
+  background-color: var(--color-ochre);
+  color: var(--color-cream-50);
+  font-weight: 600;
+  border-radius: 0 0 8px 8px;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }

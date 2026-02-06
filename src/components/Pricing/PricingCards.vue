@@ -90,7 +90,7 @@ onMounted(async () => {
         console.log('Fetched plans from API:', data.data)
       }
     }
-  } catch (e) {
+  } catch (_e) {
     // Use default plans
     console.log('Using default pricing plans')
   } finally {

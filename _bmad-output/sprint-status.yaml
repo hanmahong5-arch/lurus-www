@@ -1,0 +1,111 @@
+# generated: 2026-02-05
+# project: lurus-www
+# project_key: www
+# tracking_system: bmad
+# story_location: _bmad-output/implementation-artifacts/stories
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+
+generated: 2026-02-05
+project: lurus-www
+project_key: www
+tracking_system: bmad
+story_location: _bmad-output/implementation-artifacts/stories
+
+development_status:
+  # ===== Epic 1: 项目基础设施与质量保障 =====
+  epic-1: done
+  1-1-data-file-centralization: done
+  1-2-typescript-type-definitions: done
+  1-3-test-infrastructure-config: done
+  1-4-ci-quality-gate-config: done
+  1-5-eslint-config: done
+  1-6-security-headers-nginx-config: done
+  1-7-env-var-management: done
+  1-8-link-health-check-script: done
+  1-9-xss-protection: done
+  1-10-seo-basic-files: done
+  epic-1-retrospective: optional
+
+  # ===== Epic 2: 导航与品牌框架 (Wave 1) =====
+  epic-2: done
+  2-1-font-self-hosting: done
+  2-2-navbar-structure-logo: done
+  2-3-dropdown-menu-system: done
+  2-4-section-active-indicator: done
+  2-5-mobile-hamburger-menu: done
+  2-6-skip-link-a11y: done
+  2-7-portal-anchor-navigation: done
+  2-8-github-stars-integration: done
+  2-9-footer-structure: done
+  2-10-og-image-self-hosting: done
+  2-11-reduced-motion-support: done
+  epic-2-retrospective: optional
+
+  # ===== Epic 3: Hero 与技术信任 (Wave 1) =====
+  epic-3: in-progress
+  3-1-code-showcase-component: done
+  3-2-hero-two-column-layout: done
+  3-3-primary-cta-button: backlog
+  3-4-secondary-cta-button: backlog
+  3-5-mid-cta-bar: backlog
+  3-6-final-cta-section: backlog
+  epic-3-retrospective: optional
+
+  # ===== Epic 4: AI Chat 体验 (Wave 1 Conditional) =====
+  epic-4: backlog
+  4-1-chat-conditional-loading: backlog
+  4-2-chat-floating-trigger: backlog
+  4-3-chat-preview-component: backlog
+  4-4-chat-quick-prompts: backlog
+  4-5-chat-fallback-handling: backlog
+  4-6-chat-streaming-a11y: backlog
+  epic-4-retrospective: optional
+
+  # ===== Epic 5: 平台能力展示 (Wave 2) =====
+  epic-5: backlog
+  5-1-platform-capability-cards: backlog
+  5-2-code-example-showcase: backlog
+  5-3-dashboard-preview: backlog
+  5-4-infrastructure-highlights: backlog
+  5-5-api-degradation-status: backlog
+  epic-5-retrospective: optional
+
+  # ===== Epic 6: 产品生态发现 (Wave 2) =====
+  epic-6: backlog
+  6-1-product-main-card: backlog
+  6-2-product-sub-card-component: backlog
+  6-3-product-screenshot-fallback: backlog
+  6-4-stats-display: backlog
+  epic-6-retrospective: optional
+
+  # ===== Epic 7: 门户与快速访问 (Wave 2) =====
+  epic-7: backlog
+  7-1-portal-category-browse: backlog
+  7-2-portal-link-interaction: backlog
+  7-3-return-visit-quick-access: backlog
+  7-4-ai-chat-portal-preview: backlog
+  7-5-getting-started-quick-access: backlog
+  epic-7-retrospective: optional
+
+  # ===== Epic 8: 分析与度量 =====
+  epic-8: backlog
+  8-1-event-tracking-infrastructure: backlog
+  8-2-core-event-tracking: backlog
+  epic-8-retrospective: optional

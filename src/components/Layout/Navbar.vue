@@ -1,17 +1,91 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, nextTick, onMounted, onUnmounted } from 'vue'
+import { navItems, ctaLinks } from '../../data/navItems'
+import NavDropdown from './NavDropdown.vue'
+import GitHubStarsBadge from './GitHubStarsBadge.vue'
+import { useActiveSection } from '../../composables/useActiveSection'
 
 const mobileMenuOpen = ref(false)
 const scrolled = ref(false)
+const hamburgerButtonRef = ref<HTMLButtonElement | null>(null)
+const menuPanelRef = ref<HTMLElement | null>(null)
 
-const navLinks = [
-  { name: '产品', path: '#products' },
-  { name: '优势', path: '#features' },
-  { name: '文档', path: 'https://docs.lurus.cn', external: true },
-]
+const { activeSection } = useActiveSection()
+
+// Map nav items to their corresponding section IDs
+const sectionMap: Record<string, string> = {
+  '产品': 'products',
+  '资源': 'portal',
+}
+
+const isNavItemActive = (name: string): boolean => {
+  const sectionId = sectionMap[name]
+  return sectionId ? activeSection.value === sectionId : false
+}
+
+// Get all focusable elements within a container
+const getFocusableElements = (container: HTMLElement): HTMLElement[] => {
+  const selector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  return Array.from(container.querySelectorAll<HTMLElement>(selector))
+}
+
+// Focus trap: keep Tab/Shift+Tab cycling within the mobile menu
+const handleMenuKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
+    closeMobileMenu()
+    return
+  }
+
+  if (event.key !== 'Tab' || !menuPanelRef.value) return
+
+  const focusableElements = getFocusableElements(menuPanelRef.value)
+  if (focusableElements.length === 0) return
+
+  const firstFocusable = focusableElements[0]
+  const lastFocusable = focusableElements[focusableElements.length - 1]
+
+  if (event.shiftKey) {
+    if (document.activeElement === firstFocusable) {
+      event.preventDefault()
+      lastFocusable.focus()
+    }
+  } else {
+    if (document.activeElement === lastFocusable) {
+      event.preventDefault()
+      firstFocusable.focus()
+    }
+  }
+}
 
 const toggleMobileMenu = () => {
-  mobileMenuOpen.value = !mobileMenuOpen.value
+  if (mobileMenuOpen.value) {
+    closeMobileMenu()
+  } else {
+    openMobileMenu()
+  }
+}
+
+const openMobileMenu = async () => {
+  mobileMenuOpen.value = true
+  document.body.style.overflow = 'hidden'
+  document.addEventListener('keydown', handleMenuKeydown)
+
+  // Focus first focusable element in menu after render
+  await nextTick()
+  if (menuPanelRef.value) {
+    const focusableElements = getFocusableElements(menuPanelRef.value)
+    if (focusableElements.length > 0) {
+      focusableElements[0].focus()
+    }
+  }
+}
+
+const closeMobileMenu = () => {
+  mobileMenuOpen.value = false
+  document.body.style.overflow = ''
+  document.removeEventListener('keydown', handleMenuKeydown)
+  // Return focus to hamburger button
+  hamburgerButtonRef.value?.focus()
 }
 
 const handleScroll = () => {
@@ -24,134 +98,253 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('keydown', handleMenuKeydown)
+  document.body.style.overflow = ''
 })
 </script>
 
 <template>
-  <nav
+  <header
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
     :class="[
       scrolled
-        ? 'bg-cream-50/95 backdrop-blur-sm border-b-2 border-ink-100 shadow-paper'
+        ? 'bg-cream-50/90 backdrop-blur-sm shadow-sm'
         : 'bg-transparent'
     ]"
   >
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-20">
-        <!-- Logo -->
-        <router-link to="/" class="flex items-center gap-3 group">
-          <div class="relative">
-            <div class="w-10 h-10 rounded-lg bg-ochre flex items-center justify-center border-2 border-ink-300 group-hover:animate-wiggle transition-transform duration-300">
-              <span class="text-cream-50 font-hand font-bold text-xl">L</span>
+    <nav aria-label="Main navigation">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+          <!-- Logo -->
+          <router-link to="/" class="flex items-center gap-3 group">
+            <div class="relative">
+              <div class="w-10 h-10 rounded-lg bg-ochre flex items-center justify-center border-2 border-ink-300 group-hover:animate-wiggle transition-transform duration-300">
+                <span class="text-cream-50 font-hand font-bold text-xl">L</span>
+              </div>
+            </div>
+            <span class="text-ink-900 font-hand font-bold text-2xl tracking-tight">Lurus</span>
+          </router-link>
+
+          <!-- Desktop Nav -->
+          <div class="hidden md:flex items-center gap-1">
+            <template v-for="link in navItems" :key="link.name">
+              <!-- Dropdown menu for items with children -->
+              <NavDropdown
+                v-if="link.children && link.children.length > 0"
+                :label="link.name"
+                :items="link.children"
+                :active="isNavItemActive(link.name)"
+              />
+              <!-- External link -->
+              <a
+                v-else-if="link.external"
+                :href="link.path"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="px-5 py-2.5 text-ink-500 hover:text-ink-900 hover:bg-cream-200 rounded-lg transition-all duration-200"
+              >
+                {{ link.name }}
+              </a>
+              <!-- Router link -->
+              <router-link
+                v-else-if="link.path.startsWith('/')"
+                :to="link.path"
+                class="px-5 py-2.5 text-ink-500 hover:text-ink-900 hover:bg-cream-200 rounded-lg transition-all duration-200"
+              >
+                {{ link.name }}
+              </router-link>
+              <!-- Anchor link -->
+              <a
+                v-else
+                :href="link.path"
+                class="px-5 py-2.5 text-ink-500 hover:text-ink-900 hover:bg-cream-200 rounded-lg transition-all duration-200"
+              >
+                {{ link.name }}
+              </a>
+            </template>
+          </div>
+
+          <!-- CTA Buttons -->
+          <div class="hidden md:flex items-center gap-3">
+            <GitHubStarsBadge />
+            <a
+              :href="ctaLinks.login"
+              class="px-5 py-2.5 text-ink-500 hover:text-ink-900 transition-colors"
+            >
+              登录
+            </a>
+            <a
+              :href="ctaLinks.register"
+              class="btn-hand btn-hand-primary"
+            >
+              开始使用
+            </a>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button
+            ref="hamburgerButtonRef"
+            @click="toggleMobileMenu"
+            class="md:hidden min-w-[44px] min-h-[44px] p-2.5 text-ink-500 hover:text-ink-900 hover:bg-cream-200 rounded-lg transition-all flex items-center justify-center"
+            :aria-expanded="mobileMenuOpen"
+            aria-label="Toggle menu"
+          >
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <g class="transition-transform duration-300 origin-center" :class="mobileMenuOpen ? 'rotate-45' : 'rotate-0'">
+                <path v-if="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </g>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Overlay -->
+      <Transition
+        enter-active-class="transition-all duration-300 ease-out"
+        enter-from-class="opacity-0 -translate-y-4"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition-all duration-300 ease-in"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-4"
+      >
+        <div
+          v-if="mobileMenuOpen"
+          class="md:hidden fixed inset-0 top-20 z-40"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation menu"
+          @click="closeMobileMenu"
+        >
+          <!-- Background overlay -->
+          <div class="absolute inset-0 bg-ink-900/50" aria-hidden="true"></div>
+
+          <!-- Menu panel -->
+          <div
+            ref="menuPanelRef"
+            class="relative bg-cream-50 h-full overflow-y-auto"
+            @click.stop
+          >
+            <div class="px-4 py-6 space-y-1">
+              <template v-for="link in navItems" :key="link.name">
+                <!-- Section with children (expanded inline on mobile) -->
+                <template v-if="link.children && link.children.length > 0">
+                  <div class="pt-4 pb-2 px-4 text-xs font-semibold text-ink-300 uppercase tracking-wider">
+                    {{ link.name }}
+                  </div>
+                  <template v-for="child in link.children" :key="child.path">
+                    <a
+                      v-if="child.external"
+                      :href="child.path"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="mobile-nav-link pl-6"
+                      @click="closeMobileMenu"
+                    >
+                      <span class="flex items-center gap-2">
+                        {{ child.name }}
+                        <svg class="w-3.5 h-3.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </span>
+                    </a>
+                    <router-link
+                      v-else-if="child.path.startsWith('/')"
+                      :to="child.path"
+                      class="mobile-nav-link pl-6"
+                      @click="closeMobileMenu"
+                    >
+                      {{ child.name }}
+                    </router-link>
+                    <a
+                      v-else
+                      :href="child.path"
+                      class="mobile-nav-link pl-6"
+                      @click="closeMobileMenu"
+                    >
+                      {{ child.name }}
+                    </a>
+                  </template>
+                </template>
+                <!-- Simple link -->
+                <template v-else>
+                  <a
+                    v-if="link.external"
+                    :href="link.path"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="mobile-nav-link"
+                    @click="closeMobileMenu"
+                  >
+                    <span class="flex items-center gap-2">
+                      {{ link.name }}
+                      <svg class="w-3.5 h-3.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </span>
+                  </a>
+                  <router-link
+                    v-else-if="link.path.startsWith('/')"
+                    :to="link.path"
+                    class="mobile-nav-link"
+                    @click="closeMobileMenu"
+                  >
+                    {{ link.name }}
+                  </router-link>
+                  <a
+                    v-else
+                    :href="link.path"
+                    class="mobile-nav-link"
+                    @click="closeMobileMenu"
+                  >
+                    {{ link.name }}
+                  </a>
+                </template>
+              </template>
+              <hr class="border-ink-100 my-4">
+              <a
+                :href="ctaLinks.login"
+                class="mobile-nav-link"
+              >
+                登录
+              </a>
+              <a
+                :href="ctaLinks.register"
+                class="block btn-hand btn-hand-primary text-center min-h-[44px] flex items-center justify-center"
+              >
+                开始使用
+              </a>
             </div>
           </div>
-          <span class="text-ink-900 font-hand font-bold text-2xl tracking-tight">Lurus</span>
-        </router-link>
-
-        <!-- Desktop Nav -->
-        <div class="hidden md:flex items-center gap-1">
-          <template v-for="link in navLinks" :key="link.path">
-            <a
-              v-if="link.external"
-              :href="link.path"
-              target="_blank"
-              class="px-5 py-2.5 text-ink-500 hover:text-ink-900 hover:bg-cream-200 rounded-lg transition-all duration-200"
-            >
-              {{ link.name }}
-            </a>
-            <a
-              v-else
-              :href="link.path"
-              class="px-5 py-2.5 text-ink-500 hover:text-ink-900 hover:bg-cream-200 rounded-lg transition-all duration-200"
-            >
-              {{ link.name }}
-            </a>
-          </template>
         </div>
-
-        <!-- CTA Buttons -->
-        <div class="hidden md:flex items-center gap-3">
-          <a
-            href="https://api.lurus.cn/login"
-            class="px-5 py-2.5 text-ink-500 hover:text-ink-900 transition-colors"
-          >
-            登录
-          </a>
-          <a
-            href="https://api.lurus.cn/register"
-            class="btn-hand btn-hand-primary"
-          >
-            开始使用
-          </a>
-        </div>
-
-        <!-- Mobile Menu Button -->
-        <button
-          @click="toggleMobileMenu"
-          class="md:hidden p-2.5 text-ink-500 hover:text-ink-900 hover:bg-cream-200 rounded-lg transition-all"
-        >
-          <svg v-if="!mobileMenuOpen" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-          <svg v-else class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Mobile Menu -->
-    <Transition
-      enter-active-class="transition-all duration-300 ease-out"
-      enter-from-class="opacity-0 -translate-y-4"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition-all duration-200 ease-in"
-      leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 -translate-y-4"
-    >
-      <div
-        v-if="mobileMenuOpen"
-        class="md:hidden bg-cream-50/98 backdrop-blur-sm border-t-2 border-ink-100"
-      >
-        <div class="px-4 py-6 space-y-2">
-          <template v-for="link in navLinks" :key="link.path">
-            <a
-              v-if="link.external"
-              :href="link.path"
-              target="_blank"
-              class="block px-4 py-3 text-ink-500 hover:text-ink-900 hover:bg-cream-200 rounded-lg transition-all"
-              @click="mobileMenuOpen = false"
-            >
-              {{ link.name }}
-            </a>
-            <a
-              v-else
-              :href="link.path"
-              class="block px-4 py-3 text-ink-500 hover:text-ink-900 hover:bg-cream-200 rounded-lg transition-all"
-              @click="mobileMenuOpen = false"
-            >
-              {{ link.name }}
-            </a>
-          </template>
-          <hr class="border-ink-100 my-4">
-          <a
-            href="https://api.lurus.cn/login"
-            class="block px-4 py-3 text-ink-500 hover:text-ink-900 hover:bg-cream-200 rounded-lg transition-all"
-          >
-            登录
-          </a>
-          <a
-            href="https://api.lurus.cn/register"
-            class="block btn-hand btn-hand-primary text-center"
-          >
-            开始使用
-          </a>
-        </div>
-      </div>
-    </Transition>
-  </nav>
+      </Transition>
+    </nav>
+  </header>
 </template>
 
 <style scoped>
 @reference "../../styles/main.css";
+
+/* Mobile nav link with minimum touch target 44x44px */
+.mobile-nav-link {
+  display: block;
+  padding: 0.875rem 1rem; /* 14px vertical = ~48px total height with line-height */
+  min-height: 44px;
+  color: var(--color-ink-500);
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link:active {
+  color: var(--color-ink-900);
+  background-color: var(--color-cream-200);
+}
+
+/* Respect reduced motion preference (ADR-002) */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-link {
+    transition: none;
+  }
+}
 </style>

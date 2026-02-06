@@ -19,7 +19,7 @@ export interface PortalCategory {
   links: PortalLink[]
 }
 
-export const portalCategories: PortalCategory[] = [
+export const portalCategories = [
   {
     id: 'academic',
     name: '学术资源',
@@ -48,10 +48,10 @@ export const portalCategories: PortalCategory[] = [
       { name: '同花顺', url: 'https://www.10jqka.com.cn', desc: '技术分析' },
       { name: 'Wind万得', url: 'https://www.wind.com.cn', desc: '专业终端' },
       { name: '新浪财经', url: 'https://finance.sina.com.cn', desc: '综合门户' },
-      { name: '证监会', url: 'http://www.csrc.gov.cn', desc: '监管信息' },
-      { name: '上交所', url: 'http://www.sse.com.cn', desc: '上海交易所' },
-      { name: '深交所', url: 'http://www.szse.cn', desc: '深圳交易所' },
-      { name: '巨潮资讯', url: 'http://www.cninfo.com.cn', desc: '公司公告' },
+      { name: '证监会', url: 'https://www.csrc.gov.cn', desc: '监管信息' },
+      { name: '上交所', url: 'https://www.sse.com.cn', desc: '上海交易所' },
+      { name: '深交所', url: 'https://www.szse.cn', desc: '深圳交易所' },
+      { name: '巨潮资讯', url: 'https://www.cninfo.com.cn', desc: '公司公告' },
     ]
   },
   {
@@ -122,4 +122,4 @@ export const portalCategories: PortalCategory[] = [
       { name: 'HeinOnline', url: 'https://heinonline.org', desc: '法学期刊' },
     ]
   },
-]
+] as const satisfies readonly PortalCategory[]

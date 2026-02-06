@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import HeroSection from '../components/Hero/HeroSection.vue'
+import CodeShowcase from '../components/TechDemo/CodeShowcase.vue'
 import PortalLinks from '../components/Portal/PortalLinks.vue'
 import ProductShowcase from '../components/Products/ProductShowcase.vue'
 import FeatureGrid from '../components/Features/FeatureGrid.vue'
 import { useScrollReveal } from '../composables/useScrollReveal'
 import { useTracking } from '../composables/useTracking'
+import { stats, trustBadges, trustBadgeIconPaths } from '../data/stats'
 
 const pageRef = ref<HTMLElement | null>(null)
 useScrollReveal(pageRef)
@@ -19,7 +21,15 @@ const trackCta = (label: string) => {
 <template>
   <div ref="pageRef">
     <!-- Hero Section -->
-    <HeroSection />
+    <HeroSection>
+      <template #right>
+        <CodeShowcase
+          code="curl https://api.lurus.cn/v1/models"
+          language="bash"
+          ariaLabel="API 调用示例"
+        />
+      </template>
+    </HeroSection>
 
     <!-- Portal Links Section -->
     <PortalLinks />
@@ -38,21 +48,13 @@ const trackCta = (label: string) => {
 
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 reveal-stagger">
-          <div class="text-center px-6 py-8 border-sketchy bg-cream-100 hover:shadow-paper-hover transition-all">
-            <div class="text-phi-2xl text-ochre mb-2 font-bold">99.9%</div>
-            <div class="text-ink-500">服务可用性</div>
-          </div>
-          <div class="text-center px-6 py-8 border-sketchy bg-cream-100 hover:shadow-paper-hover transition-all">
-            <div class="text-phi-2xl text-product-api mb-2 font-bold">50+</div>
-            <div class="text-ink-500">支持模型</div>
-          </div>
-          <div class="text-center px-6 py-8 border-sketchy bg-cream-100 hover:shadow-paper-hover transition-all">
-            <div class="text-phi-2xl text-product-gushen mb-2 font-bold">&lt;100ms</div>
-            <div class="text-ink-500">平均延迟</div>
-          </div>
-          <div class="text-center px-6 py-8 border-sketchy bg-cream-100 hover:shadow-paper-hover transition-all">
-            <div class="text-phi-2xl text-product-switch mb-2 font-bold">10M+</div>
-            <div class="text-ink-500">API 调用/天</div>
+          <div
+            v-for="stat in stats"
+            :key="stat.label"
+            class="text-center px-6 py-8 border-sketchy bg-cream-100 hover:shadow-paper-hover transition-all"
+          >
+            <div :class="['text-phi-2xl mb-2 font-bold', stat.color]">{{ stat.value }}</div>
+            <div class="text-ink-500">{{ stat.label }}</div>
           </div>
         </div>
       </div>
@@ -98,23 +100,15 @@ const trackCta = (label: string) => {
 
         <!-- Trust Badges -->
         <div class="mt-fib-6 flex flex-wrap items-center justify-center gap-fib-5 text-ink-500 text-sm">
-          <div class="flex items-center gap-2 px-4 py-2 border-sketchy-light bg-cream-50">
-            <svg class="w-5 h-5 text-product-gushen" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          <div
+            v-for="badge in trustBadges"
+            :key="badge.label"
+            class="flex items-center gap-2 px-4 py-2 border-sketchy-light bg-cream-50"
+          >
+            <svg :class="['w-5 h-5', badge.iconColor]" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="trustBadgeIconPaths[badge.icon]" />
             </svg>
-            <span>数据安全加密</span>
-          </div>
-          <div class="flex items-center gap-2 px-4 py-2 border-sketchy-light bg-cream-50">
-            <svg class="w-5 h-5 text-product-gushen" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span>无需信用卡</span>
-          </div>
-          <div class="flex items-center gap-2 px-4 py-2 border-sketchy-light bg-cream-50">
-            <svg class="w-5 h-5 text-ochre" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            <span>即时开通</span>
+            <span>{{ badge.label }}</span>
           </div>
         </div>
       </div>

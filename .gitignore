@@ -15,11 +15,9 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Environment
-.env
+# Environment (local overrides only)
 .env.local
 .env.*.local
 
-# BMAD (managed at root level only)
+# BMAD framework (lives at root only)
 _bmad/
-_bmad-output/

@@ -4,4 +4,16 @@
     <loc>https://www.lurus.cn/</loc>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>https://www.lurus.cn/pricing</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lurus.cn/download</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.lurus.cn/about</loc>
+    <priority>0.7</priority>
+  </url>
 </urlset>

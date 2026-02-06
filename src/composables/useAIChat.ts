@@ -4,29 +4,14 @@
  */
 
 import { ref, computed } from 'vue'
-import type { ChatMessage, QuickPrompt, ModelOption } from '../types/chat'
+import type { ChatMessage } from '../types/chat'
 import { useChatPersist } from './useChatPersist'
 import { useChatApi, getErrorCode } from './useChatApi'
 import { useNetworkStatus } from './useNetworkStatus'
+import { chatModels, quickPrompts, chatConfig } from '../data/chatModels'
 
-// Debounce settings
-const DEBOUNCE_MS = 300
-
-// Available models
-const MODELS: ModelOption[] = [
-  { id: 'deepseek-chat', name: 'DeepSeek' },
-  { id: 'gpt-4o-mini', name: 'GPT-4o Mini' },
-  { id: 'claude-sonnet-4-20250514', name: 'Claude Sonnet' }
-]
-
-// Quick prompts
-const QUICK_PROMPTS: QuickPrompt[] = [
-  { icon: '📚', label: '论文总结', prompt: '请帮我总结这篇论文的核心观点、方法论和结论：' },
-  { icon: '💹', label: '金融分析', prompt: '请分析以下金融数据的市场影响和投资建议：' },
-  { icon: '💻', label: '技术解读', prompt: '请解释以下技术概念，并提供代码示例：' },
-  { icon: '🏥', label: '医学科普', prompt: '请用通俗语言解释以下医学知识：' },
-  { icon: '⚖️', label: '法律咨询', prompt: '请查询相关法条并解释其实际应用：' }
-]
+// Debounce settings from centralized config
+const DEBOUNCE_MS = chatConfig.debounceMs
 
 export const useAIChat = () => {
   // Composables
@@ -239,9 +224,9 @@ export const useAIChat = () => {
     canSend,
     hasMessages,
 
-    // Constants
-    models: MODELS,
-    quickPrompts: QUICK_PROMPTS,
+    // Constants (from centralized data)
+    models: chatModels,
+    quickPrompts,
 
     // Methods
     sendMessage,
