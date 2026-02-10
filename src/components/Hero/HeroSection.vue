@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { products } from '../../data/products'
+import PrimaryButton from '../CTAs/PrimaryButton.vue'
 
 const heroProducts = products.map((p) => ({
   name: p.name,
@@ -65,17 +66,12 @@ const floatingDots = [
 
           <!-- CTA Buttons -->
           <div class="flex flex-col sm:flex-row gap-fib-4 mb-fib-5">
-            <a
+            <PrimaryButton
+              text="获取 API Key"
               href="https://api.lurus.cn"
               target="_blank"
-              rel="noopener noreferrer"
-              class="btn-hand btn-hand-primary inline-flex items-center gap-2"
-            >
-              <span>获取 API Key</span>
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </a>
+              aria-label="跳转到 API Key 注册页面"
+            />
             <a
               href="https://docs.lurus.cn"
               target="_blank"
