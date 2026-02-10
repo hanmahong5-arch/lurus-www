@@ -20,8 +20,8 @@ spec:
         kubernetes.io/hostname: cloud-ubuntu-1-16c32g
       containers:
         - name: www
-          image: lurus-www:latest
-          imagePullPolicy: Never
+          image: ghcr.io/hanmahong5-arch/lurus-www:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
               name: http
