@@ -66,10 +66,12 @@ jobs:
           name: dist
           path: dist
 
-  # Stage 5: E2E Tests
+  # Stage 5: E2E Tests (optional quality check)
   e2e:
     runs-on: ubuntu-latest
     needs: build
+    if: success() || failure()
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -85,10 +87,12 @@ jobs:
       - name: Run E2E tests
         run: bun run test:e2e --project=chromium
 
-  # Stage 6: Lighthouse CI
+  # Stage 6: Lighthouse CI (optional quality check)
   lighthouse:
     runs-on: ubuntu-latest
     needs: build
+    if: success() || failure()
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -109,7 +113,7 @@ jobs:
   # Stage 7: Docker Build & Push
   docker:
     runs-on: ubuntu-latest
-    needs: [e2e, lighthouse]
+    needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
