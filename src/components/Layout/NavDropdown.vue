@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import type { NavItem } from '../../types/navigation'
 
-const props = defineProps<{
+defineProps<{
   label: string
   items: NavItem[]
   active?: boolean

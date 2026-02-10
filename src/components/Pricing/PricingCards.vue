@@ -87,12 +87,10 @@ onMounted(async () => {
       const data = await res.json()
       if (data.success && data.data) {
         // API data available, could merge with local
-        console.log('Fetched plans from API:', data.data)
       }
     }
   } catch (_e) {
     // Use default plans
-    console.log('Using default pricing plans')
   } finally {
     loading.value = false
   }
