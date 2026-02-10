@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { products } from '../../data/products'
 import PrimaryButton from '../CTAs/PrimaryButton.vue'
+import SecondaryButton from '../CTAs/SecondaryButton.vue'
 
 const heroProducts = products.map((p) => ({
   name: p.name,
@@ -70,19 +71,14 @@ const floatingDots = [
               text="获取 API Key"
               href="https://api.lurus.cn"
               target="_blank"
-              aria-label="跳转到 API Key 注册页面"
+              ariaLabel="跳转到 API Key 注册页面"
             />
-            <a
+            <SecondaryButton
+              text="查看文档"
               href="https://docs.lurus.cn"
               target="_blank"
-              rel="noopener noreferrer"
-              class="btn-hand inline-flex items-center gap-2"
-            >
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span>查看文档</span>
-            </a>
+              ariaLabel="跳转到文档站点"
+            />
           </div>
 
           <!-- Product Tags -->

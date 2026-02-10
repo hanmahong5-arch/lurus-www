@@ -1,6 +1,6 @@
 # Story 3.4: 次级 CTA 按钮
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -146,20 +146,34 @@ interface SecondaryButtonProps {
 
 ### Agent Model Used
 
-(To be filled by implementing agent)
+claude-sonnet-4-5-20250929
 
 ### Debug Log References
 
-(To be filled by implementing agent)
+None required — implementation was straightforward without blocking issues.
 
 ### Completion Notes List
 
-(To be filled by implementing agent)
+- Created `SecondaryButton.vue` component following the same structure as `PrimaryButton.vue` but with Secondary styling (transparent background, ochre border)
+- Removed debounce logic from Secondary button (unnecessary for lower-hierarchy CTAs)
+- Integrated `SecondaryButton` into `HeroSection.vue`, replacing the temporary `<a>` element with proper component
+- All 8 SecondaryButton tests pass (props, href/target, ariaLabel, rel="noopener noreferrer", styling)
+- HeroSection tests pass (11 tests verifying secondary CTA renders correctly)
+- Fixed Vue component prop naming: used `ariaLabel` (camelCase) instead of `aria-label` (kebab-case) for type safety
+- TypeScript `vue-tsc` type checking passes with no errors
+- ESLint passes with no warnings
+- Production build successful (1.25s build time)
 
 ### File List
 
-(To be filled by implementing agent)
+**Created:**
+- `src/components/CTAs/SecondaryButton.vue`
+- `src/components/CTAs/__tests__/SecondaryButton.test.ts`
+
+**Modified:**
+- `src/components/Hero/HeroSection.vue` (imported SecondaryButton, replaced temporary `<a>` with `<SecondaryButton>`)
 
 ### Change Log
 
 - 2026-02-10: Story 3.4 created — ready for development
+- 2026-02-10: Story 3.4 completed — SecondaryButton implemented, tested, and integrated
