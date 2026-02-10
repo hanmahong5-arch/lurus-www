@@ -170,12 +170,16 @@ onUnmounted(() => {
             <a
               :href="ctaLinks.login"
               class="px-5 py-2.5 text-ink-500 hover:text-ink-900 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               登录
             </a>
             <a
               :href="ctaLinks.register"
               class="btn-hand btn-hand-primary"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               开始使用
             </a>
@@ -305,12 +309,16 @@ onUnmounted(() => {
               <a
                 :href="ctaLinks.login"
                 class="mobile-nav-link"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 登录
               </a>
               <a
                 :href="ctaLinks.register"
                 class="block btn-hand btn-hand-primary text-center min-h-[44px] flex items-center justify-center"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 开始使用
               </a>

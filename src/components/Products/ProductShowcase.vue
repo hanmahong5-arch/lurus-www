@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { products, productIconPaths, curlExample } from '../../data/products'
+import { COPY_FEEDBACK_DURATION_MS } from '../../constants/ui'
 
 const curlCopied = ref(false)
 
@@ -8,7 +9,7 @@ const copyCurl = async () => {
   try {
     await navigator.clipboard.writeText(curlExample)
     curlCopied.value = true
-    setTimeout(() => { curlCopied.value = false }, 2000)
+    setTimeout(() => { curlCopied.value = false }, COPY_FEEDBACK_DURATION_MS)
   } catch {
     // Fallback: no-op on clipboard failure
   }

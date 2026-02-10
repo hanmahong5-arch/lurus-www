@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import PricingCards from '../components/Pricing/PricingCards.vue'
+import CheckIcon from '../components/Pricing/icons/CheckIcon.vue'
+import MinusIcon from '../components/Pricing/icons/MinusIcon.vue'
+import FaqItem from '../components/Pricing/FaqItem.vue'
 </script>
 
 <template>
@@ -138,55 +141,3 @@ import PricingCards from '../components/Pricing/PricingCards.vue'
     </section>
   </div>
 </template>
-
-<script lang="ts">
-// Helper components
-const CheckIcon = {
-  template: `
-    <svg class="w-5 h-5 text-green-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-    </svg>
-  `
-}
-
-const MinusIcon = {
-  template: `
-    <svg class="w-5 h-5 text-gray-600 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-    </svg>
-  `
-}
-
-const FaqItem = {
-  props: ['question', 'answer'],
-  data() {
-    return { open: false }
-  },
-  template: `
-    <div class="bg-surface rounded-xl border border-gray-800">
-      <button
-        @click="open = !open"
-        class="w-full px-6 py-4 flex items-center justify-between text-left"
-      >
-        <span class="font-medium text-white">{{ question }}</span>
-        <svg
-          class="w-5 h-5 text-gray-400 transition-transform duration-200"
-          :class="{ 'rotate-180': open }"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-      <div v-if="open" class="px-6 pb-4 text-gray-400">
-        {{ answer }}
-      </div>
-    </div>
-  `
-}
-
-export default {
-  components: { CheckIcon, MinusIcon, FaqItem }
-}
-</script>

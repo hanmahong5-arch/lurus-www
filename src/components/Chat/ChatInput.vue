@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
+import { MAX_INPUT_LENGTH, MAX_TEXTAREA_HEIGHT } from '../../constants/ui'
 
 // Auto-resizing textarea input component
 
@@ -24,7 +25,7 @@ const inputValue = computed({
 })
 
 const charCount = computed(() => props.modelValue.length)
-const maxChars = computed(() => props.maxLength || 2000)
+const maxChars = computed(() => props.maxLength || MAX_INPUT_LENGTH)
 const canSend = computed(() => inputValue.value.trim().length > 0 && !props.disabled)
 
 // Auto-resize textarea based on content
@@ -35,8 +36,8 @@ const autoResize = () => {
 
     // Reset height to auto to get the correct scrollHeight
     el.style.height = 'auto'
-    // Set new height, max 150px
-    el.style.height = Math.min(el.scrollHeight, 150) + 'px'
+    // Set new height, max height from constant
+    el.style.height = Math.min(el.scrollHeight, MAX_TEXTAREA_HEIGHT) + 'px'
   })
 }
 

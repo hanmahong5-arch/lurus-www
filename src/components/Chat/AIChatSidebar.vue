@@ -7,6 +7,7 @@
 import { ref } from 'vue'
 import { useAIChat } from '../../composables/useAIChat'
 import { useTracking } from '../../composables/useTracking'
+import { MOBILE_BREAKPOINT, MAX_INPUT_LENGTH } from '../../constants/ui'
 
 // Child components
 import ChatHeader from './ChatHeader.vue'
@@ -40,7 +41,7 @@ const {
 
 // Check if mobile on mount and resize
 const checkMobile = () => {
-  isMobile.value = window.innerWidth < 640
+  isMobile.value = window.innerWidth < MOBILE_BREAKPOINT
 }
 
 // Initialize mobile check
@@ -180,7 +181,7 @@ if (typeof window !== 'undefined') {
       v-model="inputMessage"
       :disabled="isLoading || !isOnline"
       placeholder="输入您的问题..."
-      :max-length="2000"
+      :max-length="MAX_INPUT_LENGTH"
       @send="handleSend"
     />
 
