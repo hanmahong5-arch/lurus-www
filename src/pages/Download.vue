@@ -1,23 +1,230 @@
 <script setup lang="ts">
-import DownloadSection from '../components/Download/DownloadSection.vue'
+import { ref, computed, onMounted } from 'vue'
+import { useReleases } from '../composables/useReleases'
+import ReleaseCard from '../components/Download/ReleaseCard.vue'
+
+const {
+  releases,
+  total,
+  currentPage,
+  pageSize,
+  isLoading,
+  error,
+  fetchReleases,
+} = useReleases()
+
+// Product selection
+const availableProducts = [
+  { id: 'lurus-switch', name: 'Lurus Switch', description: 'Wails 桌面应用' },
+  { id: 'lurus-cli', name: 'Lurus CLI', description: 'TUI 命令行工具' },
+]
+
+const selectedProduct = ref<string | undefined>(undefined)
+const includePrerelease = ref(false)
+
+// Computed
+const filteredReleases = computed(() => releases.value)
+
+const hasMore = computed(() => {
+  return currentPage.value * pageSize.value < total.value
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(total.value / pageSize.value)
+})
+
+// Methods
+async function loadReleases(page = 1) {
+  await fetchReleases({
+    product_id: selectedProduct.value,
+    release_type: 'stable',
+    include_prerelease: includePrerelease.value,
+    page,
+    page_size: 20,
+  })
+}
+
+function selectProduct(productId: string | undefined) {
+  selectedProduct.value = productId
+  loadReleases(1)
+}
+
+function togglePrerelease() {
+  includePrerelease.value = !includePrerelease.value
+  loadReleases(1)
+}
+
+function goToPage(page: number) {
+  if (page < 1 || page > totalPages.value) return
+  loadReleases(page)
+  // Scroll to top of releases
+  window.scrollTo({ top: 300, behavior: 'smooth' })
+}
+
+// Lifecycle
+onMounted(() => {
+  loadReleases()
+})
 </script>
 
 <template>
   <div class="pt-16">
     <!-- Page Header -->
     <section class="py-16 bg-surface-dark">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">
           下载中心
         </h1>
         <p class="text-lg text-gray-400 max-w-2xl mx-auto">
-          获取 CodeSwitch 客户端，支持 Windows、macOS 和 Linux
+          获取 Lurus 系列产品，支持 Windows、macOS、Linux 等多个平台
         </p>
       </div>
     </section>
 
-    <!-- Download Section -->
-    <DownloadSection />
+    <!-- Product Filter & Controls -->
+    <section class="py-8 bg-surface border-b border-gray-800 sticky top-16 z-10">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap items-center gap-4">
+          <!-- Product Tabs -->
+          <div class="flex items-center gap-2">
+            <button
+              @click="selectProduct(undefined)"
+              :class="[
+                'px-4 py-2 rounded-lg font-medium transition-colors',
+                selectedProduct === undefined
+                  ? 'bg-primary text-white'
+                  : 'bg-surface-dark text-gray-400 hover:text-white hover:bg-surface-dark/80',
+              ]"
+            >
+              全部产品
+            </button>
+            <button
+              v-for="product in availableProducts"
+              :key="product.id"
+              @click="selectProduct(product.id)"
+              :class="[
+                'px-4 py-2 rounded-lg font-medium transition-colors',
+                selectedProduct === product.id
+                  ? 'bg-primary text-white'
+                  : 'bg-surface-dark text-gray-400 hover:text-white hover:bg-surface-dark/80',
+              ]"
+            >
+              {{ product.name }}
+            </button>
+          </div>
+
+          <!-- Prerelease Toggle -->
+          <label class="flex items-center gap-2 ml-auto cursor-pointer">
+            <input
+              type="checkbox"
+              :checked="includePrerelease"
+              @change="togglePrerelease"
+              class="w-4 h-4 rounded border-gray-600 bg-surface-dark text-primary focus:ring-primary focus:ring-offset-0"
+            >
+            <span class="text-sm text-gray-400">显示预发布版本</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Releases List -->
+    <section class="py-16 bg-surface">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Loading State -->
+        <div v-if="isLoading && releases.length === 0" class="text-center py-12">
+          <div class="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p class="mt-4 text-gray-400">加载中...</p>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="error" class="text-center py-12">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 mb-4">
+            <svg class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-white mb-2">加载失败</h3>
+          <p class="text-gray-400 mb-6">{{ error }}</p>
+          <button
+            @click="loadReleases()"
+            class="px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
+          >
+            重试
+          </button>
+        </div>
+
+        <!-- Empty State -->
+        <div v-else-if="releases.length === 0" class="text-center py-12">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4">
+            <svg class="w-8 h-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-white mb-2">暂无发布版本</h3>
+          <p class="text-gray-400">当前筛选条件下没有可用的版本</p>
+        </div>
+
+        <!-- Releases -->
+        <div v-else class="space-y-6">
+          <ReleaseCard
+            v-for="(release, index) in filteredReleases"
+            :key="release.id"
+            :release="release"
+            :is-latest="index === 0 && currentPage === 1"
+          />
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="totalPages > 1" class="mt-12 flex items-center justify-center gap-2">
+          <button
+            @click="goToPage(currentPage - 1)"
+            :disabled="currentPage === 1"
+            :class="[
+              'px-4 py-2 rounded-lg font-medium transition-colors',
+              currentPage === 1
+                ? 'bg-surface-dark text-gray-600 cursor-not-allowed'
+                : 'bg-surface-dark text-white hover:bg-gray-800',
+            ]"
+          >
+            上一页
+          </button>
+
+          <div class="flex items-center gap-1">
+            <button
+              v-for="page in totalPages"
+              :key="page"
+              @click="goToPage(page)"
+              :class="[
+                'px-4 py-2 rounded-lg font-medium transition-colors',
+                currentPage === page
+                  ? 'bg-primary text-white'
+                  : 'bg-surface-dark text-gray-400 hover:text-white hover:bg-gray-800',
+              ]"
+            >
+              {{ page }}
+            </button>
+          </div>
+
+          <button
+            @click="goToPage(currentPage + 1)"
+            :disabled="currentPage === totalPages"
+            :class="[
+              'px-4 py-2 rounded-lg font-medium transition-colors',
+              currentPage === totalPages
+                ? 'bg-surface-dark text-gray-600 cursor-not-allowed'
+                : 'bg-surface-dark text-white hover:bg-gray-800',
+            ]"
+          >
+            下一页
+          </button>
+        </div>
+
+        <!-- Results Info -->
+        <div v-if="!isLoading && releases.length > 0" class="mt-8 text-center text-sm text-gray-500">
+          显示第 {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, total) }} 个版本，共 {{ total }} 个
+        </div>
+      </div>
+    </section>
 
     <!-- Installation Guide -->
     <section class="py-16 bg-surface-dark">
@@ -36,10 +243,10 @@ import DownloadSection from '../components/Download/DownloadSection.vue'
               Windows 安装
             </h3>
             <ol class="text-gray-400 space-y-2 list-decimal list-inside">
-              <li>下载 <code class="text-primary">codeswitch-win-x64.exe</code> 安装包</li>
+              <li>下载对应的 <code class="text-primary">.exe</code> 安装包</li>
               <li>双击运行安装程序，按照向导完成安装</li>
-              <li>安装完成后，从开始菜单启动 CodeSwitch</li>
-              <li>在设置中输入你的 API Token 即可开始使用</li>
+              <li>安装完成后，从开始菜单启动应用</li>
+              <li>根据应用提示完成初始配置</li>
             </ol>
           </div>
 
@@ -54,9 +261,9 @@ import DownloadSection from '../components/Download/DownloadSection.vue'
             <ol class="text-gray-400 space-y-2 list-decimal list-inside">
               <li>下载对应芯片版本的 <code class="text-primary">.dmg</code> 文件</li>
               <li>双击打开 DMG 文件</li>
-              <li>将 CodeSwitch 拖入 Applications 文件夹</li>
+              <li>将应用拖入 Applications 文件夹</li>
               <li>首次运行时，右键点击应用选择"打开"以绕过 Gatekeeper</li>
-              <li>在设置中输入你的 API Token 即可开始使用</li>
+              <li>根据应用提示完成初始配置</li>
             </ol>
           </div>
 
@@ -69,61 +276,55 @@ import DownloadSection from '../components/Download/DownloadSection.vue'
               Linux 安装
             </h3>
             <ol class="text-gray-400 space-y-2 list-decimal list-inside">
-              <li>下载 <code class="text-primary">codeswitch-linux-x64.tar.gz</code></li>
+              <li>下载 <code class="text-primary">.tar.gz</code> 压缩包</li>
               <li>
                 解压文件：
-                <code class="block mt-1 p-2 bg-black/30 rounded text-sm">tar -xzf codeswitch-linux-x64.tar.gz</code>
+                <code class="block mt-1 p-2 bg-black/30 rounded text-sm">tar -xzf lurus-*.tar.gz</code>
               </li>
               <li>
                 运行安装脚本或直接启动：
-                <code class="block mt-1 p-2 bg-black/30 rounded text-sm">./codeswitch</code>
+                <code class="block mt-1 p-2 bg-black/30 rounded text-sm">./lurus</code>
               </li>
-              <li>在设置中输入你的 API Token 即可开始使用</li>
+              <li>根据应用提示完成初始配置</li>
             </ol>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- CLI Usage -->
+    <!-- System Requirements -->
     <section class="py-16 bg-surface">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-2xl font-bold text-white mb-8 text-center">
-          命令行工具配置
+          系统要求
         </h2>
-
-        <div class="bg-surface-dark rounded-xl p-6 border border-gray-800">
-          <p class="text-gray-400 mb-4">
-            CodeSwitch 启动后会在本地提供代理服务，你可以配置各种 AI 开发工具使用它：
-          </p>
-
-          <div class="space-y-6">
-            <!-- Claude Code -->
-            <div>
-              <h4 class="text-white font-medium mb-2">Claude Code</h4>
-              <code class="block p-3 bg-black/30 rounded text-sm text-gray-300">
-                export ANTHROPIC_BASE_URL=http://localhost:18100<br>
-                export ANTHROPIC_API_KEY=sk-your-token
-              </code>
-            </div>
-
-            <!-- OpenAI -->
-            <div>
-              <h4 class="text-white font-medium mb-2">OpenAI SDK / ChatGPT CLI</h4>
-              <code class="block p-3 bg-black/30 rounded text-sm text-gray-300">
-                export OPENAI_BASE_URL=http://localhost:18100/v1<br>
-                export OPENAI_API_KEY=sk-your-token
-              </code>
-            </div>
-
-            <!-- Gemini -->
-            <div>
-              <h4 class="text-white font-medium mb-2">Gemini CLI</h4>
-              <code class="block p-3 bg-black/30 rounded text-sm text-gray-300">
-                export GEMINI_API_BASE=http://localhost:18100<br>
-                export GEMINI_API_KEY=sk-your-token
-              </code>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-6 bg-surface-dark rounded-xl border border-gray-800">
+            <h4 class="text-primary font-medium mb-4 text-lg">Windows</h4>
+            <ul class="text-gray-400 space-y-2 text-sm">
+              <li>• Windows 10 或更高版本</li>
+              <li>• 64 位处理器</li>
+              <li>• 4 GB RAM 或更多</li>
+              <li>• 500 MB 可用磁盘空间</li>
+            </ul>
+          </div>
+          <div class="p-6 bg-surface-dark rounded-xl border border-gray-800">
+            <h4 class="text-primary font-medium mb-4 text-lg">macOS</h4>
+            <ul class="text-gray-400 space-y-2 text-sm">
+              <li>• macOS 11 Big Sur 或更高版本</li>
+              <li>• Apple Silicon 或 Intel 处理器</li>
+              <li>• 4 GB RAM 或更多</li>
+              <li>• 500 MB 可用磁盘空间</li>
+            </ul>
+          </div>
+          <div class="p-6 bg-surface-dark rounded-xl border border-gray-800">
+            <h4 class="text-primary font-medium mb-4 text-lg">Linux</h4>
+            <ul class="text-gray-400 space-y-2 text-sm">
+              <li>• Ubuntu 20.04+ / Debian 11+</li>
+              <li>• 64 位处理器</li>
+              <li>• 4 GB RAM 或更多</li>
+              <li>• 500 MB 可用磁盘空间</li>
+            </ul>
           </div>
         </div>
       </div>

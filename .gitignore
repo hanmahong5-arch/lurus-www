@@ -21,3 +21,9 @@ Thumbs.db
 
 # BMAD framework (lives at root only)
 _bmad/
+.env
+.env.production
+coverage/
+test-results/
+playwright-report/
+bun.lock

@@ -29,6 +29,26 @@ export const navItems: NavDropdownItem[] = [
   { name: '关于', path: '/about' },
 ]
 
+/**
+ * Get login URL with optional return URL
+ */
+export function getLoginUrl(returnUrl?: string): string {
+  const redirectUrl = returnUrl || window.location.href
+  return `https://api.lurus.cn/login?redirect_url=${encodeURIComponent(redirectUrl)}`
+}
+
+/**
+ * Get register URL with optional return URL
+ */
+export function getRegisterUrl(returnUrl?: string): string {
+  const redirectUrl = returnUrl || window.location.href
+  return `https://api.lurus.cn/register?redirect_url=${encodeURIComponent(redirectUrl)}`
+}
+
+/**
+ * Legacy static links (deprecated - use functions above)
+ * @deprecated Use getLoginUrl() and getRegisterUrl() instead
+ */
 export const ctaLinks: CtaLinks = {
   login: 'https://api.lurus.cn/login',
   register: 'https://api.lurus.cn/register',

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
-import { navItems, ctaLinks } from '../../data/navItems'
+import { navItems, getRegisterUrl } from '../../data/navItems'
 import NavDropdown from './NavDropdown.vue'
 import GitHubStarsBadge from './GitHubStarsBadge.vue'
 import { useActiveSection } from '../../composables/useActiveSection'
+import { useAuth } from '../../composables/useAuth'
 
 const mobileMenuOpen = ref(false)
 const scrolled = ref(false)
@@ -11,6 +12,7 @@ const hamburgerButtonRef = ref<HTMLButtonElement | null>(null)
 const menuPanelRef = ref<HTMLElement | null>(null)
 
 const { activeSection } = useActiveSection()
+const { isLoggedIn, userInfo, checkSession, login, logout } = useAuth()
 
 // Map nav items to their corresponding section IDs
 const sectionMap: Record<string, string> = {
@@ -92,8 +94,10 @@ const handleScroll = () => {
   scrolled.value = window.scrollY > 20
 }
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('scroll', handleScroll)
+  // Check session status on mount
+  await checkSession()
 })
 
 onUnmounted(() => {
@@ -101,6 +105,15 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleMenuKeydown)
   document.body.style.overflow = ''
 })
+
+/**
+ * Handle logout button click
+ */
+async function handleLogout() {
+  await logout()
+  // Optionally refresh page or redirect
+  window.location.reload()
+}
 </script>
 
 <template>
@@ -167,22 +180,49 @@ onUnmounted(() => {
           <!-- CTA Buttons -->
           <div class="hidden md:flex items-center gap-3">
             <GitHubStarsBadge />
-            <a
-              :href="ctaLinks.login"
-              class="px-5 py-2.5 text-ink-500 hover:text-ink-900 transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              登录
-            </a>
-            <a
-              :href="ctaLinks.register"
-              class="btn-hand btn-hand-primary"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              开始使用
-            </a>
+            <template v-if="isLoggedIn && userInfo">
+              <!-- Logged in: Show user menu -->
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-cream-200">
+                  <img
+                    v-if="userInfo.avatar"
+                    :src="userInfo.avatar"
+                    :alt="`${userInfo.username} avatar`"
+                    class="w-7 h-7 rounded-full border-2 border-ink-300"
+                  >
+                  <div
+                    v-else
+                    class="w-7 h-7 rounded-full bg-ochre flex items-center justify-center border-2 border-ink-300"
+                  >
+                    <span class="text-cream-50 text-sm font-bold">{{ userInfo.username.charAt(0).toUpperCase() }}</span>
+                  </div>
+                  <span class="text-ink-900 font-medium">{{ userInfo.username }}</span>
+                </div>
+                <button
+                  @click="handleLogout"
+                  class="px-5 py-2.5 text-ink-500 hover:text-ink-900 hover:bg-cream-200 rounded-lg transition-all duration-200"
+                >
+                  退出
+                </button>
+              </div>
+            </template>
+            <template v-else>
+              <!-- Not logged in: Show login/register buttons -->
+              <button
+                @click="login"
+                class="px-5 py-2.5 text-ink-500 hover:text-ink-900 transition-colors"
+              >
+                登录
+              </button>
+              <a
+                :href="getRegisterUrl()"
+                class="btn-hand btn-hand-primary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                开始使用
+              </a>
+            </template>
           </div>
 
           <!-- Mobile Menu Button -->
@@ -306,22 +346,50 @@ onUnmounted(() => {
                 </template>
               </template>
               <hr class="border-ink-100 my-4">
-              <a
-                :href="ctaLinks.login"
-                class="mobile-nav-link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                登录
-              </a>
-              <a
-                :href="ctaLinks.register"
-                class="block btn-hand btn-hand-primary text-center min-h-[44px] flex items-center justify-center"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                开始使用
-              </a>
+              <template v-if="isLoggedIn && userInfo">
+                <!-- Logged in: Show user info and logout -->
+                <div class="mobile-nav-link flex items-center gap-3 cursor-default">
+                  <img
+                    v-if="userInfo.avatar"
+                    :src="userInfo.avatar"
+                    :alt="`${userInfo.username} avatar`"
+                    class="w-10 h-10 rounded-full border-2 border-ink-300"
+                  >
+                  <div
+                    v-else
+                    class="w-10 h-10 rounded-full bg-ochre flex items-center justify-center border-2 border-ink-300"
+                  >
+                    <span class="text-cream-50 font-bold">{{ userInfo.username.charAt(0).toUpperCase() }}</span>
+                  </div>
+                  <div>
+                    <p class="text-ink-900 font-medium">{{ userInfo.username }}</p>
+                    <p class="text-ink-300 text-sm">{{ userInfo.email }}</p>
+                  </div>
+                </div>
+                <button
+                  @click="handleLogout"
+                  class="mobile-nav-link text-red-600 hover:bg-red-50"
+                >
+                  退出登录
+                </button>
+              </template>
+              <template v-else>
+                <!-- Not logged in: Show login/register -->
+                <button
+                  @click="login"
+                  class="mobile-nav-link"
+                >
+                  登录
+                </button>
+                <a
+                  :href="getRegisterUrl()"
+                  class="block btn-hand btn-hand-primary text-center min-h-[44px] flex items-center justify-center"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  开始使用
+                </a>
+              </template>
             </div>
           </div>
         </div>
