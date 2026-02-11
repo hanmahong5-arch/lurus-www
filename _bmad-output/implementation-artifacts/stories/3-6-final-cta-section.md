@@ -1,6 +1,6 @@
 # Story 3.6: Final CTA 区段
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -20,28 +20,28 @@ So that 我在浏览完内容后可以采取下一步行动。
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: 创建 FinalCTA 组件 (AC: #1, #2, #3, #4)
-  - [ ] 1.1 创建 `src/components/CTAs/FinalCTA.vue`
-  - [ ] 1.2 实现品牌标语: Caveat 字体, text-phi-2xl, text-ink-900
-  - [ ] 1.3 实现双按钮组: 使用 PrimaryButton + SecondaryButton
-  - [ ] 1.4 实现居中布局: max-w-4xl mx-auto, text-center
-  - [ ] 1.5 实现上下间距: py-fib-7 (55px vertical padding)
-  - [ ] 1.6 实现响应式: 按钮组 flex-col sm:flex-row gap-fib-4
-  - [ ] 1.7 添加语义标记: `<section aria-label="行动号召">`
-- [ ] Task 2: 集成到页面布局 (AC: all)
-  - [ ] 2.1 在 `src/pages/Home.vue` 中引入 FinalCTA
-  - [ ] 2.2 将 FinalCTA 放置在 Footer 之前（页面最后一个内容区段）
-  - [ ] 2.3 确保与现有区段间距一致
-- [ ] Task 3: 编写测试 (AC: all)
-  - [ ] 3.1 创建 `src/components/CTAs/__tests__/FinalCTA.test.ts`
-  - [ ] 3.2 测试: 品牌标语文本正确渲染
-  - [ ] 3.3 测试: Caveat 字体类 font-caveat 存在
-  - [ ] 3.4 测试: phi-2xl 大小类存在
-  - [ ] 3.5 测试: PrimaryButton 渲染并传递正确的 href 和 ariaLabel
-  - [ ] 3.6 测试: SecondaryButton 渲染并传递正确的 href 和 ariaLabel
-  - [ ] 3.7 测试: section 标签存在且有 aria-label 属性
-  - [ ] 3.8 测试: 响应式 CSS 类存在 (flex-col, sm:flex-row)
-  - [ ] 3.9 测试: 垂直 padding py-fib-7 存在
+- [x] Task 1: 创建 FinalCTA 组件 (AC: #1, #2, #3, #4)
+  - [x] 1.1 创建 `src/components/CTAs/FinalCTA.vue`
+  - [x] 1.2 实现品牌标语: Caveat 字体 (font-hand), text-phi-2xl, text-ink-900
+  - [x] 1.3 实现双按钮组: 使用 PrimaryButton + SecondaryButton
+  - [x] 1.4 实现居中布局: max-w-4xl mx-auto, text-center
+  - [x] 1.5 实现上下间距: py-fib-7 (89px vertical padding)
+  - [x] 1.6 实现响应式: 按钮组 flex-col sm:flex-row gap-fib-4
+  - [x] 1.7 添加语义标记: `<section aria-label="行动号召">`
+- [x] Task 2: 集成到页面布局 (AC: all)
+  - [x] 2.1 在 `src/pages/Home.vue` 中引入 FinalCTA
+  - [x] 2.2 将 FinalCTA 放置在现有 CTA section 之后（页面最后一个内容区段）
+  - [x] 2.3 确保与现有区段间距一致
+- [x] Task 3: 编写测试 (AC: all)
+  - [x] 3.1 创建 `src/components/CTAs/__tests__/FinalCTA.test.ts`
+  - [x] 3.2 测试: 品牌标语文本正确渲染
+  - [x] 3.3 测试: Caveat 字体类 font-hand 存在
+  - [x] 3.4 测试: phi-2xl 大小类存在
+  - [x] 3.5 测试: PrimaryButton 渲染并传递正确的 href 和 ariaLabel
+  - [x] 3.6 测试: SecondaryButton 渲染并传递正确的 href 和 ariaLabel
+  - [x] 3.7 测试: section 标签存在且有 aria-label 属性
+  - [x] 3.8 测试: 响应式 CSS 类存在 (flex-col, sm:flex-row)
+  - [x] 3.9 测试: 垂直 padding py-fib-7 存在
 
 ## Dev Notes
 
@@ -355,25 +355,39 @@ So that 我在浏览完内容后可以采取下一步行动。
 
 ### Agent Model Used
 
-_To be filled by dev agent_
+claude-sonnet-4-5-20250929
 
 ### Debug Log References
 
-_To be filled by dev agent_
+None required — implementation was straightforward without blocking issues.
+
+**Key Implementation Decisions**:
+1. Used `font-hand` class for Caveat font (configured in tailwind.config.ts)
+2. Set Primary button to `target="_blank"` for external API link
+3. Used placeholder URL `https://lurus.cn/contact` for "联系我们" button (to be updated when contact page is created)
+4. Applied clean design without decorative elements (per Dev Notes Option A recommendation)
+5. No reveal-fade-up animation (kept simple for page bottom section)
 
 ### Completion Notes List
 
-_To be filled by dev agent upon completion_
+- Created `FinalCTA.vue` component with brand tagline "全栈自建，匠心品质。" using font-hand (Caveat)
+- Implemented responsive layout: mobile (flex-col), desktop (flex-row)
+- Integrated to Home.vue after existing CTA section (line 117)
+- All 9 FinalCTA tests pass (tagline text, font class, size class, button props, section markup, responsive classes)
+- Build successful: 1.25s
+- ESLint: zero warnings for FinalCTA files
+- TypeScript: no type errors (component props correctly typed)
 
 ### File List
 
 **Created:**
-- `src/components/CTAs/FinalCTA.vue` (to be created)
-- `src/components/CTAs/__tests__/FinalCTA.test.ts` (to be created)
+- `src/components/CTAs/FinalCTA.vue`
+- `src/components/CTAs/__tests__/FinalCTA.test.ts`
 
 **Modified:**
-- `src/pages/Home.vue` (to be modified, add FinalCTA before Footer)
+- `src/pages/Home.vue` (imported FinalCTA, added component after existing CTA section)
 
 ### Change Log
 
 - 2026-02-11: Story 3.6 created — ready for development
+- 2026-02-11: Story 3.6 completed — FinalCTA implemented, tested, and integrated to Home page
