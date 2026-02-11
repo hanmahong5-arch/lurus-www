@@ -64,8 +64,8 @@ development_status:
   3-2-hero-two-column-layout: done
   3-3-primary-cta-button: done
   3-4-secondary-cta-button: done
-  3-5-mid-cta-bar: backlog
-  3-6-final-cta-section: backlog
+  3-5-mid-cta-bar: done
+  3-6-final-cta-section: done
   epic-3-retrospective: optional
 
   # ===== Epic 4: AI Chat 体验 (Wave 1 Conditional) =====

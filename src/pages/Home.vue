@@ -8,6 +8,7 @@ import FeatureGrid from '../components/Features/FeatureGrid.vue'
 import { useScrollReveal } from '../composables/useScrollReveal'
 import { useTracking } from '../composables/useTracking'
 import { stats, trustBadges, trustBadgeIconPaths } from '../data/stats'
+import FinalCTA from '../components/CTAs/FinalCTA.vue'
 
 const pageRef = ref<HTMLElement | null>(null)
 useScrollReveal(pageRef)
@@ -113,6 +114,9 @@ const trackCta = (label: string) => {
         </div>
       </div>
     </section>
+
+    <!-- Final CTA Section -->
+    <FinalCTA />
   </div>
 </template>
 
