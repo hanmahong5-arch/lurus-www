@@ -95,4 +95,18 @@
 - lurus-api CORS 配置允许 www.lurus.cn 跨域请求
 - lurus-api OAuth redirect_url 参数支持
 
-**状态**：⏳ 前端完成，待后端 API 修改
+**状态**：⏳ 前端完成,待后端 API 修改
+
+---
+
+## 2026-02-13: Story 3.5 — CTABar 中间 CTA 条 ✅
+
+实现可复用 CTABar 组件并集成到 Platform Overview 和 Portal 区段。Epic 3 全部完成。
+
+**验证结果**：
+- `bun run test` → 8/8 CTABar 测试 PASS
+- `bun run build` → PASS (1.40s)
+- 安全: 外部链接正确配置 target="_blank"
+- a11y: 强制 ariaLabel (TypeScript interface)
+
+**状态**：Epic 3 (6/6 stories) → done

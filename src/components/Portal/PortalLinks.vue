@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { portalCategories } from '../../data/portalLinks'
 import { useTracking } from '../../composables/useTracking'
+import CTABar from '../CTAs/CTABar.vue'
 
 const { track } = useTracking()
 const trackPortalClick = (linkName: string, category: string) => {
@@ -71,6 +72,16 @@ const trackPortalClick = (linkName: string, category: string) => {
         </div>
       </div>
     </div>
+
+    <!-- CTA Bar at bottom of Portal section -->
+    <CTABar
+      message="需要 API 访问？"
+      :primary-cta="{
+        text: '获取 API Key',
+        href: 'https://api.lurus.cn',
+        ariaLabel: '跳转到 API Key 注册页面'
+      }"
+    />
   </section>
 </template>
 

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import CTABar from '../CTAs/CTABar.vue'
+
 const features = [
   {
     icon: 'shield',
@@ -103,6 +105,21 @@ const getIconPath = (name: string) => {
         </div>
       </div>
     </div>
+
+    <!-- CTA Bar at bottom of Platform Overview section -->
+    <CTABar
+      message="想了解更多？"
+      :primary-cta="{
+        text: '获取 API Key',
+        href: 'https://api.lurus.cn',
+        ariaLabel: '跳转到 API Key 注册页面'
+      }"
+      :secondary-cta="{
+        text: '查看文档',
+        href: 'https://docs.lurus.cn',
+        ariaLabel: '跳转到文档站点'
+      }"
+    />
   </section>
 </template>
 
