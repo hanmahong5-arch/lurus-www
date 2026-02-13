@@ -69,11 +69,11 @@ development_status:
   epic-3-retrospective: optional
 
   # ===== Epic 4: AI Chat 体验 (Wave 1 Conditional) =====
-  epic-4: backlog
-  4-1-chat-conditional-loading: backlog
-  4-2-chat-floating-trigger: backlog
-  4-3-chat-preview-component: backlog
-  4-4-chat-quick-prompts: backlog
+  epic-4: in-progress
+  4-1-chat-conditional-loading: done
+  4-2-chat-floating-trigger: done
+  4-3-chat-preview-component: done
+  4-4-chat-quick-prompts: done
   4-5-chat-fallback-handling: backlog
   4-6-chat-streaming-a11y: backlog
   epic-4-retrospective: optional

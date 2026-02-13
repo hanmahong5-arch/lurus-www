@@ -80,4 +80,19 @@ const handleSelect = (prompt: string) => {
 .label {
   font-weight: 500;
 }
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .prompt-btn {
+    transition: none;
+  }
+
+  .prompt-btn:hover {
+    transform: none;
+  }
+
+  .prompt-btn:active {
+    transform: none;
+  }
+}
 </style>

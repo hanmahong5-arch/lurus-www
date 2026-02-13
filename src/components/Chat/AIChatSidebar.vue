@@ -1,12 +1,13 @@
 <script setup lang="ts">
 /**
  * AI Chat Sidebar - Main container component
- * Handles sidebar visibility and layout, delegates logic to composables
+ * Handles sidebar layout, delegates logic to composables.
+ * Open/close state is managed by parent (App.vue) via props/emits.
+ * Toggle button has been extracted to ChatFloatingTrigger component.
  */
 
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useAIChat } from '../../composables/useAIChat'
-import { useTracking } from '../../composables/useTracking'
 import { MOBILE_BREAKPOINT, MAX_INPUT_LENGTH } from '../../constants/ui'
 
 // Child components
@@ -16,8 +17,17 @@ import ChatInput from './ChatInput.vue'
 import ChatQuickPrompts from './ChatQuickPrompts.vue'
 import NetworkStatusBanner from './NetworkStatusBanner.vue'
 
-// Sidebar state
-const isOpen = ref(false)
+interface Props {
+  isOpen: boolean
+}
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  close: []
+  toggle: []
+}>()
+
 const isMobile = ref(false)
 
 // Chat logic from composable
@@ -36,32 +46,17 @@ const {
   retryMessage,
   deleteMessage,
   clearChat,
-  applyPrompt
 } = useAIChat()
 
 // Check if mobile on mount and resize
 const checkMobile = () => {
-  isMobile.value = window.innerWidth < MOBILE_BREAKPOINT
-}
-
-// Initialize mobile check
-if (typeof window !== 'undefined') {
-  checkMobile()
-  window.addEventListener('resize', checkMobile)
-}
-
-const { track } = useTracking()
-
-// Toggle sidebar
-const toggleSidebar = () => {
-  if (!isOpen.value) {
-    track('chat_open')
+  if (typeof window !== 'undefined') {
+    isMobile.value = window.innerWidth < MOBILE_BREAKPOINT
   }
-  isOpen.value = !isOpen.value
 }
 
 const closeSidebar = () => {
-  isOpen.value = false
+  emit('close')
 }
 
 // Handle send
@@ -69,9 +64,9 @@ const handleSend = () => {
   sendMessage()
 }
 
-// Handle quick prompt selection
+// Handle quick prompt selection — auto-send the prompt as a message (FR31)
 const handlePromptSelect = (prompt: string) => {
-  applyPrompt(prompt)
+  sendMessage(prompt)
 }
 
 // Handle model change
@@ -96,54 +91,30 @@ const handleClear = () => {
 
 // Accessibility: close on Escape key
 const handleKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Escape' && isOpen.value) {
+  if (e.key === 'Escape' && props.isOpen) {
     closeSidebar()
   }
 }
 
-// Add keyboard listener
-if (typeof window !== 'undefined') {
+onMounted(() => {
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
   window.addEventListener('keydown', handleKeydown)
-}
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
-  <!-- Toggle Button (always visible) -->
-  <button
-    @click="toggleSidebar"
-    class="toggle-btn"
-    :class="{ 'is-open': isOpen }"
-    :aria-label="isOpen ? '关闭AI助手' : '打开AI助手'"
-    :aria-expanded="isOpen"
-    aria-controls="ai-chat-sidebar"
-  >
-    <!-- Chat icon when closed -->
-    <svg v-if="!isOpen" class="toggle-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
-    <!-- Close icon when open -->
-    <svg v-else class="toggle-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M6 18L18 6M6 6l12 12"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-      />
-    </svg>
-  </button>
-
   <!-- Sidebar Panel -->
   <aside
     id="ai-chat-sidebar"
     class="chat-sidebar"
     :class="{
-      'is-open': isOpen,
+      'is-open': props.isOpen,
       'is-mobile': isMobile
     }"
     role="complementary"
@@ -162,8 +133,9 @@ if (typeof window !== 'undefined') {
       @close="closeSidebar"
     />
 
-    <!-- Quick prompts -->
+    <!-- Quick prompts: show only when no message history (FR31) -->
     <ChatQuickPrompts
+      v-if="!hasMessages"
       :prompts="quickPrompts"
       @select="handlePromptSelect"
     />
@@ -196,7 +168,7 @@ if (typeof window !== 'undefined') {
   <!-- Overlay (mobile) -->
   <Transition name="fade">
     <div
-      v-if="isOpen && isMobile"
+      v-if="props.isOpen && isMobile"
       @click="closeSidebar"
       class="overlay"
       aria-hidden="true"
@@ -206,53 +178,6 @@ if (typeof window !== 'undefined') {
 
 <style scoped>
 @reference "../../styles/main.css";
-
-/* Toggle button */
-.toggle-btn {
-  position: fixed;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: var(--color-ochre);
-  color: var(--color-cream-50);
-  border: none;
-  border-radius: 12px 0 0 12px;
-  cursor: pointer;
-  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toggle-btn:hover {
-  background: #b8921f;
-  width: 52px;
-}
-
-.toggle-btn:focus-visible {
-  outline: none;
-  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(201, 162, 39, 0.4);
-}
-
-.toggle-btn.is-open {
-  right: 400px;
-}
-
-@media (max-width: 640px) {
-  .toggle-btn.is-open {
-    right: 100%;
-    transform: translateY(-50%) translateX(48px);
-  }
-}
-
-.toggle-icon {
-  width: 24px;
-  height: 24px;
-}
 
 /* Sidebar panel */
 .chat-sidebar {
