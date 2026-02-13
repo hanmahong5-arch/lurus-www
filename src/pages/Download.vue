@@ -25,9 +25,10 @@ const includePrerelease = ref(false)
 // Computed
 const filteredReleases = computed(() => releases.value)
 
-const hasMore = computed(() => {
-  return currentPage.value * pageSize.value < total.value
-})
+// Pagination state (for future use when backend supports pagination)
+// const hasMore = computed(() => {
+//   return currentPage.value * pageSize.value < total.value
+// })
 
 const totalPages = computed(() => {
   return Math.ceil(total.value / pageSize.value)

@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { useReleases } from '../useReleases'
-import type { Release, ReleaseArtifact } from '../../types/release'
+import type { ReleaseArtifact } from '../../types/release'
 
 // Mock fetch
 global.fetch = vi.fn()
@@ -160,7 +160,7 @@ describe('useReleases', () => {
         },
       }
 
-      ;(global.fetch as any).mockResolvedValueOnce({
+      ;vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         json: async () => mockResponse,
       })
@@ -177,7 +177,7 @@ describe('useReleases', () => {
     })
 
     it('should handle fetch errors', async () => {
-      ;(global.fetch as any).mockResolvedValueOnce({
+      ;vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
         status: 500,
         statusText: 'Internal Server Error',
@@ -191,7 +191,7 @@ describe('useReleases', () => {
     })
 
     it('should handle network errors', async () => {
-      ;(global.fetch as any).mockRejectedValueOnce(new Error('Network error'))
+      ;vi.mocked(global.fetch).mockRejectedValueOnce(new Error('Network error'))
 
       const { fetchReleases, error } = useReleases()
 
@@ -226,7 +226,7 @@ describe('useReleases', () => {
         },
       }
 
-      ;(global.fetch as any).mockResolvedValueOnce({
+      ;vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: true,
         json: async () => mockResponse,
       })
@@ -241,7 +241,7 @@ describe('useReleases', () => {
     })
 
     it('should return null on error', async () => {
-      ;(global.fetch as any).mockRejectedValueOnce(new Error('API error'))
+      ;vi.mocked(global.fetch).mockRejectedValueOnce(new Error('API error'))
 
       const { fetchLatestRelease } = useReleases()
 
