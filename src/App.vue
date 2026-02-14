@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineAsyncComponent, ref, onMounted, onUnmounted } from 'vue'
+import { defineAsyncComponent, ref, nextTick, onMounted, onUnmounted } from 'vue'
 import { RouterView } from 'vue-router'
 import Navbar from './components/Layout/Navbar.vue'
 import Footer from './components/Layout/Footer.vue'
@@ -11,6 +11,7 @@ const { track } = useTracking()
 
 // Chat panel open/close state managed at App level (shared by Trigger + Sidebar + Preview)
 const isChatOpen = ref(false)
+const chatTriggerRef = ref<InstanceType<typeof ChatFloatingTrigger> | null>(null)
 
 const handleChatToggle = () => {
   if (!isChatOpen.value) {
@@ -21,6 +22,11 @@ const handleChatToggle = () => {
 
 const handleChatClose = () => {
   isChatOpen.value = false
+  // Restore focus to trigger button after sidebar closes (a11y)
+  nextTick(() => {
+    const triggerEl = chatTriggerRef.value?.$el as HTMLElement | undefined
+    triggerEl?.focus()
+  })
 }
 
 /**
@@ -70,6 +76,7 @@ const ChatFloatingTrigger = defineAsyncComponent(
     <!-- AI Chat: conditional load via env flag (ADR-001) -->
     <template v-if="isChatEnabled">
       <ChatFloatingTrigger
+        ref="chatTriggerRef"
         :is-open="isChatOpen"
         @toggle="handleChatToggle"
       />

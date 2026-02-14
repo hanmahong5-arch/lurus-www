@@ -110,3 +110,13 @@
 - a11y: 强制 ariaLabel (TypeScript interface)
 
 **状态**：Epic 3 (6/6 stories) → done
+
+## 2026-02-13: Story 4-5 — Chat Fallback Handling
+Added ChatErrorBanner component, hasRetriesExhausted logic, ChatPreview demo conversation.
+Verification: `vitest run → 22 files, 242 passed` | `eslint → 0 errors` | `vite build → PASS (1.48s)`
+Remaining: Epic 4 still in-progress (4-6 chat-streaming-a11y: backlog).
+
+## 2026-02-13: Story 5-5 — API Degradation Status
+useApiHealth composable (HEAD /v1/models, 5s timeout, 1 retry) + ApiStatusBanner (neutral cream/ink styling, role="status") integrated into PlatformCapabilities. 21 new tests.
+Verification: `npx vitest run → 383 passed; npx tsc --noEmit → 0 errors; npx vite build → success`
+Epic 5 (平台能力展示) now complete — all 5 stories done.

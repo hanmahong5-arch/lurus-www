@@ -6,7 +6,7 @@
  * Hidden on mobile (< 768px) - users access Chat via ChatFloatingTrigger instead.
  */
 
-import type { QuickPrompt } from '../../types/chat'
+import type { QuickPrompt, DemoMessage } from '../../types/chat'
 
 /** Maximum number of quick prompts displayed in the preview */
 const MAX_PREVIEW_PROMPTS = 3
@@ -18,6 +18,7 @@ interface Props {
   ariaLabel?: string
   quickPrompts: QuickPrompt[]
   isAvailable: boolean
+  demoMessages?: DemoMessage[]
 }
 
 const props = defineProps<Props>()
@@ -90,8 +91,23 @@ const handleActionKeydown = (event: KeyboardEvent) => {
       </div>
     </div>
 
-    <!-- Unavailable State Description -->
-    <div v-if="!props.isAvailable" class="unavailable-desc">
+    <!-- Unavailable State: Demo Conversation (ADR-010 three-state degradation) -->
+    <div v-if="!props.isAvailable && props.demoMessages && props.demoMessages.length > 0" class="demo-conversation" aria-label="对话演示">
+      <p class="demo-label">对话示例</p>
+      <div class="demo-messages">
+        <div
+          v-for="(msg, index) in props.demoMessages"
+          :key="index"
+          class="demo-bubble"
+          :class="msg.role === 'user' ? 'is-user' : 'is-assistant'"
+        >
+          <p class="demo-text">{{ msg.content }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unavailable State Description (fallback when no demo messages) -->
+    <div v-else-if="!props.isAvailable" class="unavailable-desc">
       <p class="unavailable-text">
         AI 智能助手正在准备中，即将为您提供实时对话服务
       </p>
@@ -269,6 +285,56 @@ const handleActionKeydown = (event: KeyboardEvent) => {
 
 .prompt-label {
   font-weight: 500;
+}
+
+
+/* Demo conversation for unavailable state */
+.demo-conversation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.demo-label {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-ink-300);
+  font-weight: 500;
+}
+
+.demo-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.demo-bubble {
+  padding: 10px 14px;
+  border-radius: 12px;
+  max-width: 90%;
+}
+
+.demo-bubble.is-user {
+  align-self: flex-end;
+  background: var(--color-ochre);
+  color: var(--color-cream-50);
+  border-radius: 12px 12px 4px 12px;
+  opacity: 0.7;
+}
+
+.demo-bubble.is-assistant {
+  align-self: flex-start;
+  background: var(--color-cream-100);
+  color: var(--color-ink-700);
+  border: 1px solid var(--color-ink-100);
+  border-radius: 12px 12px 12px 4px;
+  opacity: 0.7;
+}
+
+.demo-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 /* Unavailable state */

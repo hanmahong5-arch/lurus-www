@@ -18,6 +18,7 @@ import SecondaryButton from './SecondaryButton.vue'
           href="https://api.lurus.cn"
           target="_blank"
           ariaLabel="跳转到 API Key 注册页面"
+          trackLocation="final"
         />
         <SecondaryButton
           text="联系我们"

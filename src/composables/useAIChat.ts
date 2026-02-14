@@ -8,7 +8,7 @@ import type { ChatMessage } from '../types/chat'
 import { useChatPersist } from './useChatPersist'
 import { useChatApi, getErrorCode } from './useChatApi'
 import { useNetworkStatus } from './useNetworkStatus'
-import { chatModels, quickPrompts, chatConfig } from '../data/chatModels'
+import { chatModels, quickPrompts, chatConfig, DOCS_URL } from '../data/chatModels'
 
 // Debounce settings from centralized config
 const DEBOUNCE_MS = chatConfig.debounceMs
@@ -16,13 +16,14 @@ const DEBOUNCE_MS = chatConfig.debounceMs
 export const useAIChat = () => {
   // Composables
   const { messages, selectedModel, clear: clearPersist } = useChatPersist()
-  const { sendWithRetry } = useChatApi()
+  const { sendStreamMessage } = useChatApi()
   const { isOnline } = useNetworkStatus()
 
   // Local state
   const isLoading = ref(false)
   const isTyping = ref(false)
   const inputMessage = ref('')
+  const isStreamingComplete = ref(false)
 
   // Mutex lock and debounce state
   let sendingPromise: Promise<void> | null = null
@@ -34,6 +35,23 @@ export const useAIChat = () => {
   })
 
   const hasMessages = computed(() => messages.value.length > 0)
+
+  /**
+   * Check if the latest user message has exhausted all retries.
+   * This indicates the Chat backend is persistently unavailable,
+   * so the ChatErrorBanner with docs link should be shown.
+   */
+  const hasRetriesExhausted = computed(() => {
+    if (messages.value.length === 0) return false
+    const lastUserMessage = [...messages.value]
+      .reverse()
+      .find(m => m.role === 'user')
+    if (!lastUserMessage) return false
+    return (
+      (lastUserMessage.status === 'failed' || lastUserMessage.status === 'timeout') &&
+      !isLoading.value
+    )
+  })
 
   /**
    * Generate unique message ID
@@ -52,21 +70,10 @@ export const useAIChat = () => {
     }
   }
 
-  /**
-   * Add assistant message from API response
-   */
-  const addAssistantMessage = (content: string) => {
-    messages.value.push({
-      id: generateId(),
-      role: 'assistant',
-      content,
-      timestamp: new Date(),
-      status: 'sent'
-    })
-  }
 
   /**
-   * Send message with debounce and mutex lock
+   * Send message with streaming.
+   * Creates assistant message placeholder, then progressively updates content.
    */
   const sendMessage = async (content?: string) => {
     const messageContent = (content || inputMessage.value).trim()
@@ -81,11 +88,12 @@ export const useAIChat = () => {
 
     lastSendTime = now
     inputMessage.value = ''
+    isStreamingComplete.value = false
 
     // Create optimistic user message
-    const tempId = generateId()
+    const userMsgId = generateId()
     messages.value.push({
-      id: tempId,
+      id: userMsgId,
       role: 'user',
       content: messageContent,
       timestamp: new Date(),
@@ -94,38 +102,82 @@ export const useAIChat = () => {
       retryCount: 0
     })
 
+    // Create assistant message placeholder for streaming
+    const assistantMsgId = generateId()
+    messages.value.push({
+      id: assistantMsgId,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date(),
+      status: 'streaming'
+    })
+
     sendingPromise = (async () => {
       isLoading.value = true
       isTyping.value = true
 
       try {
-        // Prepare messages for API
+        // Prepare messages for API (exclude streaming placeholder)
         const apiMessages = messages.value
-          .filter(m => m.status !== 'failed' && m.status !== 'timeout')
+          .filter(m => m.status !== 'failed' && m.status !== 'timeout' && m.status !== 'streaming')
           .map(m => ({
             role: m.role,
             content: m.content
           }))
 
-        const response = await sendWithRetry(apiMessages, selectedModel.value)
-        const assistantContent = response.choices?.[0]?.message?.content || '抱歉，未收到有效回复'
-
-        // Success: update user message status
-        updateMessage(tempId, {
+        // Mark user message as sent
+        updateMessage(userMsgId, {
           status: 'sent',
           isOptimistic: false
         })
 
-        // Add assistant message
-        addAssistantMessage(assistantContent)
-      } catch (error) {
-        // Failure: mark user message as failed
-        const errorCode = getErrorCode(error)
-        updateMessage(tempId, {
-          status: errorCode === 'TIMEOUT' ? 'timeout' : 'failed',
-          errorCode,
-          retryCount: (messages.value.find(m => m.id === tempId)?.retryCount || 0) + 1
+        // Stream tokens into the assistant message
+        await sendStreamMessage(apiMessages, selectedModel.value, (token) => {
+          const idx = messages.value.findIndex(m => m.id === assistantMsgId)
+          if (idx !== -1) {
+            messages.value[idx] = {
+              ...messages.value[idx],
+              content: messages.value[idx].content + token
+            }
+          }
         })
+
+        // Stream complete - finalize assistant message
+        const finalMsg = messages.value.find(m => m.id === assistantMsgId)
+        const finalContent = finalMsg?.content || ''
+
+        if (!finalContent) {
+          updateMessage(assistantMsgId, {
+            content: '抱歉，未收到有效回复',
+            status: 'sent'
+          })
+        } else {
+          updateMessage(assistantMsgId, { status: 'sent' })
+        }
+
+        isStreamingComplete.value = true
+      } catch (error) {
+        const errorCode = getErrorCode(error)
+        const assistantMsg = messages.value.find(m => m.id === assistantMsgId)
+
+        if (assistantMsg && !assistantMsg.content) {
+          // No content received - remove empty placeholder, mark user msg failed
+          const assistantIdx = messages.value.findIndex(m => m.id === assistantMsgId)
+          if (assistantIdx !== -1) {
+            messages.value.splice(assistantIdx, 1)
+          }
+          updateMessage(userMsgId, {
+            status: errorCode === 'TIMEOUT' ? 'timeout' : 'failed',
+            errorCode,
+            retryCount: (messages.value.find(m => m.id === userMsgId)?.retryCount || 0) + 1
+          })
+        } else {
+          // Partial content - mark assistant message as failed
+          updateMessage(assistantMsgId, {
+            status: 'failed',
+            errorCode
+          })
+        }
       } finally {
         isLoading.value = false
         isTyping.value = false
@@ -137,13 +189,12 @@ export const useAIChat = () => {
   }
 
   /**
-   * Retry a failed message
+   * Retry a failed message using streaming
    */
   const retryMessage = async (messageId: string) => {
     const message = messages.value.find(m => m.id === messageId)
     if (!message || message.role !== 'user') return
 
-    // Reset message status
     updateMessage(messageId, {
       status: 'sending',
       errorCode: undefined
@@ -151,31 +202,57 @@ export const useAIChat = () => {
 
     isLoading.value = true
     isTyping.value = true
+    isStreamingComplete.value = false
+
+    // Create assistant placeholder for streaming retry
+    const assistantMsgId = generateId()
+    messages.value.push({
+      id: assistantMsgId,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date(),
+      status: 'streaming'
+    })
 
     try {
-      // Get all messages up to and including the retry message
       const messageIndex = messages.value.findIndex(m => m.id === messageId)
       const apiMessages = messages.value
         .slice(0, messageIndex + 1)
-        .filter(m => m.status !== 'failed' && m.status !== 'timeout' || m.id === messageId)
+        .filter(m => (m.status !== 'failed' && m.status !== 'timeout' && m.status !== 'streaming') || m.id === messageId)
         .map(m => ({
           role: m.role,
           content: m.content
         }))
 
-      const response = await sendWithRetry(apiMessages, selectedModel.value)
-      const assistantContent = response.choices?.[0]?.message?.content || '抱歉，未收到有效回复'
-
-      // Success
       updateMessage(messageId, {
         status: 'sent',
         isOptimistic: false
       })
 
-      addAssistantMessage(assistantContent)
+      await sendStreamMessage(apiMessages, selectedModel.value, (token) => {
+        const idx = messages.value.findIndex(m => m.id === assistantMsgId)
+        if (idx !== -1) {
+          messages.value[idx] = {
+            ...messages.value[idx],
+            content: messages.value[idx].content + token
+          }
+        }
+      })
+
+      updateMessage(assistantMsgId, { status: 'sent' })
+      isStreamingComplete.value = true
     } catch (error) {
       const errorCode = getErrorCode(error)
       const currentRetryCount = message.retryCount || 0
+      const assistantMsg = messages.value.find(m => m.id === assistantMsgId)
+
+      if (assistantMsg && !assistantMsg.content) {
+        const idx = messages.value.findIndex(m => m.id === assistantMsgId)
+        if (idx !== -1) messages.value.splice(idx, 1)
+      } else if (assistantMsg) {
+        updateMessage(assistantMsgId, { status: 'failed', errorCode })
+      }
+
       updateMessage(messageId, {
         status: errorCode === 'TIMEOUT' ? 'timeout' : 'failed',
         errorCode,
@@ -219,14 +296,17 @@ export const useAIChat = () => {
     isTyping,
     inputMessage,
     isOnline,
+    isStreamingComplete,
 
     // Computed
     canSend,
     hasMessages,
+    hasRetriesExhausted,
 
     // Constants (from centralized data)
     models: chatModels,
     quickPrompts,
+    docsUrl: DOCS_URL,
 
     // Methods
     sendMessage,

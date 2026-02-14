@@ -1,9 +1,9 @@
 /**
  * Chat API composable
- * Handles API calls with timeout, retry, and error handling
+ * Handles API calls with timeout, retry, error handling, and SSE streaming
  */
 
-import type { ChatApiResponse } from '../types/chat'
+import type { ChatApiResponse, ChatStreamDelta } from '../types/chat'
 import { TimeoutError, NetworkError } from '../types/chat'
 
 const API_URL = 'https://api.lurus.cn/v1/chat/completions'
@@ -31,7 +31,7 @@ export const getErrorMessage = (error: unknown, statusCode?: number): string => 
   if (statusCode === 429) return '请求过于频繁，请稍后再试'
   if (statusCode === 500) return '服务器繁忙，请稍后重试'
   if (statusCode && statusCode >= 500) return '服务器错误，请稍后重试'
-  return '未知错误，请稍后重试'
+  return '未知错误，请稍后再试'
 }
 
 /**
@@ -45,13 +45,33 @@ export const getErrorCode = (error: unknown, statusCode?: number): string => {
     return 'NETWORK_ERROR'
   }
   if (statusCode) {
-    return `HTTP_${statusCode}`
+    return "HTTP_" + statusCode
   }
   return 'UNKNOWN'
 }
 
 /**
- * Send message with timeout using AbortController
+ * Parse a single SSE chunk line and extract content delta.
+ * Returns the content string if present, or null for non-content lines.
+ */
+export const parseSSEChunk = (line: string): string | null => {
+  if (!line || !line.startsWith('data: ')) return null
+
+  const data = line.slice(6).trim()
+  if (!data || data === '[DONE]') return null
+
+  try {
+    const parsed: ChatStreamDelta = JSON.parse(data)
+    const delta = parsed.choices?.[0]?.delta
+    if (delta?.content) return delta.content
+    return null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Send message with timeout using AbortController (non-streaming)
  */
 const sendWithTimeout = async (
   messages: Array<{ role: string; content: string }>,
@@ -65,7 +85,7 @@ const sendWithTimeout = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
+        'Authorization': 'Bearer ' + API_KEY
       },
       body: JSON.stringify({
         model,
@@ -92,7 +112,7 @@ const sendWithTimeout = async (
 }
 
 /**
- * Send message with exponential backoff retry
+ * Send message with exponential backoff retry (non-streaming)
  * Retry delays: 1s -> 2s -> 4s (max 3 attempts)
  */
 export const sendWithRetry = async (
@@ -130,9 +150,96 @@ export const sendWithRetry = async (
   throw lastError
 }
 
+/**
+ * Send message with SSE streaming.
+ * Calls onToken callback for each content token received.
+ * Uses AbortController for 30s timeout.
+ */
+export const sendStreamMessage = async (
+  messages: Array<{ role: string; content: string }>,
+  model: string,
+  onToken: (token: string) => void,
+  abortSignal?: AbortSignal
+): Promise<void> => {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS)
+
+  // Link external abort signal if provided
+  if (abortSignal) {
+    abortSignal.addEventListener('abort', () => controller.abort())
+  }
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + API_KEY
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        stream: true
+      }),
+      signal: controller.signal
+    })
+
+    if (!response.ok) {
+      const errorMsg = getErrorMessage(null, response.status)
+      throw new NetworkError(errorMsg)
+    }
+
+    if (!response.body) {
+      throw new NetworkError('服务器未返回流式响应')
+    }
+
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      buffer += decoder.decode(value, { stream: true })
+
+      // Process complete lines from buffer
+      const lines = buffer.split(String.fromCharCode(10))
+      // Keep the last potentially incomplete line in buffer
+      buffer = lines.pop() || ''
+
+      for (const line of lines) {
+        const trimmed = line.trim()
+        if (!trimmed) continue
+
+        const content = parseSSEChunk(trimmed)
+        if (content) {
+          onToken(content)
+        }
+      }
+    }
+
+    // Process any remaining buffer content
+    if (buffer.trim()) {
+      const content = parseSSEChunk(buffer.trim())
+      if (content) {
+        onToken(content)
+      }
+    }
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new TimeoutError('请求超时(30秒)，请检查网络后重试')
+    }
+    throw error
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
+
 export const useChatApi = () => {
   return {
     sendWithRetry,
+    sendStreamMessage,
     getErrorMessage,
     getErrorCode
   }

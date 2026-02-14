@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useTracking } from '../../composables/useTracking'
 
 interface PrimaryButtonProps {
   text: string
   href: string
   target?: string
   ariaLabel: string
+  /** Location identifier for cta_click tracking (e.g. 'hero', 'final', 'cta_bar') */
+  trackLocation?: string
 }
 
 const props = withDefaults(defineProps<PrimaryButtonProps>(), {
   target: '_self'
 })
+
+const { track } = useTracking()
 
 // Debounce: prevent rapid successive clicks
 const lastClickTime = ref<number>(0)
@@ -23,6 +28,11 @@ const handleClick = (event: MouseEvent) => {
     return
   }
   lastClickTime.value = now
+
+  // Track CTA click event when location is specified (FR43)
+  if (props.trackLocation) {
+    track('cta_click', { button_location: props.trackLocation })
+  }
   // Let the default link behavior proceed
 }
 </script>

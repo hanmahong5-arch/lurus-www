@@ -27,3 +27,8 @@ export const COPY_FEEDBACK_DURATION_MS = 2000
  * Default debounce interval for user input (milliseconds)
  */
 export const DEBOUNCE_INTERVAL_MS = 300
+
+/**
+ * CSS selector for all focusable elements (used by focus trap)
+ */
+export const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'

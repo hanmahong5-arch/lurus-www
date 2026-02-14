@@ -90,7 +90,7 @@ describe('CodeShowcase', () => {
       expect(flagSpans.length).toBeGreaterThan(0)
     })
 
-    it('should render non-bash languages as plain text', () => {
+    it('should tokenize JSON with proper token types', () => {
       const wrapper = mount(CodeShowcase, {
         props: {
           ...defaultProps,
@@ -99,11 +99,75 @@ describe('CodeShowcase', () => {
         },
       })
 
+      // JSON tokenizer splits into key, string, and structural tokens
+      const keySpans = wrapper.findAll('.token-key')
+      expect(keySpans.length).toBeGreaterThan(0)
+      const stringSpans = wrapper.findAll('.token-string')
+      expect(stringSpans.length).toBeGreaterThan(0)
+      expect(wrapper.find('code').text()).toContain('key')
+      expect(wrapper.find('code').text()).toContain('value')
+    })
+
+    it('should render unsupported languages as plain text', () => {
+      const wrapper = mount(CodeShowcase, {
+        props: {
+          ...defaultProps,
+          language: 'python',
+          code: 'print(42)',
+        },
+      })
+
       const plainSpans = wrapper.findAll('.token-plain')
       expect(plainSpans.length).toBe(1)
-      expect(plainSpans[0].text()).toBe('{"key": "value"}')
+      expect(plainSpans[0].text()).toBe('print(42)')
+    })
+
+    it('should highlight JSON numbers with token-number class', () => {
+      const wrapper = mount(CodeShowcase, {
+        props: {
+          ...defaultProps,
+          language: 'json',
+          code: '{"count": 42}',
+        },
+      })
+
+      const numberSpans = wrapper.findAll('.token-number')
+      expect(numberSpans.length).toBeGreaterThan(0)
+      const has42 = numberSpans.some(s => s.text() === '42')
+      expect(has42).toBe(true)
+    })
+
+    it('should highlight JSON booleans with token-boolean class', () => {
+      const wrapper = mount(CodeShowcase, {
+        props: {
+          ...defaultProps,
+          language: 'json',
+          code: '{"active": true}',
+        },
+      })
+
+      const boolSpans = wrapper.findAll('.token-boolean')
+      expect(boolSpans.length).toBeGreaterThan(0)
+      const hasTrue = boolSpans.some(s => s.text() === 'true')
+      expect(hasTrue).toBe(true)
+    })
+
+    it('should highlight JSON null with token-null class', () => {
+      const wrapper = mount(CodeShowcase, {
+        props: {
+          ...defaultProps,
+          language: 'json',
+          code: '{"data": null}',
+        },
+      })
+
+      const nullSpans = wrapper.findAll('.token-null')
+      expect(nullSpans.length).toBeGreaterThan(0)
+      const hasNull = nullSpans.some(s => s.text() === 'null')
+      expect(hasNull).toBe(true)
     })
   })
+
 
   describe('copy functionality', () => {
     it('should call copyToClipboard when copy button is clicked', async () => {

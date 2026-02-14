@@ -9,6 +9,7 @@ import TypingIndicator from './TypingIndicator.vue'
 const props = defineProps<{
   messages: ChatMessage[]
   isTyping: boolean
+  isStreamingComplete: boolean
 }>()
 
 const emit = defineEmits<{
@@ -27,13 +28,27 @@ const scrollToBottom = () => {
   })
 }
 
-// Watch for new messages and typing state
+// Watch for new messages, typing state, and streaming content changes
 watch(
-  () => [props.messages.length, props.isTyping],
+  () => {
+    const lastMsg = props.messages[props.messages.length - 1]
+    return [props.messages.length, props.isTyping, lastMsg?.content?.length || 0]
+  },
   () => {
     scrollToBottom()
   }
 )
+
+// Track streaming completion for screen reader announcement
+const streamingJustCompleted = ref(false)
+watch(() => props.isStreamingComplete, (complete) => {
+  if (complete) {
+    streamingJustCompleted.value = true
+    setTimeout(() => {
+      streamingJustCompleted.value = false
+    }, 1000)
+  }
+})
 
 const handleRetry = (id: string) => {
   emit('retry', id)
@@ -82,6 +97,16 @@ const handleDelete = (id: string) => {
 
       <!-- Typing indicator -->
       <TypingIndicator v-if="isTyping" />
+
+      <!-- Screen reader announcement for streaming completion -->
+      <div
+        v-if="streamingJustCompleted"
+        class="sr-only"
+        role="status"
+        aria-live="polite"
+      >
+        AI 回复完成
+      </div>
     </div>
   </div>
 </template>
@@ -137,6 +162,18 @@ const handleDelete = (id: string) => {
   color: var(--color-ink-300);
   margin: 0;
   opacity: 0.8;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .messages-list {

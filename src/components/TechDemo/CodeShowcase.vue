@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { copyToClipboard } from '@/utils/clipboard'
 
 interface Token {
-  type: 'keyword' | 'url' | 'string' | 'flag' | 'plain'
+  type: 'keyword' | 'url' | 'string' | 'flag' | 'plain' | 'key' | 'number' | 'boolean' | 'null'
   value: string
 }
 
@@ -25,14 +25,10 @@ const copied = ref(false)
 const lastCopyTime = ref(0)
 
 /**
- * Tokenize a code string into typed tokens for CSS-only syntax highlighting.
- * Supports bash/curl commands with keywords, URLs, strings, flags, and plain text.
+ * Tokenize a bash/curl code string into typed tokens for CSS-only syntax highlighting.
+ * Supports keywords, URLs, strings, flags, and plain text.
  */
-function tokenize(code: string): Token[] {
-  if (props.language !== 'bash') {
-    return [{ type: 'plain', value: code }]
-  }
-
+function tokenizeBash(code: string): Token[] {
   const tokens: Token[] = []
   // Pattern order matters: URLs before strings (URLs may contain quotes context)
   const regex = /(\bhttps?:\/\/[^\s"'\\]+)|(["'][^"']*["'])|(\\?\b(?:curl|GET|POST|PUT|DELETE|HEAD|PATCH)\b)|(-[a-zA-Z]\b)|(\\\n)/g
@@ -67,6 +63,68 @@ function tokenize(code: string): Token[] {
   }
 
   return tokens
+}
+
+
+/**
+ * Tokenize a JSON code string into typed tokens for CSS-only syntax highlighting.
+ * Supports object keys, string values, numbers, booleans, and null.
+ */
+function tokenizeJson(code: string): Token[] {
+  const tokens: Token[] = []
+  // Match JSON tokens: keys ("key":), strings ("value"), numbers, booleans, null
+  const regex = /("(?:[^"\\]|\\.)*")\s*(:)|("(?:[^"\\]|\\.)*")|(\b(?:true|false)\b)|(\bnull\b)|(-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?)\b/g
+
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+
+  while ((match = regex.exec(code)) !== null) {
+    // Capture plain text before the match (brackets, commas, whitespace)
+    if (match.index > lastIndex) {
+      tokens.push({ type: 'plain', value: code.slice(lastIndex, match.index) })
+    }
+
+    if (match[1] && match[2]) {
+      // Object key followed by colon
+      tokens.push({ type: 'key', value: match[1] })
+      tokens.push({ type: 'plain', value: match[2] })
+    } else if (match[3]) {
+      // String value (not a key)
+      tokens.push({ type: 'string', value: match[3] })
+    } else if (match[4]) {
+      // Boolean
+      tokens.push({ type: 'boolean', value: match[4] })
+    } else if (match[5]) {
+      // Null
+      tokens.push({ type: 'null', value: match[5] })
+    } else if (match[6]) {
+      // Number
+      tokens.push({ type: 'number', value: match[6] })
+    }
+
+    lastIndex = match.index + match[0].length
+  }
+
+  // Remaining plain text
+  if (lastIndex < code.length) {
+    tokens.push({ type: 'plain', value: code.slice(lastIndex) })
+  }
+
+  return tokens
+}
+
+/**
+ * Tokenize a code string into typed tokens for CSS-only syntax highlighting.
+ * Delegates to language-specific tokenizers.
+ */
+function tokenize(code: string): Token[] {
+  if (props.language === 'bash') {
+    return tokenizeBash(code)
+  }
+  if (props.language === 'json') {
+    return tokenizeJson(code)
+  }
+  return [{ type: 'plain', value: code }]
 }
 
 const tokens = computed(() => tokenize(props.code))
@@ -268,6 +326,24 @@ async function handleCopy() {
 
 .token-plain {
   color: var(--color-cream-100);
+}
+
+
+/* CSS-only syntax highlighting tokens - JSON */
+.token-key {
+  color: var(--color-ochre);
+}
+
+.token-number {
+  color: #7DD3FC;
+}
+
+.token-boolean {
+  color: #F9A8D4;
+}
+
+.token-null {
+  color: var(--color-ink-300);
 }
 
 /* Reduced motion: disable copy-flash transition */

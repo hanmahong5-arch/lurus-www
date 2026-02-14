@@ -6,9 +6,9 @@
  * Toggle button has been extracted to ChatFloatingTrigger component.
  */
 
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useAIChat } from '../../composables/useAIChat'
-import { MOBILE_BREAKPOINT, MAX_INPUT_LENGTH } from '../../constants/ui'
+import { MOBILE_BREAKPOINT, MAX_INPUT_LENGTH, FOCUSABLE_SELECTOR } from '../../constants/ui'
 
 // Child components
 import ChatHeader from './ChatHeader.vue'
@@ -16,6 +16,7 @@ import ChatMessages from './ChatMessages.vue'
 import ChatInput from './ChatInput.vue'
 import ChatQuickPrompts from './ChatQuickPrompts.vue'
 import NetworkStatusBanner from './NetworkStatusBanner.vue'
+import ChatErrorBanner from './ChatErrorBanner.vue'
 
 interface Props {
   isOpen: boolean
@@ -29,6 +30,42 @@ const emit = defineEmits<{
 }>()
 
 const isMobile = ref(false)
+const sidebarRef = ref<HTMLElement | null>(null)
+
+/**
+ * Get all focusable elements within the sidebar for focus trap
+ */
+const getFocusableElements = (): HTMLElement[] => {
+  if (!sidebarRef.value) return []
+  return Array.from(sidebarRef.value.querySelectorAll(FOCUSABLE_SELECTOR)) as HTMLElement[]
+}
+
+/**
+ * Focus trap handler: keeps Tab/Shift+Tab within sidebar
+ */
+const handleFocusTrap = (e: KeyboardEvent) => {
+  if (e.key !== 'Tab') return
+
+  const focusable = getFocusableElements()
+  if (focusable.length === 0) return
+
+  const first = focusable[0]
+  const last = focusable[focusable.length - 1]
+
+  if (e.shiftKey) {
+    // Shift+Tab: wrap from first to last
+    if (document.activeElement === first) {
+      e.preventDefault()
+      last.focus()
+    }
+  } else {
+    // Tab: wrap from last to first
+    if (document.activeElement === last) {
+      e.preventDefault()
+      first.focus()
+    }
+  }
+}
 
 // Chat logic from composable
 const {
@@ -40,8 +77,11 @@ const {
   isOnline,
   canSend: _canSend,
   hasMessages,
+  hasRetriesExhausted,
   models,
   quickPrompts,
+  docsUrl,
+  isStreamingComplete,
   sendMessage,
   retryMessage,
   deleteMessage,
@@ -54,6 +94,23 @@ const checkMobile = () => {
     isMobile.value = window.innerWidth < MOBILE_BREAKPOINT
   }
 }
+
+// Focus into sidebar when opened, add focus trap
+watch(() => props.isOpen, (isOpen) => {
+  if (isOpen) {
+    nextTick(() => {
+      const focusable = getFocusableElements()
+      if (focusable.length > 0) {
+        focusable[0].focus()
+      }
+      // Add focus trap listener
+      sidebarRef.value?.addEventListener('keydown', handleFocusTrap)
+    })
+  } else {
+    // Remove focus trap listener
+    sidebarRef.value?.removeEventListener('keydown', handleFocusTrap)
+  }
+})
 
 const closeSidebar = () => {
   emit('close')
@@ -111,6 +168,7 @@ onUnmounted(() => {
 <template>
   <!-- Sidebar Panel -->
   <aside
+    ref="sidebarRef"
     id="ai-chat-sidebar"
     class="chat-sidebar"
     :class="{
@@ -122,6 +180,12 @@ onUnmounted(() => {
   >
     <!-- Network status banner -->
     <NetworkStatusBanner :is-online="isOnline" />
+
+    <!-- Error banner: shown when all retries exhausted (FR32) -->
+    <ChatErrorBanner
+      v-if="hasRetriesExhausted"
+      :docs-url="docsUrl"
+    />
 
     <!-- Header -->
     <ChatHeader
@@ -144,6 +208,7 @@ onUnmounted(() => {
     <ChatMessages
       :messages="messages"
       :is-typing="isTyping"
+      :is-streaming-complete="isStreamingComplete"
       @retry="handleRetry"
       @delete="handleDelete"
     />
@@ -192,6 +257,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   transform: translateX(100%);
+  will-change: transform;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -218,6 +284,18 @@ onUnmounted(() => {
   margin: 0;
   font-size: 11px;
   color: var(--color-ink-300);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .chat-sidebar {
+    transition: none;
+  }
+
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: none;
+  }
 }
 
 /* Overlay for mobile */

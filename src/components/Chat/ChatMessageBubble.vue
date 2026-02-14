@@ -15,6 +15,7 @@ const emit = defineEmits<{
 
 const isUser = computed(() => props.message.role === 'user')
 const isFailed = computed(() => props.message.status === 'failed' || props.message.status === 'timeout')
+const isStreaming = computed(() => props.message.status === 'streaming')
 const isSending = computed(() => props.message.status === 'sending')
 
 const formattedTime = computed(() => {
@@ -46,12 +47,13 @@ const handleDelete = () => {
     :class="{
       'is-user': isUser,
       'is-assistant': !isUser,
+      'is-streaming': isStreaming,
       'is-sending': isSending,
       'is-failed': isFailed
     }"
   >
     <div class="message-bubble">
-      <p class="content">{{ message.content }}</p>
+      <p class="content">{{ message.content }}<span v-if="isStreaming" class="streaming-cursor" aria-hidden="true"></span></p>
 
       <!-- Status indicator -->
       <div v-if="isSending || isFailed" class="status-bar">
@@ -111,6 +113,36 @@ const handleDelete = () => {
   gap: 4px;
   max-width: 85%;
   animation: fadeIn 0.2s ease-out;
+}
+
+.streaming-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--color-ink-500);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.is-streaming .message-bubble {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .streaming-cursor {
+    animation: none;
+    opacity: 1;
+  }
+
+  .message-wrapper {
+    animation: none;
+  }
 }
 
 @keyframes fadeIn {

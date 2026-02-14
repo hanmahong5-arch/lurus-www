@@ -3,7 +3,7 @@
  * Defines message status, roles, and API response types
  */
 
-export type MessageStatus = 'sending' | 'sent' | 'failed' | 'timeout'
+export type MessageStatus = 'sending' | 'sent' | 'failed' | 'timeout' | 'streaming'
 export type MessageRole = 'user' | 'assistant' | 'system'
 
 export interface ChatMessage {
@@ -25,6 +25,17 @@ export interface ChatApiResponse {
   }>
 }
 
+
+/**
+ * SSE streaming delta from OpenAI-compatible API
+ */
+export interface ChatStreamDelta {
+  choices: Array<{
+    delta: { role?: string; content?: string }
+    finish_reason: string | null
+  }>
+}
+
 export interface QuickPrompt {
   icon: string
   label: string
@@ -34,6 +45,11 @@ export interface QuickPrompt {
 export interface ModelOption {
   id: string
   name: string
+}
+
+export interface DemoMessage {
+  role: 'user' | 'assistant'
+  content: string
 }
 
 export interface ChatState {

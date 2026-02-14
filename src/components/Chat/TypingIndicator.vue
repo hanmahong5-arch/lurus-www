@@ -69,4 +69,11 @@
   color: var(--color-ink-500);
   white-space: nowrap;
 }
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    animation: none;
+    opacity: 0.7;
+  }
+}
 </style>

@@ -3,7 +3,7 @@
  * Centralized AI chat configuration for useAIChat composable
  */
 
-import type { ModelOption, QuickPrompt } from '../types/chat'
+import type { ModelOption, QuickPrompt, DemoMessage } from '../types/chat'
 import type { ChatConfig } from '../types/common'
 
 /**
@@ -34,3 +34,17 @@ export const chatConfig: ChatConfig = {
   maxRetries: 3,
   timeoutMs: 30000,
 }
+
+/**
+ * Documentation URL for fallback when Chat is unavailable
+ */
+export const DOCS_URL = 'https://docs.lurus.cn'
+
+/**
+ * Pre-recorded demo conversation for ChatPreview unavailable state
+ * Shown as static content when Chat backend is unreachable (ADR-010)
+ */
+export const fallbackDemoMessages: DemoMessage[] = [
+  { role: 'user', content: 'Lurus API 支持哪些 AI 模型？' },
+  { role: 'assistant', content: '目前支持 50+ 主流 AI 模型，包括 GPT-4o、DeepSeek、Claude 等。访问文档了解完整列表。' },
+]

@@ -5,7 +5,7 @@ import SecondaryButton from '../CTAs/SecondaryButton.vue'
 
 const heroProducts = products.map((p) => ({
   name: p.name,
-  color: `var(--color-product-${p.id})`,
+  color: p.bgColor,
 }))
 
 const floatingDots = [
@@ -72,6 +72,7 @@ const floatingDots = [
               href="https://api.lurus.cn"
               target="_blank"
               ariaLabel="跳转到 API Key 注册页面"
+              trackLocation="hero"
             />
             <SecondaryButton
               text="查看文档"

@@ -32,6 +32,7 @@ const props = defineProps<CTABarProps>()
           :href="props.primaryCta.href"
           :ariaLabel="props.primaryCta.ariaLabel"
           target="_blank"
+          trackLocation="cta_bar"
         />
         <SecondaryButton
           v-if="props.secondaryCta"

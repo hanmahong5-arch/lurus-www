@@ -1,0 +1,60 @@
+import { describe, it, expect } from 'vitest'
+import { gettingStartedItems } from '../gettingStarted'
+
+describe('gettingStartedItems', () => {
+  it('should export exactly 3 items', () => {
+    expect(gettingStartedItems).toHaveLength(3)
+  })
+
+  it('should have required fields for each item', () => {
+    gettingStartedItems.forEach((item) => {
+      expect(item.id).toBeTruthy()
+      expect(typeof item.id).toBe('string')
+      expect(item.label).toBeTruthy()
+      expect(typeof item.label).toBe('string')
+      expect(item.href).toBeTruthy()
+      expect(typeof item.href).toBe('string')
+      expect(typeof item.external).toBe('boolean')
+      expect(item.ariaLabel).toBeTruthy()
+      expect(typeof item.ariaLabel).toBe('string')
+      expect(item.iconPath).toBeTruthy()
+      expect(typeof item.iconPath).toBe('string')
+      expect(item.description).toBeTruthy()
+      expect(typeof item.description).toBe('string')
+    })
+  })
+
+  it('should have unique IDs', () => {
+    const ids = gettingStartedItems.map((item) => item.id)
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it('should contain the expected item IDs', () => {
+    const ids = gettingStartedItems.map((item) => item.id)
+    expect(ids).toContain('api-docs')
+    expect(ids).toContain('portal')
+    expect(ids).toContain('gushen')
+  })
+
+  it('should mark external links correctly', () => {
+    const apiDocs = gettingStartedItems.find((i) => i.id === 'api-docs')
+    expect(apiDocs?.external).toBe(true)
+    expect(apiDocs?.href).toMatch(/^https:\/\//)
+
+    const gushen = gettingStartedItems.find((i) => i.id === 'gushen')
+    expect(gushen?.external).toBe(true)
+    expect(gushen?.href).toMatch(/^https:\/\//)
+  })
+
+  it('should mark portal as internal link', () => {
+    const portal = gettingStartedItems.find((i) => i.id === 'portal')
+    expect(portal?.external).toBe(false)
+    expect(portal?.href).toBe('#portal')
+  })
+
+  it('should have ariaLabel for every item', () => {
+    gettingStartedItems.forEach((item) => {
+      expect(item.ariaLabel.length).toBeGreaterThan(0)
+    })
+  })
+})

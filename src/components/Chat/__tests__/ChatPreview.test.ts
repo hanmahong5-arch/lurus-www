@@ -3,10 +3,10 @@
  * Tests rendering states, user interactions, accessibility, and design system compliance
  */
 
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ChatPreview from '../ChatPreview.vue'
-import type { QuickPrompt } from '../../../types/chat'
+import type { QuickPrompt, DemoMessage } from '../../../types/chat'
 
 /** Test fixture: sample quick prompts */
 const mockPrompts: QuickPrompt[] = [
@@ -15,11 +15,18 @@ const mockPrompts: QuickPrompt[] = [
   { icon: '💹', label: 'Finance Analysis', prompt: 'Please analyze this financial data:' },
 ]
 
+
+/** Test fixture: demo messages for unavailable state */
+const mockDemoMessages: DemoMessage[] = [
+  { role: 'user', content: 'Lurus API supports which AI models?' },
+  { role: 'assistant', content: 'Currently supports 50+ mainstream AI models.' },
+]
 /** Default props factory */
 const createProps = (overrides: Partial<{
   ariaLabel: string
   quickPrompts: QuickPrompt[]
   isAvailable: boolean
+  demoMessages: DemoMessage[]
 }> = {}) => ({
   quickPrompts: mockPrompts,
   isAvailable: true,
@@ -292,6 +299,71 @@ describe('ChatPreview', () => {
 
       const promptButtons = wrapper.findAll('.prompt-preview-btn')
       expect(promptButtons.length).toBe(1)
+    })
+  })
+
+  describe('demo conversation (unavailable state)', () => {
+    it('should show demo messages when unavailable and demoMessages provided', () => {
+      const wrapper = mount(ChatPreview, {
+        props: createProps({ isAvailable: false, demoMessages: mockDemoMessages }),
+      })
+
+      const demoBubbles = wrapper.findAll('.demo-bubble')
+      expect(demoBubbles.length).toBe(2)
+    })
+
+    it('should show user demo message with is-user class', () => {
+      const wrapper = mount(ChatPreview, {
+        props: createProps({ isAvailable: false, demoMessages: mockDemoMessages }),
+      })
+
+      const userBubble = wrapper.find('.demo-bubble.is-user')
+      expect(userBubble.exists()).toBe(true)
+      expect(userBubble.text()).toContain('Lurus API supports which AI models?')
+    })
+
+    it('should show assistant demo message with is-assistant class', () => {
+      const wrapper = mount(ChatPreview, {
+        props: createProps({ isAvailable: false, demoMessages: mockDemoMessages }),
+      })
+
+      const assistantBubble = wrapper.find('.demo-bubble.is-assistant')
+      expect(assistantBubble.exists()).toBe(true)
+      expect(assistantBubble.text()).toContain('50+ mainstream AI models')
+    })
+
+    it('should show demo label text', () => {
+      const wrapper = mount(ChatPreview, {
+        props: createProps({ isAvailable: false, demoMessages: mockDemoMessages }),
+      })
+
+      expect(wrapper.find('.demo-label').exists()).toBe(true)
+    })
+
+    it('should show fallback text when unavailable but no demoMessages', () => {
+      const wrapper = mount(ChatPreview, {
+        props: createProps({ isAvailable: false }),
+      })
+
+      expect(wrapper.find('.unavailable-desc').exists()).toBe(true)
+      expect(wrapper.find('.demo-conversation').exists()).toBe(false)
+    })
+
+    it('should show fallback text when unavailable with empty demoMessages', () => {
+      const wrapper = mount(ChatPreview, {
+        props: createProps({ isAvailable: false, demoMessages: [] }),
+      })
+
+      expect(wrapper.find('.unavailable-desc').exists()).toBe(true)
+      expect(wrapper.find('.demo-conversation').exists()).toBe(false)
+    })
+
+    it('should not show demo conversation when available', () => {
+      const wrapper = mount(ChatPreview, {
+        props: createProps({ isAvailable: true, demoMessages: mockDemoMessages }),
+      })
+
+      expect(wrapper.find('.demo-conversation').exists()).toBe(false)
     })
   })
 })

@@ -4,12 +4,14 @@ import HeroSection from '../components/Hero/HeroSection.vue'
 import CodeShowcase from '../components/TechDemo/CodeShowcase.vue'
 import PortalLinks from '../components/Portal/PortalLinks.vue'
 import ProductShowcase from '../components/Products/ProductShowcase.vue'
-import FeatureGrid from '../components/Features/FeatureGrid.vue'
+import StatsDisplay from '../components/Products/StatsDisplay.vue'
+import PlatformCapabilities from '../components/Features/PlatformCapabilities.vue'
 import { useScrollReveal } from '../composables/useScrollReveal'
 import { useTracking } from '../composables/useTracking'
 import { useChatFeature } from '../composables/useChatFeature'
 import { quickPrompts } from '../data/chatModels'
-import { stats, trustBadges, trustBadgeIconPaths } from '../data/stats'
+import { trustBadges, trustBadgeIconPaths } from '../data/stats'
+import GettingStartedSection from '../components/GettingStarted/GettingStartedSection.vue'
 import FinalCTA from '../components/CTAs/FinalCTA.vue'
 
 const pageRef = ref<HTMLElement | null>(null)
@@ -74,28 +76,14 @@ const handleSelectPrompt = (prompt: string) => {
     <!-- Products Section -->
     <ProductShowcase />
 
-    <!-- Features Section -->
-    <FeatureGrid />
+    <!-- Platform Capabilities Section (S3: Platform Overview) -->
+    <PlatformCapabilities />
 
     <!-- Stats Section -->
-    <section class="py-16 bg-cream-50 relative overflow-hidden">
-      <!-- Decorative elements -->
-      <div class="absolute top-8 left-8 doodle-corner opacity-30"></div>
-      <div class="absolute bottom-8 right-8 doodle-corner rotate-180 opacity-30"></div>
+    <StatsDisplay />
 
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 reveal-stagger">
-          <div
-            v-for="stat in stats"
-            :key="stat.label"
-            class="text-center px-6 py-8 border-sketchy bg-cream-100 hover:shadow-paper-hover transition-all"
-          >
-            <div :class="['text-phi-2xl mb-2 font-bold', stat.color]">{{ stat.value }}</div>
-            <div class="text-ink-500">{{ stat.label }}</div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- Getting Started Section (S6) -->
+    <GettingStartedSection />
 
     <!-- CTA Section -->
     <section class="py-fib-7 bg-cream-100 relative overflow-hidden">

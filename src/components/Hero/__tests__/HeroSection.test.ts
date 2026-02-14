@@ -96,7 +96,7 @@ describe('HeroSection', () => {
     it('should render all product items', () => {
       const wrapper = mount(HeroSection)
 
-      const productNames = ['Lurus API', 'GuShen', 'Switch', 'Docs', 'Deaigc']
+      const productNames = ['Lurus API', 'GuShen', 'Webmail', 'Lurus Switch']
       for (const name of productNames) {
         expect(wrapper.text()).toContain(name)
       }
@@ -111,7 +111,7 @@ describe('HeroSection', () => {
       const productDots = dots.filter(
         (d) => !d.classes().some((c) => c.includes('animate-float') || c.includes('bg-ochre'))
       )
-      expect(productDots.length).toBe(5)
+      expect(productDots.length).toBe(4)
     })
   })
 })
