@@ -84,7 +84,7 @@ function handleTabKeydown(event: KeyboardEvent) {
         :code="example.code"
         :language="example.language"
         :show-auth-tag="example.showAuthTag"
-        :aria-label="example.ariaLabel"
+        :ariaLabel="example.ariaLabel"
       />
     </div>
   </div>

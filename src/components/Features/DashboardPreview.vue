@@ -65,7 +65,7 @@ function handleImageError() {
         <CodeShowcase
           :code="dashboardPreviewConfig.fallbackCode"
           :language="dashboardPreviewConfig.fallbackLanguage"
-          :aria-label="dashboardPreviewConfig.fallbackAriaLabel"
+          :ariaLabel="dashboardPreviewConfig.fallbackAriaLabel"
         />
       </div>
 

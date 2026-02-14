@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import type { Platform } from '../../types/release'
 
-interface Props {
+const props = withDefaults(defineProps<{
   platform: Platform
   size?: 'sm' | 'md' | 'lg'
-}
-
-const { size } = withDefaults(defineProps<Props>(), {
+}>(), {
   size: 'md',
 })
 
-const sizeClasses = {
+const sizeClasses: Record<string, string> = {
   sm: 'w-5 h-5',
   md: 'w-6 h-6',
   lg: 'w-10 h-10',
@@ -19,8 +17,8 @@ const sizeClasses = {
 
 <template>
   <svg
-    v-if="platform === 'windows'"
-    :class="sizeClasses[size]"
+    v-if="props.platform === 'windows'"
+    :class="sizeClasses[props.size]"
     viewBox="0 0 24 24"
     fill="currentColor"
   >
@@ -30,8 +28,8 @@ const sizeClasses = {
   </svg>
 
   <svg
-    v-else-if="platform === 'darwin'"
-    :class="sizeClasses[size]"
+    v-else-if="props.platform === 'darwin'"
+    :class="sizeClasses[props.size]"
     viewBox="0 0 24 24"
     fill="currentColor"
   >
@@ -41,8 +39,8 @@ const sizeClasses = {
   </svg>
 
   <svg
-    v-else-if="platform === 'linux'"
-    :class="sizeClasses[size]"
+    v-else-if="props.platform === 'linux'"
+    :class="sizeClasses[props.size]"
     viewBox="0 0 24 24"
     fill="currentColor"
   >
@@ -52,8 +50,8 @@ const sizeClasses = {
   </svg>
 
   <svg
-    v-else-if="platform === 'android'"
-    :class="sizeClasses[size]"
+    v-else-if="props.platform === 'android'"
+    :class="sizeClasses[props.size]"
     viewBox="0 0 24 24"
     fill="currentColor"
   >
@@ -63,8 +61,8 @@ const sizeClasses = {
   </svg>
 
   <svg
-    v-else-if="platform === 'ios'"
-    :class="sizeClasses[size]"
+    v-else-if="props.platform === 'ios'"
+    :class="sizeClasses[props.size]"
     viewBox="0 0 24 24"
     fill="currentColor"
   >
@@ -76,7 +74,7 @@ const sizeClasses = {
   <!-- Fallback: generic desktop icon -->
   <svg
     v-else
-    :class="sizeClasses[size]"
+    :class="sizeClasses[props.size]"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
