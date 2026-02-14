@@ -59,7 +59,7 @@ describe('useReleases', () => {
       const { getDownloadUrl } = useReleases()
 
       const url = getDownloadUrl(123, 456)
-      expect(url).toContain('/api/v1/releases/123/download/456')
+      expect(url).toContain('/api/releases/123/download/456')
     })
   })
 

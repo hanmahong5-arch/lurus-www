@@ -31,20 +31,20 @@ const releaseDate = computed(() => {
 
 const releaseTypeLabel = computed(() => {
   const labels: Record<string, string> = {
-    stable: '稳定版',
-    beta: '测试版',
-    alpha: '预览版',
+    stable: 'Stable',
+    beta: 'Beta',
+    alpha: 'Alpha',
   }
   return labels[props.release.release_type] || props.release.release_type
 })
 
 const releaseTypeColor = computed(() => {
   const colors: Record<string, string> = {
-    stable: 'text-green-500 bg-green-500/10 border-green-500/30',
-    beta: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/30',
-    alpha: 'text-orange-500 bg-orange-500/10 border-orange-500/30',
+    stable: 'text-green-700 bg-green-50 border-green-300',
+    beta: 'text-yellow-700 bg-yellow-50 border-yellow-300',
+    alpha: 'text-orange-700 bg-orange-50 border-orange-300',
   }
-  return colors[props.release.release_type] || 'text-gray-500 bg-gray-500/10 border-gray-500/30'
+  return colors[props.release.release_type] || 'text-ink-500 bg-cream-200 border-ink-100'
 })
 
 function handleDownload(artifact: ReleaseArtifact) {
@@ -61,16 +61,16 @@ function toggleChecksums() {
 </script>
 
 <template>
-  <div class="bg-surface rounded-xl border border-gray-800 overflow-hidden">
+  <div class="card-sketchy overflow-hidden">
     <!-- Header -->
-    <div class="p-6 border-b border-gray-800">
+    <div class="p-6 border-b-2 border-ink-100">
       <div class="flex items-start justify-between gap-4">
         <div class="flex-1">
-          <div class="flex items-center gap-3 mb-2">
-            <h3 class="text-xl font-bold text-white">{{ release.title }}</h3>
+          <div class="flex items-center gap-3 mb-2 flex-wrap">
+            <h3 class="text-xl font-bold text-ink-900">{{ release.title }}</h3>
             <span
               :class="[
-                'px-2 py-1 text-xs font-medium rounded-md border',
+                'px-2 py-0.5 text-xs font-medium rounded border',
                 releaseTypeColor,
               ]"
             >
@@ -78,17 +78,17 @@ function toggleChecksums() {
             </span>
             <span
               v-if="isLatest"
-              class="px-2 py-1 text-xs font-medium rounded-md border text-primary bg-primary/10 border-primary/30"
+              class="px-2 py-0.5 text-xs font-medium rounded border text-ochre bg-yellow-50 border-ochre/30"
             >
-              最新版本
+              Latest
             </span>
           </div>
-          <div class="flex items-center gap-4 text-sm text-gray-400">
-            <span>版本 {{ release.version }}</span>
-            <span>•</span>
+          <div class="flex items-center gap-4 text-sm text-ink-300">
+            <span>v{{ release.version }}</span>
+            <span>&middot;</span>
             <span>{{ releaseDate }}</span>
           </div>
-          <p v-if="release.description" class="mt-2 text-gray-400">
+          <p v-if="release.description" class="mt-2 text-ink-500">
             {{ release.description }}
           </p>
         </div>
@@ -96,27 +96,28 @@ function toggleChecksums() {
     </div>
 
     <!-- Download Buttons -->
-    <div class="p-6 bg-surface-dark">
+    <div class="p-6 bg-cream-100/50">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <button
           v-for="artifact in release.artifacts"
           :key="artifact.id"
           @click="handleDownload(artifact)"
-          class="p-4 bg-surface rounded-lg border border-gray-800 hover:border-gray-700 transition-all duration-200 flex items-center gap-3 text-left group"
+          class="p-4 bg-cream-50 border-2 border-ink-100 hover:border-ink-300 transition-all duration-200 flex items-center gap-3 text-left group"
+          style="border-radius: 3px 10px 5px 12px / 12px 5px 10px 3px"
         >
-          <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+          <div class="w-10 h-10 rounded-lg bg-cream-200 flex items-center justify-center flex-shrink-0 group-hover:bg-ochre/20 transition-colors text-ink-500">
             <PlatformIcon :platform="artifact.platform" size="md" />
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-white font-medium truncate">
+            <p class="text-ink-900 font-medium truncate">
               {{ getPlatformName(artifact.platform) }} {{ getArchName(artifact.arch) }}
             </p>
-            <p class="text-gray-500 text-sm">
+            <p class="text-ink-300 text-sm">
               {{ formatFileSize(artifact.file_size) }}
             </p>
           </div>
           <svg
-            class="w-5 h-5 text-gray-400 flex-shrink-0 group-hover:text-primary transition-colors"
+            class="w-5 h-5 text-ink-300 flex-shrink-0 group-hover:text-ochre transition-colors"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -132,23 +133,23 @@ function toggleChecksums() {
       </div>
 
       <!-- Download Statistics -->
-      <div v-if="release.artifacts.length > 0" class="mt-4 pt-4 border-t border-gray-800">
-        <p class="text-sm text-gray-500">
-          总下载次数：{{ release.artifacts.reduce((sum, a) => sum + a.download_count, 0).toLocaleString() }}
+      <div v-if="release.artifacts.length > 0" class="mt-4 pt-4 border-t-2 border-ink-100">
+        <p class="text-sm text-ink-300">
+          Downloads: {{ release.artifacts.reduce((sum, a) => sum + a.download_count, 0).toLocaleString() }}
         </p>
       </div>
     </div>
 
     <!-- Changelog Section -->
-    <div v-if="release.changelog_md" class="border-t border-gray-800">
+    <div v-if="release.changelog_md" class="border-t-2 border-ink-100">
       <button
         @click="toggleChangelog"
-        class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-surface-dark/50 transition-colors"
+        class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-cream-100/50 transition-colors"
       >
-        <span class="text-white font-medium">更新日志</span>
+        <span class="text-ink-900 font-medium">Changelog</span>
         <svg
           :class="[
-            'w-5 h-5 text-gray-400 transition-transform',
+            'w-5 h-5 text-ink-300 transition-transform',
             showChangelog ? 'rotate-180' : '',
           ]"
           fill="none"
@@ -165,22 +166,22 @@ function toggleChecksums() {
       </button>
       <div
         v-if="showChangelog"
-        class="px-6 pb-6 prose prose-invert prose-sm max-w-none"
+        class="px-6 pb-6"
       >
-        <div class="text-gray-400 whitespace-pre-wrap">{{ release.changelog_md }}</div>
+        <div class="text-ink-500 whitespace-pre-wrap text-sm">{{ release.changelog_md }}</div>
       </div>
     </div>
 
     <!-- Checksums Section -->
-    <div class="border-t border-gray-800">
+    <div class="border-t-2 border-ink-100">
       <button
         @click="toggleChecksums"
-        class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-surface-dark/50 transition-colors"
+        class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-cream-100/50 transition-colors"
       >
-        <span class="text-white font-medium">文件校验和 (SHA256)</span>
+        <span class="text-ink-900 font-medium">SHA256 Checksums</span>
         <svg
           :class="[
-            'w-5 h-5 text-gray-400 transition-transform',
+            'w-5 h-5 text-ink-300 transition-transform',
             showChecksums ? 'rotate-180' : '',
           ]"
           fill="none"
@@ -200,10 +201,10 @@ function toggleChecksums() {
           <div
             v-for="artifact in release.artifacts"
             :key="artifact.id"
-            class="p-3 bg-black/30 rounded-lg"
+            class="p-3 bg-cream-200 border border-ink-100 rounded"
           >
-            <p class="text-sm text-gray-400 mb-1">{{ artifact.filename }}</p>
-            <code class="text-xs text-gray-500 font-mono break-all">
+            <p class="text-sm text-ink-500 mb-1">{{ artifact.filename }}</p>
+            <code class="text-xs text-ink-300 font-mono break-all">
               {{ artifact.checksum_sha256 }}
             </code>
           </div>

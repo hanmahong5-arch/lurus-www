@@ -25,6 +25,7 @@ export const navItems: NavDropdownItem[] = [
       { name: '文档', path: 'https://docs.lurus.cn', external: true },
     ],
   },
+  { name: '下载', path: '/download' },
   { name: '定价', path: '/pricing' },
   { name: '关于', path: '/about' },
 ]

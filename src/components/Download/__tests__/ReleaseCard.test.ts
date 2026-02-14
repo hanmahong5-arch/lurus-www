@@ -63,7 +63,7 @@ describe('ReleaseCard', () => {
 
     expect(wrapper.text()).toContain('Lurus Switch v1.0.0')
     expect(wrapper.text()).toContain('1.0.0')
-    expect(wrapper.text()).toContain('稳定版')
+    expect(wrapper.text()).toContain('Stable')
   })
 
   it('should display latest badge when isLatest is true', () => {
@@ -74,7 +74,7 @@ describe('ReleaseCard', () => {
       },
     })
 
-    expect(wrapper.text()).toContain('最新版本')
+    expect(wrapper.text()).toContain('Latest')
   })
 
   it('should not display latest badge when isLatest is false', () => {
@@ -85,7 +85,7 @@ describe('ReleaseCard', () => {
       },
     })
 
-    expect(wrapper.text()).not.toContain('最新版本')
+    expect(wrapper.text()).not.toContain('Latest')
   })
 
   it('should render all artifacts', () => {
@@ -118,12 +118,12 @@ describe('ReleaseCard', () => {
     })
 
     // Changelog should be hidden initially
-    expect(wrapper.text()).toContain('更新日志')
+    expect(wrapper.text()).toContain('Changelog')
     expect(wrapper.text()).not.toContain('New Features')
 
-    // Find and click the changelog toggle button (contains "更新日志")
+    // Find and click the changelog toggle button
     const buttons = wrapper.findAll('button')
-    const changelogButton = buttons.find(b => b.text().includes('更新日志'))
+    const changelogButton = buttons.find(b => b.text().includes('Changelog'))
     expect(changelogButton).toBeDefined()
 
     await changelogButton!.trigger('click')
@@ -138,7 +138,7 @@ describe('ReleaseCard', () => {
         release: mockRelease,
       },
     })
-    expect(stableWrapper.text()).toContain('稳定版')
+    expect(stableWrapper.text()).toContain('Stable')
 
     const betaRelease = { ...mockRelease, release_type: 'beta' as const }
     const betaWrapper = mount(ReleaseCard, {
@@ -146,7 +146,7 @@ describe('ReleaseCard', () => {
         release: betaRelease,
       },
     })
-    expect(betaWrapper.text()).toContain('测试版')
+    expect(betaWrapper.text()).toContain('Beta')
 
     const alphaRelease = { ...mockRelease, release_type: 'alpha' as const }
     const alphaWrapper = mount(ReleaseCard, {
@@ -154,7 +154,7 @@ describe('ReleaseCard', () => {
         release: alphaRelease,
       },
     })
-    expect(alphaWrapper.text()).toContain('预览版')
+    expect(alphaWrapper.text()).toContain('Alpha')
   })
 
   it('should format file sizes correctly', () => {

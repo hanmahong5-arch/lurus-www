@@ -56,7 +56,7 @@ export function useReleases() {
       if (params.page) queryParams.append('page', String(params.page))
       if (params.page_size) queryParams.append('page_size', String(params.page_size))
 
-      const url = `${API_BASE_URL}/api/v1/releases?${queryParams.toString()}`
+      const url = `${API_BASE_URL}/api/releases?${queryParams.toString()}`
       const response = await fetch(url)
 
       if (!response.ok) {
@@ -104,7 +104,7 @@ export function useReleases() {
         queryParams.append('current_version', currentVersion)
       }
 
-      const url = `${API_BASE_URL}/api/v1/releases/latest/${productId}?${queryParams.toString()}`
+      const url = `${API_BASE_URL}/api/releases/latest/${productId}?${queryParams.toString()}`
       const response = await fetch(url)
 
       if (!response.ok) {
@@ -135,7 +135,7 @@ export function useReleases() {
     error.value = null
 
     try {
-      const url = `${API_BASE_URL}/api/v1/releases/${releaseId}`
+      const url = `${API_BASE_URL}/api/releases/${releaseId}`
       const response = await fetch(url)
 
       if (!response.ok) {
@@ -162,7 +162,7 @@ export function useReleases() {
    * Get download URL for an artifact (triggers download)
    */
   function getDownloadUrl(releaseId: number, artifactId: number): string {
-    return `${API_BASE_URL}/api/v1/releases/${releaseId}/download/${artifactId}`
+    return `${API_BASE_URL}/api/releases/${releaseId}/download/${artifactId}`
   }
 
   /**
