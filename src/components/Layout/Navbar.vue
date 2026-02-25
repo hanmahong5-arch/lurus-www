@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
-import { navItems, getRegisterUrl } from '../../data/navItems'
+import { navItems } from '../../data/navItems'
 import NavDropdown from './NavDropdown.vue'
-import GitHubStarsBadge from './GitHubStarsBadge.vue'
 import { useActiveSection } from '../../composables/useActiveSection'
 import { useAuth } from '../../composables/useAuth'
 
@@ -13,6 +12,12 @@ const menuPanelRef = ref<HTMLElement | null>(null)
 
 const { activeSection } = useActiveSection()
 const { isLoggedIn, userInfo, checkSession, login, logout } = useAuth()
+
+/** Display name: prefer name, fallback to preferred_username, then email */
+const displayName = (u: NonNullable<typeof userInfo.value>) =>
+  u.name || u.preferred_username || u.email || 'User'
+const displayInitial = (u: NonNullable<typeof userInfo.value>) =>
+  (u.name || u.preferred_username || u.email || 'U').charAt(0).toUpperCase()
 
 // Map nav items to their corresponding section IDs
 const sectionMap: Record<string, string> = {
@@ -108,11 +113,10 @@ onUnmounted(() => {
 
 /**
  * Handle logout button click
+ * logout() redirects to Zitadel end_session then back to home
  */
-async function handleLogout() {
-  await logout()
-  // Optionally refresh page or redirect
-  window.location.reload()
+function handleLogout() {
+  logout()
 }
 </script>
 
@@ -179,24 +183,23 @@ async function handleLogout() {
 
           <!-- CTA Buttons -->
           <div class="hidden md:flex items-center gap-3">
-            <GitHubStarsBadge />
             <template v-if="isLoggedIn && userInfo">
               <!-- Logged in: Show user menu -->
               <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-cream-200">
                   <img
-                    v-if="userInfo.avatar"
-                    :src="userInfo.avatar"
-                    :alt="`${userInfo.username} avatar`"
+                    v-if="userInfo.picture"
+                    :src="userInfo.picture"
+                    :alt="`${displayName(userInfo)} avatar`"
                     class="w-7 h-7 rounded-full border-2 border-ink-300"
                   >
                   <div
                     v-else
                     class="w-7 h-7 rounded-full bg-ochre flex items-center justify-center border-2 border-ink-300"
                   >
-                    <span class="text-cream-50 text-sm font-bold">{{ userInfo.username.charAt(0).toUpperCase() }}</span>
+                    <span class="text-cream-50 text-sm font-bold">{{ displayInitial(userInfo) }}</span>
                   </div>
-                  <span class="text-ink-900 font-medium">{{ userInfo.username }}</span>
+                  <span class="text-ink-900 font-medium">{{ displayName(userInfo) }}</span>
                 </div>
                 <button
                   @click="handleLogout"
@@ -209,19 +212,17 @@ async function handleLogout() {
             <template v-else>
               <!-- Not logged in: Show login/register buttons -->
               <button
-                @click="login"
+                @click="login()"
                 class="px-5 py-2.5 text-ink-500 hover:text-ink-900 transition-colors"
               >
                 登录
               </button>
-              <a
-                :href="getRegisterUrl()"
+              <button
+                @click="login({ prompt: 'create' })"
                 class="btn-hand btn-hand-primary"
-                target="_blank"
-                rel="noopener noreferrer"
               >
                 开始使用
-              </a>
+              </button>
             </template>
           </div>
 
@@ -350,19 +351,19 @@ async function handleLogout() {
                 <!-- Logged in: Show user info and logout -->
                 <div class="mobile-nav-link flex items-center gap-3 cursor-default">
                   <img
-                    v-if="userInfo.avatar"
-                    :src="userInfo.avatar"
-                    :alt="`${userInfo.username} avatar`"
+                    v-if="userInfo.picture"
+                    :src="userInfo.picture"
+                    :alt="`${displayName(userInfo)} avatar`"
                     class="w-10 h-10 rounded-full border-2 border-ink-300"
                   >
                   <div
                     v-else
                     class="w-10 h-10 rounded-full bg-ochre flex items-center justify-center border-2 border-ink-300"
                   >
-                    <span class="text-cream-50 font-bold">{{ userInfo.username.charAt(0).toUpperCase() }}</span>
+                    <span class="text-cream-50 font-bold">{{ displayInitial(userInfo) }}</span>
                   </div>
                   <div>
-                    <p class="text-ink-900 font-medium">{{ userInfo.username }}</p>
+                    <p class="text-ink-900 font-medium">{{ displayName(userInfo) }}</p>
                     <p class="text-ink-300 text-sm">{{ userInfo.email }}</p>
                   </div>
                 </div>
@@ -376,19 +377,17 @@ async function handleLogout() {
               <template v-else>
                 <!-- Not logged in: Show login/register -->
                 <button
-                  @click="login"
+                  @click="login()"
                   class="mobile-nav-link"
                 >
                   登录
                 </button>
-                <a
-                  :href="getRegisterUrl()"
+                <button
+                  @click="login({ prompt: 'create' })"
                   class="block btn-hand btn-hand-primary text-center min-h-[44px] flex items-center justify-center"
-                  target="_blank"
-                  rel="noopener noreferrer"
                 >
                   开始使用
-                </a>
+                </button>
               </template>
             </div>
           </div>

@@ -6,6 +6,7 @@
  */
 
 import { ref, onMounted, onUnmounted } from 'vue'
+import { parseDropData, buildAnalysisPrompt, hasPortalData } from '../../utils/portalDrag'
 
 /** Hero section selector used by IntersectionObserver */
 const HERO_SELECTOR = '[aria-label="Hero"]'
@@ -74,6 +75,41 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 }
 
+// Drag-drop support: drop portal link onto floating trigger to open chat + analyze
+const isDragHover = ref(false)
+let dragLeaveTimer: ReturnType<typeof setTimeout> | null = null
+
+const handleTriggerDragOver = (e: DragEvent) => {
+  if (!hasPortalData(e)) return
+  e.preventDefault()
+  e.dataTransfer!.dropEffect = 'copy'
+}
+
+const handleTriggerDragEnter = (e: DragEvent) => {
+  if (!hasPortalData(e)) return
+  if (dragLeaveTimer) {
+    clearTimeout(dragLeaveTimer)
+    dragLeaveTimer = null
+  }
+  isDragHover.value = true
+}
+
+const handleTriggerDragLeave = () => {
+  dragLeaveTimer = setTimeout(() => {
+    isDragHover.value = false
+  }, 50)
+}
+
+const handleTriggerDrop = (e: DragEvent) => {
+  e.preventDefault()
+  isDragHover.value = false
+  const data = parseDropData(e)
+  if (data) {
+    const prompt = buildAnalysisPrompt(data)
+    window.dispatchEvent(new CustomEvent('lurus:open-chat', { detail: { prompt } }))
+  }
+}
+
 onMounted(() => {
   initObserver()
 })
@@ -91,12 +127,16 @@ const isVisible = () => !isHeroVisible.value
     <button
       v-show="isVisible()"
       class="floating-trigger"
-      :class="{ 'is-open': props.isOpen }"
+      :class="{ 'is-open': props.isOpen, 'is-drag-hover': isDragHover }"
       :aria-label="props.isOpen ? '关闭 AI 对话' : (props.ariaLabel ?? DEFAULT_ARIA_LABEL)"
       :aria-expanded="props.isOpen"
       aria-controls="ai-chat-sidebar"
       @click="handleClick"
       @keydown="handleKeydown"
+      @dragover="handleTriggerDragOver"
+      @dragenter="handleTriggerDragEnter"
+      @dragleave="handleTriggerDragLeave"
+      @drop="handleTriggerDrop"
     >
       <!-- Chat icon (when closed) -->
       <svg
@@ -180,6 +220,13 @@ const isVisible = () => !isHeroVisible.value
 .floating-trigger:focus-visible {
   outline: none;
   box-shadow: 3px 3px 0 var(--color-ink-100), 0 0 0 3px var(--color-ochre), 0 0 0 5px var(--color-cream-50);
+}
+
+/* Drag hover: enlarge + highlight when portal link is dragged over */
+.floating-trigger.is-drag-hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(201, 162, 39, 0.4), 5px 5px 0 var(--color-ink-100);
+  background-color: color-mix(in srgb, var(--color-ochre), #fff 15%);
 }
 
 /* When Chat panel is open, subtle style change */

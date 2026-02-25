@@ -9,6 +9,7 @@
 import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useAIChat } from '../../composables/useAIChat'
 import { MOBILE_BREAKPOINT, MAX_INPUT_LENGTH, FOCUSABLE_SELECTOR } from '../../constants/ui'
+import { parseDropData, buildAnalysisPrompt, hasPortalData } from '../../utils/portalDrag'
 
 // Child components
 import ChatHeader from './ChatHeader.vue'
@@ -20,6 +21,7 @@ import ChatErrorBanner from './ChatErrorBanner.vue'
 
 interface Props {
   isOpen: boolean
+  pendingPrompt?: string
 }
 
 const props = defineProps<Props>()
@@ -27,10 +29,13 @@ const props = defineProps<Props>()
 const emit = defineEmits<{
   close: []
   toggle: []
+  'prompt-consumed': []
 }>()
 
 const isMobile = ref(false)
 const sidebarRef = ref<HTMLElement | null>(null)
+const isDragOver = ref(false)
+let dragLeaveTimer: ReturnType<typeof setTimeout> | null = null
 
 /**
  * Get all focusable elements within the sidebar for focus trap
@@ -153,6 +158,59 @@ const handleKeydown = (e: KeyboardEvent) => {
   }
 }
 
+// Watch for pending prompt from App.vue (event channel fix + drag-drop from trigger)
+watch(() => props.pendingPrompt, (prompt) => {
+  if (prompt && props.isOpen) {
+    nextTick(() => {
+      sendMessage(prompt)
+      emit('prompt-consumed')
+    })
+  }
+})
+
+// Also handle case where sidebar opens with a pending prompt
+watch(() => props.isOpen, (isOpen) => {
+  if (isOpen && props.pendingPrompt) {
+    nextTick(() => {
+      sendMessage(props.pendingPrompt!)
+      emit('prompt-consumed')
+    })
+  }
+})
+
+// Drag-and-drop handlers for receiving portal links
+const handleDragOver = (e: DragEvent) => {
+  if (!hasPortalData(e)) return
+  e.preventDefault()
+  e.dataTransfer!.dropEffect = 'copy'
+}
+
+const handleDragEnter = (e: DragEvent) => {
+  if (!hasPortalData(e)) return
+  if (dragLeaveTimer) {
+    clearTimeout(dragLeaveTimer)
+    dragLeaveTimer = null
+  }
+  isDragOver.value = true
+}
+
+const handleDragLeave = () => {
+  // Debounce to prevent flickering when moving between child elements
+  dragLeaveTimer = setTimeout(() => {
+    isDragOver.value = false
+  }, 50)
+}
+
+const handleDrop = (e: DragEvent) => {
+  e.preventDefault()
+  isDragOver.value = false
+  const data = parseDropData(e)
+  if (data) {
+    const prompt = buildAnalysisPrompt(data)
+    sendMessage(prompt)
+  }
+}
+
 onMounted(() => {
   checkMobile()
   window.addEventListener('resize', checkMobile)
@@ -177,7 +235,22 @@ onUnmounted(() => {
     }"
     role="complementary"
     aria-label="AI 聊天助手"
+    @dragover="handleDragOver"
+    @dragenter="handleDragEnter"
+    @dragleave="handleDragLeave"
+    @drop="handleDrop"
   >
+    <!-- Drag-drop overlay -->
+    <Transition name="fade">
+      <div v-if="isDragOver" class="drop-overlay" aria-hidden="true">
+        <div class="drop-overlay-content">
+          <svg class="drop-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 4v16m-8-8h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          <span class="drop-text">放下链接开始分析</span>
+        </div>
+      </div>
+    </Transition>
     <!-- Network status banner -->
     <NetworkStatusBanner :is-online="isOnline" />
 
@@ -284,6 +357,39 @@ onUnmounted(() => {
   margin: 0;
   font-size: 11px;
   color: var(--color-ink-300);
+}
+
+/* Drag-drop overlay */
+.drop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(201, 162, 39, 0.12);
+  border: 3px dashed var(--color-ochre);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.drop-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.drop-icon {
+  width: 40px;
+  height: 40px;
+  color: var(--color-ochre);
+}
+
+.drop-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ochre);
 }
 
 /* Respect reduced motion */

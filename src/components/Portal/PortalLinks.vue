@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { portalCategories } from '../../data/portalLinks'
+import { portalCategories, type PortalLink } from '../../data/portalLinks'
 import { useTracking } from '../../composables/useTracking'
 import { useChatFeature } from '../../composables/useChatFeature'
+import { DRAG_MIME } from '../../utils/portalDrag'
 import CTABar from '../CTAs/CTABar.vue'
 import PortalChatPreview from './PortalChatPreview.vue'
 
@@ -34,6 +35,23 @@ const toggleLabel = computed(() =>
 
 const trackPortalClick = (linkName: string, category: string) => {
   track('portal_link_click', { link_name: linkName, link_category: category })
+}
+
+const draggingLink = ref(false)
+
+const handleDragStart = (e: DragEvent, link: PortalLink, categoryName: string) => {
+  e.dataTransfer?.setData(DRAG_MIME, JSON.stringify({
+    name: link.name,
+    url: link.url,
+    desc: link.desc || '',
+    category: categoryName,
+  }))
+  e.dataTransfer!.effectAllowed = 'copy'
+  draggingLink.value = true
+}
+
+const handleDragEnd = () => {
+  draggingLink.value = false
 }
 </script>
 
@@ -103,10 +121,13 @@ const trackPortalClick = (linkName: string, category: string) => {
                   :href="link.url"
                   target="_blank"
                   rel="noopener noreferrer"
+                  draggable="true"
                   class="portal-link-btn group"
-                  :class="category.colorClass"
+                  :class="[category.colorClass, { 'is-dragging': draggingLink }]"
                   :title="link.desc"
                   @click="trackPortalClick(link.name, category.id)"
+                  @dragstart="handleDragStart($event, link, category.name)"
+                  @dragend="handleDragEnd"
                 >
                   <span>{{ link.name }}</span>
                   <svg class="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -215,5 +236,15 @@ const trackPortalClick = (linkName: string, category: string) => {
 .portal-category-card:hover {
   box-shadow: 4px 4px 0 var(--color-ink-100);
   transform: translate(-2px, -2px);
+}
+
+/* Dragging feedback: reduce opacity on all links while one is being dragged */
+.portal-link-btn.is-dragging {
+  opacity: 0.6;
+  cursor: grabbing;
+}
+
+.portal-link-btn[draggable="true"] {
+  cursor: grab;
 }
 </style>

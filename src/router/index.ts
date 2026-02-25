@@ -21,6 +21,26 @@ const routes: RouteRecordRaw[] = [
     name: 'About',
     component: () => import('../pages/About.vue')
   },
+  {
+    path: '/solutions',
+    name: 'Solutions',
+    component: () => import('../pages/Solutions.vue')
+  },
+  {
+    path: '/terms',
+    name: 'Terms',
+    component: () => import('../pages/Terms.vue')
+  },
+  {
+    path: '/privacy',
+    name: 'Privacy',
+    component: () => import('../pages/Privacy.vue')
+  },
+  {
+    path: '/auth/callback',
+    name: 'AuthCallback',
+    component: () => import('../pages/AuthCallback.vue')
+  },
   // Catch-all redirect to home for unknown routes
   {
     path: '/:pathMatch(.*)*',

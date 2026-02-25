@@ -11,6 +11,7 @@ const { track } = useTracking()
 
 // Chat panel open/close state managed at App level (shared by Trigger + Sidebar + Preview)
 const isChatOpen = ref(false)
+const pendingPrompt = ref('')
 const chatTriggerRef = ref<InstanceType<typeof ChatFloatingTrigger> | null>(null)
 
 const handleChatToggle = () => {
@@ -33,9 +34,11 @@ const handleChatClose = () => {
  * Listen for custom event from ChatPreview (in Home.vue) to open the Chat panel.
  * This bridges the communication gap between Home.vue child component and App.vue.
  */
-const handleOpenChatEvent = () => {
-  if (!isChatOpen.value) {
-    isChatOpen.value = true
+const handleOpenChatEvent = (e: Event) => {
+  const detail = (e as CustomEvent).detail
+  isChatOpen.value = true
+  if (detail?.prompt) {
+    pendingPrompt.value = detail.prompt
   }
 }
 
@@ -82,8 +85,10 @@ const ChatFloatingTrigger = defineAsyncComponent(
       />
       <AIChatSidebar
         :is-open="isChatOpen"
+        :pending-prompt="pendingPrompt"
         @close="handleChatClose"
         @toggle="handleChatToggle"
+        @prompt-consumed="pendingPrompt = ''"
       />
     </template>
   </div>

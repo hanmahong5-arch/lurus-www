@@ -4,7 +4,7 @@
  */
 
 // Navigation types
-export type { NavItem, NavDropdownItem, CtaLinks } from './navigation'
+export type { NavItem, NavDropdownItem } from './navigation'
 
 // Product types
 export type { Product, ProductStats, ProductIconPaths } from './products'

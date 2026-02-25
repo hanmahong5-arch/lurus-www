@@ -77,7 +77,7 @@ describe('DashboardPreview', () => {
 
     it('passes correct language to CodeShowcase in fallback mode', () => {
       const wrapper = mount(DashboardPreview)
-      expect(wrapper.find('[data-testid="code-showcase"]').attributes('data-language')).toBe('json')
+      expect(wrapper.find('[data-testid="code-showcase"]').attributes('data-language')).toBe('typescript')
     })
 
     it('passes non-empty ariaLabel to CodeShowcase', () => {
@@ -85,9 +85,9 @@ describe('DashboardPreview', () => {
       expect(wrapper.find('[data-testid="code-showcase"]').attributes('data-aria-label')).toBeTruthy()
     })
 
-    it('renders fallback code content containing monitoring data', () => {
+    it('renders fallback code content containing API example', () => {
       const wrapper = mount(DashboardPreview)
-      expect(wrapper.find('[data-testid="code-showcase"]').text()).toContain('total_requests')
+      expect(wrapper.find('[data-testid="code-showcase"]').text()).toContain('chat/completions')
     })
   })
 

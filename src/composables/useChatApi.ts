@@ -6,10 +6,20 @@
 import type { ChatApiResponse, ChatStreamDelta } from '../types/chat'
 import { TimeoutError, NetworkError } from '../types/chat'
 
+import { useAuth } from './useAuth'
+
 const API_URL = 'https://api.lurus.cn/v1/chat/completions'
-const API_KEY = 'sk-gushenAIQuantTradingPlatform2026'
+const DEMO_API_KEY = import.meta.env.VITE_DEMO_API_KEY || ''
 const TIMEOUT_MS = 30000
 const MAX_RETRIES = 3
+
+/**
+ * Get the appropriate API key: session token for logged-in users, demo key for guests
+ */
+function getApiKey(): string {
+  const { getAccessToken } = useAuth()
+  return getAccessToken() || DEMO_API_KEY
+}
 
 /**
  * Get human-readable error message based on error type and status code
@@ -85,7 +95,7 @@ const sendWithTimeout = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + API_KEY
+        'Authorization': 'Bearer ' + getApiKey()
       },
       body: JSON.stringify({
         model,
@@ -174,7 +184,7 @@ export const sendStreamMessage = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + API_KEY
+        'Authorization': 'Bearer ' + getApiKey()
       },
       body: JSON.stringify({
         model,

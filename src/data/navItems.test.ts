@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { navItems, ctaLinks } from './navItems'
+import { navItems } from './navItems'
 
 describe('navItems', () => {
   it('should have navigation items', () => {
@@ -50,17 +50,5 @@ describe('navItems', () => {
         })
       }
     })
-  })
-})
-
-describe('ctaLinks', () => {
-  it('should have login and register URLs using HTTPS', () => {
-    expect(ctaLinks.login).toMatch(/^https:\/\//)
-    expect(ctaLinks.register).toMatch(/^https:\/\//)
-  })
-
-  it('should point to api.lurus.cn domain', () => {
-    expect(ctaLinks.login).toContain('api.lurus.cn')
-    expect(ctaLinks.register).toContain('api.lurus.cn')
   })
 })

@@ -78,7 +78,7 @@ export const portalCategories = [
     color: '#C67B5C',
     colorClass: 'portal-engineering',
     links: [
-      { name: 'GitHub', url: 'https://github.com', desc: '代码托管' },
+      { name: 'Gitee', url: 'https://gitee.com', desc: '代码托管' },
       { name: 'Stack Overflow', url: 'https://stackoverflow.com', desc: '开发者问答' },
       { name: 'Dev.to', url: 'https://dev.to', desc: '开发者社区' },
       { name: 'Hacker News', url: 'https://news.ycombinator.com', desc: '技术新闻' },

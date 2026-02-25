@@ -25,7 +25,6 @@ const globalStubs = {
     props: ['to'],
   },
   NavDropdown: { template: '<div class="nav-dropdown-stub"><slot /></div>', props: ['label', 'items', 'active'] },
-  GitHubStarsBadge: { template: '<div class="github-stars-stub" />' },
   Transition: {
     template: '<div><slot /></div>',
   },

@@ -31,12 +31,12 @@ describe('dashboardPreview data', () => {
     expect(dashboardPreviewConfig.fallbackCode.length).toBeGreaterThan(0)
   })
 
-  it('fallback code is valid JSON', () => {
-    expect(() => JSON.parse(dashboardPreviewConfig.fallbackCode)).not.toThrow()
+  it('fallback code is non-empty code snippet', () => {
+    expect(dashboardPreviewConfig.fallbackCode.length).toBeGreaterThan(10)
   })
 
-  it('has json as fallback language', () => {
-    expect(dashboardPreviewConfig.fallbackLanguage).toBe('json')
+  it('has typescript as fallback language', () => {
+    expect(dashboardPreviewConfig.fallbackLanguage).toBe('typescript')
   })
 
   it('has non-empty alt text for screenshot', () => {

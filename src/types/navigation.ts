@@ -12,8 +12,3 @@ export interface NavItem {
 export interface NavDropdownItem extends NavItem {
   children?: NavItem[]
 }
-
-export interface CtaLinks {
-  login: string
-  register: string
-}

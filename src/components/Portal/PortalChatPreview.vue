@@ -5,8 +5,10 @@
  * Dispatches lurus:open-chat custom event to trigger AIChatSidebar via App.vue.
  */
 
+import { ref } from 'vue'
 import { useTracking } from '../../composables/useTracking'
 import { quickPrompts } from '../../data/chatModels'
+import { parseDropData, buildAnalysisPrompt, hasPortalData } from '../../utils/portalDrag'
 
 /** Maximum number of quick prompts displayed in the preview */
 const MAX_PREVIEW_PROMPTS = 3
@@ -39,14 +41,65 @@ const handleActionKeydown = (event: KeyboardEvent) => {
     handleOpenChat()
   }
 }
+
+// Drag-and-drop handlers
+const isDragOver = ref(false)
+let dragLeaveTimer: ReturnType<typeof setTimeout> | null = null
+
+const handleDragOver = (e: DragEvent) => {
+  if (!hasPortalData(e)) return
+  e.preventDefault()
+  e.dataTransfer!.dropEffect = 'copy'
+}
+
+const handleDragEnter = (e: DragEvent) => {
+  if (!hasPortalData(e)) return
+  if (dragLeaveTimer) {
+    clearTimeout(dragLeaveTimer)
+    dragLeaveTimer = null
+  }
+  isDragOver.value = true
+}
+
+const handleDragLeave = () => {
+  dragLeaveTimer = setTimeout(() => {
+    isDragOver.value = false
+  }, 50)
+}
+
+const handleDrop = (e: DragEvent) => {
+  e.preventDefault()
+  isDragOver.value = false
+  const data = parseDropData(e)
+  if (data) {
+    const prompt = buildAnalysisPrompt(data)
+    track('chat_open', { source: 'portal_preview_drop' })
+    window.dispatchEvent(new CustomEvent('lurus:open-chat', { detail: { prompt } }))
+  }
+}
 </script>
 
 <template>
   <div
     class="portal-chat-preview card-sketchy"
+    :class="{ 'is-drag-over': isDragOver }"
     role="region"
     aria-label="AI Chat 门户预览"
+    @dragover="handleDragOver"
+    @dragenter="handleDragEnter"
+    @dragleave="handleDragLeave"
+    @drop="handleDrop"
   >
+    <!-- Drop zone hint -->
+    <Transition name="fade">
+      <div v-if="isDragOver" class="drop-hint" aria-hidden="true">
+        <svg class="drop-hint-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 4v16m-8-8h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <span>放下链接开始分析</span>
+      </div>
+    </Transition>
+
     <!-- Brand Header -->
     <div class="preview-header">
       <div class="brand-icon">
@@ -120,6 +173,49 @@ const handleActionKeydown = (event: KeyboardEvent) => {
   background-color: var(--color-cream-50);
   min-height: 280px;
   transition: box-shadow 0.3s ease, transform 0.3s ease;
+  position: relative;
+}
+
+.portal-chat-preview.is-drag-over {
+  border-color: var(--color-ochre);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.3);
+}
+
+/* Drop hint overlay */
+.drop-hint {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(201, 162, 39, 0.08);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.drop-hint-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--color-ochre);
+}
+
+.drop-hint span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ochre);
+}
+
+/* Fade transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .portal-chat-preview:hover {

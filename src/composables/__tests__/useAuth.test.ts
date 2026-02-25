@@ -1,9 +1,27 @@
 /**
- * Unit tests for useAuth composable
+ * Unit tests for useAuth composable (OIDC PKCE flow)
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { useAuth } from '../useAuth'
+
+// Mock crypto.subtle for PKCE
+const mockDigest = vi.fn().mockResolvedValue(new ArrayBuffer(32))
+vi.stubGlobal('crypto', {
+  getRandomValues: (arr: Uint8Array) => {
+    for (let i = 0; i < arr.length; i++) arr[i] = i % 256
+    return arr
+  },
+  subtle: { digest: mockDigest },
+})
+
+// Mock sessionStorage
+const storage: Record<string, string> = {}
+vi.stubGlobal('sessionStorage', {
+  getItem: (key: string) => storage[key] ?? null,
+  setItem: (key: string, val: string) => { storage[key] = val },
+  removeItem: (key: string) => { delete storage[key] },
+})
 
 // Mock fetch globally
 const mockFetch = vi.fn()
@@ -12,217 +30,148 @@ global.fetch = mockFetch
 describe('useAuth', () => {
   beforeEach(() => {
     mockFetch.mockClear()
-    vi.stubGlobal('location', {
-      href: 'https://www.lurus.cn',
-    })
+    Object.keys(storage).forEach(key => delete storage[key])
   })
 
   afterEach(() => {
-    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
   })
 
-  describe('checkSession', () => {
-    it('should set isLoggedIn to true when session is valid', async () => {
-      const mockUser = {
-        id: '123',
-        username: 'testuser',
-        email: 'test@example.com',
-        avatar: 'https://example.com/avatar.jpg',
-      }
-
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({
-          success: true,
-          data: {
-            user: mockUser,
-          },
-        }),
-      })
-
-      const { checkSession, isLoggedIn, userInfo, isLoading } = useAuth()
-
-      expect(isLoading.value).toBe(false)
-      await checkSession()
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.lurus.cn/api/v1/auth/session',
-        expect.objectContaining({
-          method: 'GET',
-          credentials: 'include',
-          headers: { Accept: 'application/json' },
-        })
-      )
-      expect(isLoggedIn.value).toBe(true)
-      expect(userInfo.value).toEqual(mockUser)
-      expect(isLoading.value).toBe(false)
-    })
-
-    it('should set isLoggedIn to false when session returns 401', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 401,
-        statusText: 'Unauthorized',
-      })
-
-      const { checkSession, isLoggedIn, userInfo, isLoading } = useAuth()
-
-      await checkSession()
-
+  describe('initial state', () => {
+    it('should initialize with default values', () => {
+      const { isLoggedIn, userInfo, isLoading, error } = useAuth()
       expect(isLoggedIn.value).toBe(false)
       expect(userInfo.value).toBeNull()
       expect(isLoading.value).toBe(false)
-    })
-
-    it('should handle API error gracefully without showing error', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error',
-      })
-
-      const { checkSession, isLoggedIn, error } = useAuth()
-
-      await checkSession()
-
-      expect(isLoggedIn.value).toBe(false)
-      expect(error.value).toBeNull() // Should not expose error to UI
-    })
-
-    it('should handle network error gracefully', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('Network error'))
-
-      const { checkSession, isLoggedIn, userInfo, error } = useAuth()
-
-      await checkSession()
-
-      expect(isLoggedIn.value).toBe(false)
-      expect(userInfo.value).toBeNull()
       expect(error.value).toBeNull()
-    })
-
-    it('should handle invalid API response format', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({
-          success: false,
-        }),
-      })
-
-      const { checkSession, isLoggedIn, userInfo } = useAuth()
-
-      await checkSession()
-
-      expect(isLoggedIn.value).toBe(false)
-      expect(userInfo.value).toBeNull()
     })
   })
 
   describe('login', () => {
-    it('should redirect to login page with current URL', () => {
+    it('should redirect to Zitadel authorize URL', async () => {
+      const hrefSetter = vi.fn()
+      Object.defineProperty(window, 'location', {
+        value: {
+          href: 'https://www.lurus.cn',
+          pathname: '/',
+          origin: 'https://www.lurus.cn',
+          get search() { return '' },
+          set href(val: string) { hrefSetter(val) },
+        },
+        writable: true,
+        configurable: true,
+      })
+
       const { login } = useAuth()
+      await login()
 
-      login()
+      expect(hrefSetter).toHaveBeenCalledTimes(1)
+      const url = hrefSetter.mock.calls[0][0] as string
+      expect(url).toContain('auth.lurus.cn/oauth/v2/authorize')
+      expect(url).toContain('response_type=code')
+      expect(url).toContain('code_challenge_method=S256')
+    })
 
-      expect(global.location.href).toBe(
-        'https://api.lurus.cn/login?redirect_url=https%3A%2F%2Fwww.lurus.cn'
-      )
+    it('should add prompt=create for registration flow', async () => {
+      const hrefSetter = vi.fn()
+      Object.defineProperty(window, 'location', {
+        value: {
+          href: 'https://www.lurus.cn',
+          pathname: '/',
+          origin: 'https://www.lurus.cn',
+          get search() { return '' },
+          set href(val: string) { hrefSetter(val) },
+        },
+        writable: true,
+        configurable: true,
+      })
+
+      const { login } = useAuth()
+      await login({ prompt: 'create' })
+
+      const url = hrefSetter.mock.calls[0][0] as string
+      expect(url).toContain('prompt=create')
+    })
+  })
+
+  describe('handleCallback', () => {
+    it('should exchange code for tokens', async () => {
+      // Setup PKCE state
+      storage['oidc_state'] = 'test-state'
+      storage['oidc_code_verifier'] = 'test-verifier'
+
+      mockFetch
+        .mockResolvedValueOnce({
+          // Token exchange
+          ok: true,
+          json: async () => ({
+            access_token: 'at-123',
+            id_token: 'id-123',
+            refresh_token: 'rt-123',
+            token_type: 'Bearer',
+            expires_in: 3600,
+          }),
+        })
+        .mockResolvedValueOnce({
+          // UserInfo
+          ok: true,
+          json: async () => ({
+            sub: 'user-123',
+            name: 'Test User',
+            email: 'test@example.com',
+          }),
+        })
+
+      const { handleCallback, isLoggedIn, userInfo } = useAuth()
+      await handleCallback('test-code', 'test-state')
+
+      expect(isLoggedIn.value).toBe(true)
+      expect(userInfo.value).toMatchObject({
+        sub: 'user-123',
+        name: 'Test User',
+        email: 'test@example.com',
+      })
+    })
+
+    it('should reject mismatched state', async () => {
+      storage['oidc_state'] = 'correct-state'
+      storage['oidc_code_verifier'] = 'test-verifier'
+
+      const { handleCallback } = useAuth()
+
+      await expect(handleCallback('test-code', 'wrong-state')).rejects.toThrow('state')
     })
   })
 
   describe('logout', () => {
-    it('should call logout API and clear local state', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
+    it('should redirect to Zitadel end_session URL', () => {
+      const hrefSetter = vi.fn()
+      Object.defineProperty(window, 'location', {
+        value: {
+          href: 'https://www.lurus.cn',
+          pathname: '/',
+          origin: 'https://www.lurus.cn',
+          get search() { return '' },
+          set href(val: string) { hrefSetter(val) },
+        },
+        writable: true,
+        configurable: true,
       })
 
-      const { logout, isLoggedIn, userInfo } = useAuth()
+      const { logout, userInfo } = useAuth()
+      userInfo.value = null
+      logout()
 
-      // Set initial logged-in state
-      isLoggedIn.value = true
-      userInfo.value = {
-        id: '123',
-        username: 'testuser',
-        email: 'test@example.com',
-      }
-
-      await logout()
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.lurus.cn/logout',
-        expect.objectContaining({
-          method: 'POST',
-          credentials: 'include',
-        })
-      )
-      expect(isLoggedIn.value).toBe(false)
-      expect(userInfo.value).toBeNull()
-    })
-
-    it('should clear local state even if API call fails', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('Network error'))
-
-      const { logout, isLoggedIn, userInfo } = useAuth()
-
-      isLoggedIn.value = true
-      userInfo.value = {
-        id: '123',
-        username: 'testuser',
-        email: 'test@example.com',
-      }
-
-      await logout()
-
-      expect(isLoggedIn.value).toBe(false)
-      expect(userInfo.value).toBeNull()
+      expect(hrefSetter).toHaveBeenCalledTimes(1)
+      const url = hrefSetter.mock.calls[0][0] as string
+      expect(url).toContain('auth.lurus.cn/oidc/v1/end_session')
     })
   })
 
-  describe('reactive state', () => {
-    it('should initialize with default values', () => {
-      const { isLoggedIn, userInfo, isLoading, error } = useAuth()
-
-      expect(isLoggedIn.value).toBe(false)
-      expect(userInfo.value).toBeNull()
-      expect(isLoading.value).toBe(false)
-      expect(error.value).toBeNull()
-    })
-
-    it('should update isLoading during checkSession', async () => {
-      mockFetch.mockImplementation(
-        () =>
-          new Promise((resolve) =>
-            setTimeout(
-              () =>
-                resolve({
-                  ok: true,
-                  status: 200,
-                  json: async () => ({
-                    success: true,
-                    data: {
-                      user: {
-                        id: '123',
-                        username: 'test',
-                        email: 'test@example.com',
-                      },
-                    },
-                  }),
-                }),
-              100
-            )
-          )
-      )
-
-      const { checkSession, isLoading } = useAuth()
-
-      const promise = checkSession()
-      expect(isLoading.value).toBe(true)
-
-      await promise
-      expect(isLoading.value).toBe(false)
+  describe('getAccessToken', () => {
+    it('should return null when not authenticated', () => {
+      const { getAccessToken } = useAuth()
+      expect(getAccessToken()).toBeNull()
     })
   })
 })

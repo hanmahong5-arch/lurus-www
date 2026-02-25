@@ -8,8 +8,6 @@
  * When user visits these paths, redirect to external URLs
  */
 export const externalRedirects = {
-  '/login': 'https://api.lurus.cn/login',
-  '/register': 'https://api.lurus.cn/register',
   '/docs': 'https://docs.lurus.cn',
 } as const satisfies Record<string, string>
 
