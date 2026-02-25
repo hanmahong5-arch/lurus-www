@@ -100,19 +100,35 @@ const isExternalUrl = props.product.url !== '#'
         </span>
       </div>
 
-      <!-- CTA button -->
-      <div class="mt-4 flex items-center gap-2 text-ink-500 group-hover:text-ochre transition-colors">
-        <span class="text-sm font-medium">了解更多</span>
-        <svg
-          data-testid="cta-arrow"
-          class="w-4 h-4 group-hover:translate-x-1 transition-transform"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
+      <!-- CTA row: 了解更多 + 查看文档 -->
+      <div class="mt-4 flex items-center justify-between">
+        <div class="flex items-center gap-2 text-ink-500 group-hover:text-ochre transition-colors">
+          <span class="text-sm font-medium">了解更多</span>
+          <svg
+            data-testid="cta-arrow"
+            class="w-4 h-4 group-hover:translate-x-1 transition-transform"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+        <a
+          v-if="product.docsUrl"
+          :href="product.docsUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex items-center gap-1 text-xs text-ink-400 hover:text-ochre transition-colors px-2 py-1 border-sketchy-light hover:border-ochre"
+          data-testid="docs-link"
+          @click.stop
         >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span>文档</span>
+        </a>
       </div>
     </div>
   </a>

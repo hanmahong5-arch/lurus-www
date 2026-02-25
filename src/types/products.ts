@@ -44,6 +44,8 @@ export interface Product {
   description: string
   useCase: string
   url: string
+  /** Optional docs URL linking to docs.lurus.cn product section */
+  docsUrl?: string
   icon: string
   color: string
   bgColor: string
