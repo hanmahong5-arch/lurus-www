@@ -11,7 +11,9 @@ const { track } = useTracking()
 
 // Chat panel open/close state managed at App level (shared by Trigger + Sidebar + Preview)
 const isChatOpen = ref(false)
-const pendingPrompt = ref('')
+// pendingPrompt uses object wrapper so watch always triggers (even for same prompt string)
+const pendingPrompt = ref<{ text: string; id: number } | null>(null)
+let promptCounter = 0
 const chatTriggerRef = ref<InstanceType<typeof ChatFloatingTrigger> | null>(null)
 
 const handleChatToggle = () => {
@@ -38,7 +40,7 @@ const handleOpenChatEvent = (e: Event) => {
   const detail = (e as CustomEvent).detail
   isChatOpen.value = true
   if (detail?.prompt) {
-    pendingPrompt.value = detail.prompt
+    pendingPrompt.value = { text: detail.prompt, id: ++promptCounter }
   }
 }
 
@@ -88,7 +90,7 @@ const ChatFloatingTrigger = defineAsyncComponent(
         :pending-prompt="pendingPrompt"
         @close="handleChatClose"
         @toggle="handleChatToggle"
-        @prompt-consumed="pendingPrompt = ''"
+        @prompt-consumed="pendingPrompt = null"
       />
     </template>
   </div>

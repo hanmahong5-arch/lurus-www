@@ -19,9 +19,14 @@ import ChatQuickPrompts from './ChatQuickPrompts.vue'
 import NetworkStatusBanner from './NetworkStatusBanner.vue'
 import ChatErrorBanner from './ChatErrorBanner.vue'
 
+interface PendingPrompt {
+  text: string
+  id: number
+}
+
 interface Props {
   isOpen: boolean
-  pendingPrompt?: string
+  pendingPrompt?: PendingPrompt | null
 }
 
 const props = defineProps<Props>()
@@ -158,25 +163,24 @@ const handleKeydown = (e: KeyboardEvent) => {
   }
 }
 
-// Watch for pending prompt from App.vue (event channel fix + drag-drop from trigger)
-watch(() => props.pendingPrompt, (prompt) => {
-  if (prompt && props.isOpen) {
-    nextTick(() => {
-      sendMessage(prompt)
-      emit('prompt-consumed')
-    })
-  }
-})
-
-// Also handle case where sidebar opens with a pending prompt
-watch(() => props.isOpen, (isOpen) => {
-  if (isOpen && props.pendingPrompt) {
-    nextTick(() => {
-      sendMessage(props.pendingPrompt!)
-      emit('prompt-consumed')
-    })
-  }
-})
+/**
+ * Watch both pendingPrompt and isOpen together.
+ * - immediate: true → handles async component first-load (props already set on mount)
+ * - Combined watcher → no duplicate sends when both change in same tick
+ * - pendingPrompt is an object { text, id } so watch always triggers (new ref each time)
+ */
+watch(
+  [() => props.pendingPrompt, () => props.isOpen],
+  ([pending, isOpen]) => {
+    if (pending?.text && isOpen) {
+      nextTick(() => {
+        sendMessage(pending.text)
+        emit('prompt-consumed')
+      })
+    }
+  },
+  { immediate: true }
+)
 
 // Drag-and-drop handlers for receiving portal links
 const handleDragOver = (e: DragEvent) => {
