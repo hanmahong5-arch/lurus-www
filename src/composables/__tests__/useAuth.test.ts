@@ -50,14 +50,16 @@ describe('useAuth', () => {
   describe('login', () => {
     it('should redirect to Zitadel authorize URL', async () => {
       const hrefSetter = vi.fn()
+      const loc = {
+        _href: 'https://www.lurus.cn',
+        get href() { return this._href },
+        set href(val: string) { hrefSetter(val); this._href = val },
+        pathname: '/',
+        origin: 'https://www.lurus.cn',
+        get search() { return '' },
+      }
       Object.defineProperty(window, 'location', {
-        value: {
-          href: 'https://www.lurus.cn',
-          pathname: '/',
-          origin: 'https://www.lurus.cn',
-          get search() { return '' },
-          set href(val: string) { hrefSetter(val) },
-        },
+        value: loc,
         writable: true,
         configurable: true,
       })
@@ -74,14 +76,16 @@ describe('useAuth', () => {
 
     it('should add prompt=create for registration flow', async () => {
       const hrefSetter = vi.fn()
+      const loc = {
+        _href: 'https://www.lurus.cn',
+        get href() { return this._href },
+        set href(val: string) { hrefSetter(val); this._href = val },
+        pathname: '/',
+        origin: 'https://www.lurus.cn',
+        get search() { return '' },
+      }
       Object.defineProperty(window, 'location', {
-        value: {
-          href: 'https://www.lurus.cn',
-          pathname: '/',
-          origin: 'https://www.lurus.cn',
-          get search() { return '' },
-          set href(val: string) { hrefSetter(val) },
-        },
+        value: loc,
         writable: true,
         configurable: true,
       })
@@ -146,14 +150,16 @@ describe('useAuth', () => {
   describe('logout', () => {
     it('should redirect to Zitadel end_session URL', () => {
       const hrefSetter = vi.fn()
+      const loc = {
+        _href: 'https://www.lurus.cn',
+        get href() { return this._href },
+        set href(val: string) { hrefSetter(val); this._href = val },
+        pathname: '/',
+        origin: 'https://www.lurus.cn',
+        get search() { return '' },
+      }
       Object.defineProperty(window, 'location', {
-        value: {
-          href: 'https://www.lurus.cn',
-          pathname: '/',
-          origin: 'https://www.lurus.cn',
-          get search() { return '' },
-          set href(val: string) { hrefSetter(val) },
-        },
+        value: loc,
         writable: true,
         configurable: true,
       })

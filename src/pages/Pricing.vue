@@ -3,7 +3,7 @@ import PricingCards from '../components/Pricing/PricingCards.vue'
 import CheckIcon from '../components/Pricing/icons/CheckIcon.vue'
 import MinusIcon from '../components/Pricing/icons/MinusIcon.vue'
 import FaqItem from '../components/Pricing/FaqItem.vue'
-import { PRICING_FAQ, SUPPORT_EMAIL } from '../config/pricing'
+import { PRICING_FAQ } from '../config/pricing'
 </script>
 
 <template>
