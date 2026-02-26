@@ -11,7 +11,7 @@ import type { ApiHealthConfig, ApiStatusBannerConfig } from '../types/apiHealth'
  * Uses /v1/models (no auth required) with HEAD request for minimal overhead.
  */
 export const apiHealthConfig: ApiHealthConfig = {
-  healthEndpoint: 'https://api.lurus.cn/v1/models',
+  healthEndpoint: `${import.meta.env.VITE_API_URL || '/api'}/v1/models`,
   timeoutMs: 5000,
   maxRetries: 1,
 }

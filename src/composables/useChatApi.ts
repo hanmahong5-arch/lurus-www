@@ -8,7 +8,8 @@ import { TimeoutError, NetworkError } from '../types/chat'
 
 import { useAuth } from './useAuth'
 
-const API_URL = 'https://api.lurus.cn/v1/chat/completions'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
+const API_URL = `${API_BASE}/v1/chat/completions`
 const DEMO_API_KEY = import.meta.env.VITE_DEMO_API_KEY || ''
 const TIMEOUT_MS = 30000
 const MAX_RETRIES = 3
