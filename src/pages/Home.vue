@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineAsyncComponent } from 'vue'
+import { ref } from 'vue'
 import HeroSection from '../components/Hero/HeroSection.vue'
 import CodeShowcase from '../components/TechDemo/CodeShowcase.vue'
 import PortalLinks from '../components/Portal/PortalLinks.vue'
@@ -8,9 +8,7 @@ import StatsDisplay from '../components/Products/StatsDisplay.vue'
 import PlatformCapabilities from '../components/Features/PlatformCapabilities.vue'
 import { useScrollReveal } from '../composables/useScrollReveal'
 import { useTracking } from '../composables/useTracking'
-import { useChatFeature } from '../composables/useChatFeature'
 import { useAuth } from '../composables/useAuth'
-import { quickPrompts } from '../data/chatModels'
 import { trustBadges, trustBadgeIconPaths } from '../data/stats'
 import GettingStartedSection from '../components/GettingStarted/GettingStartedSection.vue'
 import FinalCTA from '../components/CTAs/FinalCTA.vue'
@@ -24,30 +22,6 @@ const trackCta = (label: string) => {
   track('cta_click', { label })
 }
 
-// Chat preview: conditionally loaded (ADR-001, ADR-013)
-const { isChatEnabled } = useChatFeature()
-
-const ChatPreview = defineAsyncComponent(
-  () => import('../components/Chat/ChatPreview.vue')
-)
-
-/**
- * Handle open-chat from ChatPreview by dispatching a custom event.
- * App.vue listens for this event to toggle the Chat panel open state.
- */
-const handleOpenChat = () => {
-  track('chat_open', { source: 'hero_preview' })
-  window.dispatchEvent(new CustomEvent('lurus:open-chat'))
-}
-
-/**
- * Handle prompt selection from ChatPreview.
- * Opens the Chat panel and applies the selected prompt.
- */
-const handleSelectPrompt = (prompt: string) => {
-  track('chat_open', { source: 'hero_preview_prompt' })
-  window.dispatchEvent(new CustomEvent('lurus:open-chat', { detail: { prompt } }))
-}
 </script>
 
 <template>
@@ -55,16 +29,7 @@ const handleSelectPrompt = (prompt: string) => {
     <!-- Hero Section -->
     <HeroSection>
       <template #right>
-        <!-- ChatPreview when Chat is enabled; CodeShowcase as fallback -->
-        <ChatPreview
-          v-if="isChatEnabled"
-          :quick-prompts="quickPrompts"
-          :is-available="true"
-          @open-chat="handleOpenChat"
-          @select-prompt="handleSelectPrompt"
-        />
         <CodeShowcase
-          v-else
           code="curl https://api.lurus.cn/v1/models"
           language="bash"
           ariaLabel="API 调用示例"

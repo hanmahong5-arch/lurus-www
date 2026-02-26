@@ -2,16 +2,13 @@
 import { ref, computed } from 'vue'
 import { portalCategories, type PortalLink } from '../../data/portalLinks'
 import { useTracking } from '../../composables/useTracking'
-import { useChatFeature } from '../../composables/useChatFeature'
 import { DRAG_MIME } from '../../utils/portalDrag'
 import CTABar from '../CTAs/CTABar.vue'
-import PortalChatPreview from './PortalChatPreview.vue'
 
 const PREVIEW_LINK_COUNT = 4
 const TOTAL_LINK_COUNT = 48
 
 const { track } = useTracking()
-const { isChatEnabled } = useChatFeature()
 const isExpanded = ref(false)
 
 const toggleExpand = () => {
@@ -77,23 +74,18 @@ const handleDragEnd = () => {
         </p>
       </div>
 
-      <!-- Portal Content: 60/40 split when Chat is enabled, full-width otherwise -->
+      <!-- Portal Content -->
       <div
         data-testid="portal-content-layout"
         class="portal-content-layout"
-        :class="{ 'has-chat': isChatEnabled }"
       >
         <!-- Left: Portal Categories (60% on desktop when Chat enabled) -->
         <div class="portal-links-area">
           <!-- Portal Categories Grid -->
           <!-- Desktop: 3 cols x 2 rows | Tablet: 2 cols x 3 rows | Mobile: 1 col x 6 rows -->
-          <!-- When Chat enabled: Desktop drops to 2 cols to fit 60% width -->
           <div
             data-testid="portal-grid"
-            class="grid gap-6 lg:gap-8 reveal-stagger"
-            :class="isChatEnabled
-              ? 'grid-cols-1 md:grid-cols-2'
-              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'"
+            class="grid gap-6 lg:gap-8 reveal-stagger grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
           >
             <div
               v-for="category in portalCategories"
@@ -160,10 +152,6 @@ const handleDragEnd = () => {
           </div>
         </div>
 
-        <!-- Right: Chat Preview Card (40% on desktop, only when Chat enabled) -->
-        <div v-if="isChatEnabled" class="portal-chat-area reveal-fade-up">
-          <PortalChatPreview />
-        </div>
       </div>
     </div>
 
@@ -181,48 +169,6 @@ const handleDragEnd = () => {
 
 <style scoped>
 @reference "../../styles/main.css";
-
-/* Portal content layout: side-by-side when Chat is enabled on desktop */
-.portal-content-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-
-.portal-content-layout.has-chat {
-  /* Desktop: 60/40 split */
-  @media (min-width: 1024px) {
-    flex-direction: row;
-    gap: 32px;
-  }
-}
-
-.portal-links-area {
-  flex: 1;
-  min-width: 0;
-}
-
-.portal-content-layout.has-chat .portal-links-area {
-  /* Desktop: take 60% width */
-  @media (min-width: 1024px) {
-    flex: 3;
-  }
-}
-
-.portal-chat-area {
-  /* Mobile: full width, stacked below portal grid */
-  width: 100%;
-}
-
-.portal-content-layout.has-chat .portal-chat-area {
-  /* Desktop: take 40% width, sticky positioning */
-  @media (min-width: 1024px) {
-    flex: 2;
-    align-self: flex-start;
-    position: sticky;
-    top: 100px;
-  }
-}
 
 .portal-category-card {
   background-color: var(--color-cream-50);
