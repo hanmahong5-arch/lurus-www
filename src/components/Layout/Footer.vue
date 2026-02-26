@@ -28,7 +28,7 @@ const socials = [
   { name: '微博', href: 'https://weibo.com/lurus', icon: 'weibo' },
 ]
 
-const ICP_NUMBER = import.meta.env.VITE_ICP_NUMBER || '沪ICP备XXXXXXXX号-1'
+const ICP_NUMBER = import.meta.env.VITE_ICP_NUMBER || '鲁ICP备2026000242号'
 </script>
 
 <template>
