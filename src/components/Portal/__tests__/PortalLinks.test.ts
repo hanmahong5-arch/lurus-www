@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { ref } from 'vue'
 import PortalLinks from '../PortalLinks.vue'
 import { portalCategories } from '../../../data/portalLinks'
 
@@ -11,13 +10,6 @@ vi.mock('../../../composables/useTracking', () => ({
   }),
 }))
 
-// Mock useChatFeature composable - default to disabled
-const mockIsChatEnabled = ref(false)
-vi.mock('../../../composables/useChatFeature', () => ({
-  useChatFeature: () => ({
-    isChatEnabled: mockIsChatEnabled,
-  }),
-}))
 
 describe('PortalLinks', () => {
   const mountComponent = () => {
@@ -204,54 +196,17 @@ describe('PortalLinks', () => {
     })
   })
 
-  describe('chat preview layout', () => {
+  describe('layout', () => {
     it('should have portal-content-layout container', () => {
       const wrapper = mountComponent()
       const layout = wrapper.find('[data-testid="portal-content-layout"]')
       expect(layout.exists()).toBe(true)
     })
 
-    it('should NOT render chat preview when chat is disabled', () => {
-      mockIsChatEnabled.value = false
-      const wrapper = mountComponent()
-      const chatArea = wrapper.find('.portal-chat-area')
-      expect(chatArea.exists()).toBe(false)
-    })
-
-    it('should NOT have has-chat class when chat is disabled', () => {
-      mockIsChatEnabled.value = false
-      const wrapper = mountComponent()
-      const layout = wrapper.find('[data-testid="portal-content-layout"]')
-      expect(layout.classes()).not.toContain('has-chat')
-    })
-
-    it('should render chat preview when chat is enabled', async () => {
-      mockIsChatEnabled.value = true
-      const wrapper = mountComponent()
-      const chatArea = wrapper.find('.portal-chat-area')
-      expect(chatArea.exists()).toBe(true)
-    })
-
-    it('should have has-chat class when chat is enabled', () => {
-      mockIsChatEnabled.value = true
-      const wrapper = mountComponent()
-      const layout = wrapper.find('[data-testid="portal-content-layout"]')
-      expect(layout.classes()).toContain('has-chat')
-    })
-
-    it('should use 3-column grid when chat is disabled', () => {
-      mockIsChatEnabled.value = false
+    it('should use 3-column grid', () => {
       const wrapper = mountComponent()
       const grid = wrapper.find('[data-testid="portal-grid"]')
       expect(grid.classes()).toContain('lg:grid-cols-3')
-    })
-
-    it('should use 2-column grid when chat is enabled', () => {
-      mockIsChatEnabled.value = true
-      const wrapper = mountComponent()
-      const grid = wrapper.find('[data-testid="portal-grid"]')
-      expect(grid.classes()).not.toContain('lg:grid-cols-3')
-      expect(grid.classes()).toContain('md:grid-cols-2')
     })
   })
 })
