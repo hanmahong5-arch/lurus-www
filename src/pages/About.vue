@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useScrollReveal } from '../composables/useScrollReveal'
+import AdvantagesSection from '../components/About/AdvantagesSection.vue'
+import AnimatedTimeline from '../components/About/AnimatedTimeline.vue'
 
 const pageRef = ref<HTMLElement | null>(null)
 useScrollReveal(pageRef)
@@ -11,11 +13,6 @@ const milestones = [
   { year: '2025 Q2', event: 'GuShen AI 量化交易平台发布' },
   { year: '2025 Q3', event: '接入 50+ 模型，日均 API 调用突破百万' },
   { year: '2026 Q1', event: 'Lurus Switch 桌面客户端发布，全平台覆盖' },
-]
-
-const techStack = [
-  { category: '基础设施', items: ['Kubernetes (K3s)', 'Traefik + TLS', 'PostgreSQL (CNPG)', 'NATS JetStream'] },
-  { category: '监控运维', items: ['Prometheus + Grafana', 'Loki 日志聚合', 'Jaeger 分布式追踪', 'ArgoCD GitOps'] },
 ]
 
 const values = [
@@ -113,48 +110,10 @@ const values = [
     </section>
 
     <!-- Timeline -->
-    <section class="py-fib-6 bg-cream-50">
-      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-phi-2xl font-hand font-bold text-ink-900 mb-fib-5 text-center reveal-fade-up">发展历程</h2>
-        <div class="space-y-fib-4">
-          <div
-            v-for="(m, idx) in milestones"
-            :key="idx"
-            class="flex gap-fib-4 items-start reveal-fade-up"
-          >
-            <div class="flex-shrink-0 w-24 text-right">
-              <span class="font-hand font-bold text-ochre text-lg">{{ m.year }}</span>
-            </div>
-            <div class="flex-shrink-0 w-3 h-3 mt-2 rounded-full bg-ochre border-2 border-cream-50 ring-2 ring-ochre/30"></div>
-            <p class="text-ink-500 flex-1">{{ m.event }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
+    <AnimatedTimeline :milestones="milestones" />
 
-    <!-- Tech Stack -->
-    <section class="py-fib-6 bg-cream-100">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-phi-2xl font-hand font-bold text-ink-900 mb-fib-5 text-center reveal-fade-up">技术架构</h2>
-        <div class="border-sketchy bg-cream-50 p-fib-5 reveal-fade-up">
-          <div class="grid md:grid-cols-2 gap-fib-5">
-            <div v-for="group in techStack" :key="group.category">
-              <h3 class="text-phi-lg font-hand font-bold text-ink-900 mb-fib-3">{{ group.category }}</h3>
-              <ul class="space-y-2">
-                <li
-                  v-for="item in group.items"
-                  :key="item"
-                  class="flex items-center gap-2 text-ink-500 text-sm"
-                >
-                  <span class="w-2 h-2 rounded-full bg-ochre flex-shrink-0"></span>
-                  {{ item }}
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- Advantages + Ecosystem Graph -->
+    <AdvantagesSection />
 
     <!-- Contact -->
     <section class="py-fib-6 bg-cream-50">

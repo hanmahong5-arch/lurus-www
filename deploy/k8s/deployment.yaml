@@ -18,9 +18,18 @@ spec:
       # Deploy to master node for better performance
       nodeSelector:
         kubernetes.io/hostname: cloud-ubuntu-1-16c32g
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
       containers:
         - name: www
-          image: ghcr.io/hanmahong5-arch/lurus-www:latest
+          image: ghcr.io/hanmahong5-arch/lurus-www:main
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -48,8 +57,20 @@ spec:
             - name: releases
               mountPath: /opt/releases
               readOnly: true
+            - name: tmp
+              mountPath: /tmp
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+            - name: nginx-run
+              mountPath: /var/run
       volumes:
         - name: releases
           hostPath:
             path: /opt/releases
             type: DirectoryOrCreate
+        - name: tmp
+          emptyDir: {}
+        - name: nginx-cache
+          emptyDir: {}
+        - name: nginx-run
+          emptyDir: {}

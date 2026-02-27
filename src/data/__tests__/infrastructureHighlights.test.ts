@@ -35,10 +35,10 @@ describe('infrastructureHighlights', () => {
 
   it('should contain the expected highlight IDs', () => {
     const ids = infrastructureHighlights.map((h) => h.id)
-    expect(ids).toContain('k8s')
-    expect(ids).toContain('gitops')
-    expect(ids).toContain('opensource')
-    expect(ids).toContain('hybrid-cloud')
+    expect(ids).toContain('high-availability')
+    expect(ids).toContain('continuous-delivery')
+    expect(ids).toContain('open-ecosystem')
+    expect(ids).toContain('elastic-scaling')
   })
 
   it('should have non-empty SVG path strings for all icons', () => {

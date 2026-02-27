@@ -12,28 +12,28 @@ import type {
 
 export const infrastructureHighlights = [
   {
-    id: 'k8s',
+    id: 'high-availability',
     icon: 'server',
-    title: 'K8s 集群',
-    description: '5 节点 Kubernetes 集群，高可用生产环境',
+    title: '高可用架构',
+    description: '多节点冗余部署，自动故障转移，99.9% 可用性保障',
   },
   {
-    id: 'gitops',
+    id: 'continuous-delivery',
     icon: 'git-branch',
-    title: 'GitOps 流水线',
-    description: 'GitHub Actions + ArgoCD 自动化部署',
+    title: '持续交付',
+    description: '自动化测试与部署流水线，分钟级上线',
   },
   {
-    id: 'opensource',
+    id: 'open-ecosystem',
     icon: 'code-fork',
-    title: '开源',
-    description: '核心网关组件开源，社区驱动',
+    title: '开放生态',
+    description: '核心组件开源，开发者社区驱动',
   },
   {
-    id: 'hybrid-cloud',
+    id: 'elastic-scaling',
     icon: 'cloud',
-    title: '混合云架构',
-    description: '多云容灾，灵活扩展',
+    title: '弹性扩展',
+    description: '多区域容灾，按需弹性伸缩',
   },
 ] satisfies InfrastructureHighlight[]
 

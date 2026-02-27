@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { products } from '../../data/products'
 import ProductSubCard from './ProductSubCard.vue'
+import AnimatedProductGraph from './AnimatedProductGraph.vue'
 </script>
 
 <template>
@@ -40,23 +41,8 @@ import ProductSubCard from './ProductSubCard.vue'
             </div>
           </div>
 
-          <div class="w-full lg:w-2/5 flex justify-center" aria-hidden="true">
-            <svg viewBox="0 0 280 200" class="w-full max-w-xs text-ink-300" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="140" cy="100" r="32" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3" />
-              <text x="140" y="104" text-anchor="middle" fill="currentColor" font-size="12" font-weight="600" class="font-hand">Lurus</text>
-              <circle cx="50" cy="40" r="22" :stroke="products[0].bgColor" stroke-width="2" />
-              <text x="50" y="44" text-anchor="middle" :fill="products[0].bgColor" font-size="9">API</text>
-              <line x1="72" y1="52" x2="110" y2="80" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3" />
-              <circle cx="230" cy="40" r="22" :stroke="products[1].bgColor" stroke-width="2" />
-              <text x="230" y="44" text-anchor="middle" :fill="products[1].bgColor" font-size="9">GuShen</text>
-              <line x1="208" y1="52" x2="170" y2="80" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3" />
-              <circle cx="50" cy="160" r="22" :stroke="products[2].bgColor" stroke-width="2" />
-              <text x="50" y="164" text-anchor="middle" :fill="products[2].bgColor" font-size="9">Mail</text>
-              <line x1="72" y1="148" x2="110" y2="120" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3" />
-              <circle cx="230" cy="160" r="22" :stroke="products[3].bgColor" stroke-width="2" />
-              <text x="230" y="164" text-anchor="middle" :fill="products[3].bgColor" font-size="9">Switch</text>
-              <line x1="208" y1="148" x2="170" y2="120" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3" />
-            </svg>
+          <div class="w-full lg:w-2/5 flex justify-center">
+            <AnimatedProductGraph :products="products" />
           </div>
         </div>
       </div>

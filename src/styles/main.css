@@ -270,7 +270,9 @@ body {
 
   /* Ensure elements are visible without animation */
   .animate-float,
-  .animate-wiggle {
+  .animate-wiggle,
+  .ecosystem-center-node,
+  .product-graph-center {
     animation: none;
   }
 }
@@ -299,6 +301,28 @@ body {
 @keyframes draw {
   to {
     stroke-dashoffset: 0;
+  }
+}
+
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: 200;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-node {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.85;
   }
 }
 
