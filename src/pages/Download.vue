@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
 const ACEST_DOWNLOAD_URL = '/releases/acest-desktop/v0.2.0/ACEST-Desktop_0.2.0_x64-setup.exe'
 const ACEST_FILE_SIZE = '37.4 MB'
 const ACEST_VERSION = '0.2.0'
@@ -32,6 +34,15 @@ const staticReleases = [
     version: '—',
     platform: 'Windows / macOS / Linux',
     status: 'coming-soon' as const,
+    size: '—',
+    url: null,
+    sha256: null,
+  },
+  {
+    product: 'MemX',
+    version: 'latest',
+    platform: 'Python · pip',
+    status: 'available' as const,
     size: '—',
     url: null,
     sha256: null,
@@ -92,9 +103,14 @@ const skillDomains = [
   { name: 'Content', count: 5, color: 'bg-cyan-100 text-cyan-700 border-cyan-200' },
 ]
 
-onMounted(() => {
-  loadReleases()
-})
+// MemX pip install copy state
+const memxCopied = ref(false)
+function copyPipInstall() {
+  navigator.clipboard.writeText('pip install memx').then(() => {
+    memxCopied.value = true
+    setTimeout(() => { memxCopied.value = false }, 2000)
+  })
+}
 </script>
 
 <template>
@@ -148,6 +164,12 @@ onMounted(() => {
                 class="btn-hand inline-flex items-center justify-center gap-2 text-lg px-8 py-4"
               >
                 All Releases
+              </a>
+              <a
+                href="#memx"
+                class="btn-hand inline-flex items-center justify-center gap-2 text-base px-5 py-4 text-ochre border-ochre/40"
+              >
+                MemX ↓
               </a>
             </div>
 
@@ -423,6 +445,231 @@ onMounted(() => {
     </section>
 
     <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- MEMX: Adaptive Context Engine for AI Memory           -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <section id="memx" class="relative py-20 sm:py-28 bg-cream-50 overflow-hidden">
+      <!-- Decorative grid -->
+      <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(#A89B8B 1px, transparent 1px), linear-gradient(90deg, #A89B8B 1px, transparent 1px); background-size: 34px 34px;"></div>
+      <div class="absolute top-12 left-12 doodle-corner opacity-30"></div>
+      <div class="absolute top-12 right-12 doodle-corner -scale-x-100 opacity-30"></div>
+
+      <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- ── HERO ── -->
+        <div class="text-center mb-16">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 mb-6 border-2 border-ochre/30 bg-ochre/5 text-ochre text-sm font-medium" style="border-radius: 3px 10px 5px 12px / 12px 5px 10px 3px">
+            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+            Python · ACE Engine · Open Source
+          </div>
+
+          <h2 class="text-5xl sm:text-6xl font-bold text-ink-900 mb-3 font-hand">MemX</h2>
+          <p class="text-xl sm:text-2xl text-ink-500 mb-2 font-medium">Adaptive Context Engine for AI Memory</p>
+          <p class="text-lg text-ink-400 mb-10">
+            零 LLM 成本的自适应 AI 记忆框架 — 让智能体真正学会记忆与遗忘
+          </p>
+
+          <!-- pip install + copy -->
+          <div class="inline-flex items-center gap-0 mb-8 card-sketchy overflow-hidden">
+            <code class="px-6 py-3 font-mono text-base text-ink-700 bg-cream-200 select-all">pip install memx</code>
+            <button
+              @click="copyPipInstall"
+              class="px-4 py-3 bg-ochre/10 border-l-2 border-ochre/20 hover:bg-ochre/20 transition-colors text-sm text-ochre font-medium whitespace-nowrap"
+            >
+              {{ memxCopied ? '✓ Copied' : 'Copy' }}
+            </button>
+          </div>
+
+          <!-- CTA buttons -->
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+            <a
+              href="https://github.com/UU114/memx"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-hand btn-hand-primary inline-flex items-center gap-2 px-6 py-3"
+            >
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.579.688.481C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+              </svg>
+              GitHub
+            </a>
+            <a
+              href="https://docs.lurus.cn"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-hand inline-flex items-center gap-2 px-6 py-3"
+            >
+              查看文档
+            </a>
+          </div>
+
+          <!-- Trust signals -->
+          <div class="flex flex-wrap items-center justify-center gap-4 text-sm text-ink-300">
+            <span class="flex items-center gap-1.5">
+              <span class="text-ochre">★</span> ACE 4-layer retrieval
+            </span>
+            <span class="text-ink-200">|</span>
+            <span class="flex items-center gap-1.5">
+              <span class="text-green-500">●</span> Zero LLM cost
+            </span>
+            <span class="text-ink-200">|</span>
+            <span class="flex items-center gap-1.5">
+              <span class="text-blue-400">⇌</span> mem0 drop-in compatible
+            </span>
+          </div>
+        </div>
+
+        <!-- ── FEATURE 4-GRID ── -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
+          <div class="card-sketchy p-5 hover:border-ochre/40 transition-colors">
+            <div class="w-10 h-10 rounded-lg bg-green-50 border-2 border-green-200 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <h3 class="text-base font-bold text-ink-900 mb-1">零 LLM 成本</h3>
+            <p class="text-xs text-ochre mb-2">规则引擎替代 LLM 调用</p>
+            <p class="text-xs text-ink-400 leading-relaxed">ACE 规则引擎提取知识，余弦相似度去重，无需每次调用 LLM，节省 2-5k tokens/次。</p>
+          </div>
+          <div class="card-sketchy p-5 hover:border-ochre/40 transition-colors">
+            <div class="w-10 h-10 rounded-lg bg-purple-50 border-2 border-purple-200 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="text-base font-bold text-ink-900 mb-1">智能遗忘</h3>
+            <p class="text-xs text-ochre mb-2">指数衰减 + 召回增强</p>
+            <p class="text-xs text-ink-400 leading-relaxed">半衰期 30 天自动衰减，召回 ≥15 次永久保留，防止知识无限膨胀。</p>
+          </div>
+          <div class="card-sketchy p-5 hover:border-ochre/40 transition-colors">
+            <div class="w-10 h-10 rounded-lg bg-blue-50 border-2 border-blue-200 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <h3 class="text-base font-bold text-ink-900 mb-1">隐私优先</h3>
+            <p class="text-xs text-ochre mb-2">处理前自动清理 PII</p>
+            <p class="text-xs text-ink-400 leading-relaxed">内置 12 种正则模式 + 自定义规则，自动识别并清理 API Key、手机号、邮箱等敏感信息。</p>
+          </div>
+          <div class="card-sketchy p-5 hover:border-ochre/40 transition-colors">
+            <div class="w-10 h-10 rounded-lg bg-ochre/10 border-2 border-ochre/30 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5 text-ochre" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <h3 class="text-base font-bold text-ink-900 mb-1">混合检索</h3>
+            <p class="text-xs text-ochre mb-2">精确 + 模糊 + 元数据 + 向量</p>
+            <p class="text-xs text-ink-400 leading-relaxed">4 层评分融合：keyword×0.6 + semantic×0.4，再乘以衰减权重与时近度提升。</p>
+          </div>
+        </div>
+
+        <!-- ── ACE PIPELINE VISUALIZATION ── -->
+        <div class="card-sketchy p-8 bg-cream-100 mb-10">
+          <h3 class="text-lg font-bold text-ink-900 mb-6 text-center font-hand">ACE Pipeline</h3>
+
+          <!-- Ingest -->
+          <div class="mb-6">
+            <p class="text-xs uppercase tracking-widest text-ink-300 mb-3 font-medium text-center">Ingest — add()</p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 text-xs font-mono text-ink-500">
+              <div class="px-3 py-2 bg-ochre/10 border border-ochre/30 rounded whitespace-nowrap text-ochre font-bold">add()</div>
+              <svg class="w-5 h-5 text-ink-300 hidden sm:block flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <svg class="w-5 h-5 text-ink-300 sm:hidden flex-shrink-0 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <div class="px-3 py-2 bg-blue-50 border border-blue-200 rounded whitespace-nowrap">Privacy Sanitizer</div>
+              <svg class="w-5 h-5 text-ink-300 hidden sm:block flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <svg class="w-5 h-5 text-ink-300 sm:hidden flex-shrink-0 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <div class="px-3 py-2 bg-green-50 border border-green-200 rounded whitespace-nowrap">Reflector</div>
+              <svg class="w-5 h-5 text-ink-300 hidden sm:block flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <svg class="w-5 h-5 text-ink-300 sm:hidden flex-shrink-0 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <div class="px-3 py-2 bg-purple-50 border border-purple-200 rounded whitespace-nowrap">Curator</div>
+              <svg class="w-5 h-5 text-ink-300 hidden sm:block flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <svg class="w-5 h-5 text-ink-300 sm:hidden flex-shrink-0 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <div class="px-3 py-2 bg-amber-50 border border-amber-200 rounded whitespace-nowrap">mem0 Backend</div>
+            </div>
+          </div>
+
+          <!-- Retrieve -->
+          <div>
+            <p class="text-xs uppercase tracking-widest text-ink-300 mb-3 font-medium text-center">Retrieve — search()</p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-0 text-xs font-mono text-ink-500">
+              <div class="px-3 py-2 bg-ochre/10 border border-ochre/30 rounded whitespace-nowrap text-ochre font-bold">search()</div>
+              <svg class="w-5 h-5 text-ink-300 hidden sm:block flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <svg class="w-5 h-5 text-ink-300 sm:hidden flex-shrink-0 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <div class="px-3 py-2 bg-blue-50 border border-blue-200 rounded whitespace-nowrap">4-layer scoring</div>
+              <svg class="w-5 h-5 text-ink-300 hidden sm:block flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <svg class="w-5 h-5 text-ink-300 sm:hidden flex-shrink-0 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <div class="px-3 py-2 bg-purple-50 border border-purple-200 rounded whitespace-nowrap">decay weight</div>
+              <svg class="w-5 h-5 text-ink-300 hidden sm:block flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <svg class="w-5 h-5 text-ink-300 sm:hidden flex-shrink-0 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <div class="px-3 py-2 bg-green-50 border border-green-200 rounded whitespace-nowrap">result</div>
+            </div>
+            <p class="text-center text-xs text-ink-300 mt-3 font-mono">
+              score = (keyword×0.6 + semantic×0.4) × decay_weight × recency_boost
+            </p>
+          </div>
+        </div>
+
+        <!-- ── COMPARISON TABLE ── -->
+        <div class="mb-10">
+          <h3 class="text-xl font-bold text-ink-900 mb-5 text-center font-hand">MemX vs mem0</h3>
+          <div class="card-sketchy overflow-hidden">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-cream-200">
+                  <th class="text-left p-4 font-semibold text-ink-700 w-1/3">能力</th>
+                  <th class="text-center p-4 font-semibold text-ink-400 w-1/3">mem0</th>
+                  <th class="text-center p-4 font-semibold text-ochre w-1/3">MemX</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-ink-100">
+                <tr class="hover:bg-cream-50 transition-colors">
+                  <td class="p-4 text-ink-600 font-medium">知识提取</td>
+                  <td class="p-4 text-center text-ink-400">LLM 调用（2-5k tokens/次）</td>
+                  <td class="p-4 text-center text-green-700 font-medium">规则引擎（零 LLM 开销）</td>
+                </tr>
+                <tr class="hover:bg-cream-50 transition-colors">
+                  <td class="p-4 text-ink-600 font-medium">去重策略</td>
+                  <td class="p-4 text-center text-ink-400">LLM 逐条决策</td>
+                  <td class="p-4 text-center text-green-700 font-medium">余弦相似度 ≥0.8 自动合并</td>
+                </tr>
+                <tr class="hover:bg-cream-50 transition-colors">
+                  <td class="p-4 text-ink-600 font-medium">遗忘机制</td>
+                  <td class="p-4 text-center text-ink-400">无，永久存储</td>
+                  <td class="p-4 text-center text-green-700 font-medium">指数衰减 + 召回增强</td>
+                </tr>
+                <tr class="hover:bg-cream-50 transition-colors">
+                  <td class="p-4 text-ink-600 font-medium">搜索方式</td>
+                  <td class="p-4 text-center text-ink-400">仅向量搜索</td>
+                  <td class="p-4 text-center text-green-700 font-medium">精确+模糊+元数据+向量 4 层</td>
+                </tr>
+                <tr class="hover:bg-cream-50 transition-colors">
+                  <td class="p-4 text-ink-600 font-medium">离线嵌入</td>
+                  <td class="p-4 text-center text-ink-400">需外部 API</td>
+                  <td class="p-4 text-center text-green-700 font-medium">ONNX Runtime 本地运行</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── CODE EXAMPLE ── -->
+        <div class="card-sketchy p-6 bg-cream-100">
+          <h3 class="text-base font-bold text-ink-900 mb-4 font-hand">Quick Start</h3>
+          <pre class="font-mono text-sm text-ink-600 bg-cream-200 rounded p-5 overflow-x-auto leading-relaxed"><code><span class="text-purple-600">from</span> memx <span class="text-purple-600">import</span> Memory
+
+<span class="text-ink-400"># Drop-in compatible with mem0 API</span>
+m = Memory(ace_enabled=<span class="text-blue-600">True</span>)
+
+<span class="text-ink-400"># Store memory — auto privacy-sanitized &amp; deduplicated</span>
+m.add(<span class="text-green-700">"prefer dark mode, use Python 3.12"</span>, user_id=<span class="text-green-700">"alice"</span>)
+
+<span class="text-ink-400"># Hybrid 4-layer retrieval with decay scoring</span>
+results = m.search(<span class="text-green-700">"UI preference"</span>, user_id=<span class="text-green-700">"alice"</span>)
+<span class="text-ink-400"># score = (keyword×0.6 + semantic×0.4) × decay_weight × recency_boost</span></code></pre>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
     <!-- ALL RELEASES -->
     <!-- ═══════════════════════════════════════════════════════ -->
     <section id="all-releases" class="py-16 bg-cream-50">
@@ -463,6 +710,13 @@ onMounted(() => {
               </svg>
               Download
             </a>
+            <code
+              v-else-if="item.product === 'MemX'"
+              class="font-mono text-sm px-4 py-2.5 bg-cream-200 border-2 border-ochre/20 text-ink-600 whitespace-nowrap"
+              style="border-radius: 3px 8px 4px 10px / 10px 4px 8px 3px"
+            >
+              pip install memx
+            </code>
             <span
               v-else
               class="btn-hand inline-flex items-center gap-2 text-sm px-5 py-2.5 opacity-50 cursor-not-allowed whitespace-nowrap"

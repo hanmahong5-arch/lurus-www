@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import type { Product } from '../../types/products'
 
-const props = defineProps<{
+defineProps<{
   products: Product[]
 }>()
 

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
+import type { Product } from '../../../types/products'
 import AnimatedProductGraph from '../AnimatedProductGraph.vue'
 
 const mockProducts = [
@@ -7,7 +8,7 @@ const mockProducts = [
   { id: 'gushen', name: 'GuShen', bgColor: '#7D8B6A' },
   { id: 'webmail', name: 'Mail', bgColor: '#8B6B7D' },
   { id: 'switch', name: 'Switch', bgColor: '#C67B5C' },
-] as any[]
+] as unknown as Product[]
 
 describe('AnimatedProductGraph', () => {
   it('should render with data-testid', () => {

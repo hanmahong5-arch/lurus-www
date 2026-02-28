@@ -5,6 +5,7 @@ const products = [
   { name: 'Lurus API', href: 'https://api.lurus.cn', description: 'LLM 统一网关' },
   { name: 'GuShen', href: 'https://gushen.lurus.cn', description: 'AI 量化交易' },
   { name: 'Lurus Switch', href: '#', description: '智能客户端' },
+  { name: 'MemX', href: '/download#memx', description: 'AI 记忆增强框架' },
   { name: 'Lurus Docs', href: 'https://docs.lurus.cn', description: '文档中心' },
 ]
 

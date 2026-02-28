@@ -13,6 +13,7 @@ export const navItems: NavDropdownItem[] = [
       { name: 'API Gateway', path: 'https://api.lurus.cn', external: true },
       { name: 'GuShen', path: 'https://gushen.lurus.cn', external: true },
       { name: 'Switch', path: '/download' },
+      { name: 'MemX', path: '/download#memx' },
       { name: 'Docs', path: 'https://docs.lurus.cn', external: true },
     ],
   },
