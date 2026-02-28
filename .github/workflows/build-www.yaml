@@ -58,6 +58,9 @@ jobs:
         run: bun install
       - name: Build
         run: bun run build
+        env:
+          # VITE_IDENTITY_URL defaults to https://identity.lurus.cn — override only if needed
+          VITE_IDENTITY_URL: ${{ vars.VITE_IDENTITY_URL || 'https://identity.lurus.cn' }}
       - name: Check bundle size
         run: node scripts/check-bundle-size.js
       - name: Upload build artifacts

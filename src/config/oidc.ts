@@ -29,3 +29,6 @@ export const USERINFO_URL = `${ISSUER}/oidc/v1/userinfo`
 
 /** End session endpoint */
 export const END_SESSION_URL = `${ISSUER}/oidc/v1/end_session`
+
+/** lurus-identity public base URL */
+export const IDENTITY_URL = import.meta.env.VITE_IDENTITY_URL || 'https://identity.lurus.cn'

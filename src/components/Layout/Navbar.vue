@@ -2,6 +2,7 @@
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 import { navItems } from '../../data/navItems'
 import NavDropdown from './NavDropdown.vue'
+import AccountBadge from '../Portal/AccountBadge.vue'
 import { useActiveSection } from '../../composables/useActiveSection'
 import { useAuth } from '../../composables/useAuth'
 
@@ -186,6 +187,8 @@ function handleLogout() {
             <template v-if="isLoggedIn && userInfo">
               <!-- Logged in: Show user menu -->
               <div class="flex items-center gap-3">
+                <!-- Lubell balance + VIP badge -->
+                <AccountBadge />
                 <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-cream-200">
                   <img
                     v-if="userInfo.picture"
