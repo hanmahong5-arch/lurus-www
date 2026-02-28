@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useScrollReveal } from '../composables/useScrollReveal'
 import AdvantagesSection from '../components/About/AdvantagesSection.vue'
 import AnimatedTimeline from '../components/About/AnimatedTimeline.vue'
+import TechArchitecture from '../components/About/TechArchitecture.vue'
 
 const pageRef = ref<HTMLElement | null>(null)
 useScrollReveal(pageRef)
@@ -51,10 +52,16 @@ const values = [
       </div>
     </section>
 
+    <!-- Advantages + Ecosystem Graph -->
+    <AdvantagesSection />
+
+    <!-- Platform Architecture -->
+    <TechArchitecture />
+
     <!-- Mission -->
     <section class="py-fib-6 bg-cream-50">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid md:grid-cols-2 gap-fib-5 items-center reveal-fade-up">
+        <div class="grid md:grid-cols-2 gap-fib-6 items-center reveal-fade-up">
           <div>
             <h2 class="text-phi-2xl font-hand font-bold text-ink-900 mb-fib-3">我们的使命</h2>
             <p class="text-ink-500 leading-relaxed">
@@ -64,7 +71,7 @@ const values = [
             </p>
           </div>
           <div class="border-sketchy bg-cream-100 p-fib-5">
-            <div class="grid grid-cols-2 gap-fib-4 text-center">
+            <div class="grid grid-cols-2 gap-fib-5 text-center">
               <div>
                 <div class="text-phi-2xl font-hand font-bold text-ochre mb-1">99.9%</div>
                 <div class="text-ink-400 text-sm">服务可用性</div>
@@ -88,10 +95,10 @@ const values = [
     </section>
 
     <!-- Core Values -->
-    <section class="py-fib-6 bg-cream-100">
+    <section class="py-fib-7 bg-cream-100">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-phi-2xl font-hand font-bold text-ink-900 mb-fib-5 text-center reveal-fade-up">核心价值</h2>
-        <div class="grid md:grid-cols-3 gap-fib-4">
+        <div class="grid md:grid-cols-3 gap-fib-5">
           <div
             v-for="v in values"
             :key="v.title"
@@ -111,9 +118,6 @@ const values = [
 
     <!-- Timeline -->
     <AnimatedTimeline :milestones="milestones" />
-
-    <!-- Advantages + Ecosystem Graph -->
-    <AdvantagesSection />
 
     <!-- Contact -->
     <section class="py-fib-6 bg-cream-50">
@@ -142,17 +146,6 @@ const values = [
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
             文档
-          </a>
-          <a
-            href="https://status.lurus.cn"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn-hand inline-flex items-center gap-2"
-          >
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            服务状态
           </a>
         </div>
       </div>

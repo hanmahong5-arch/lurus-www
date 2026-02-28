@@ -6,7 +6,7 @@ import { DRAG_MIME } from '../../utils/portalDrag'
 import CTABar from '../CTAs/CTABar.vue'
 
 const PREVIEW_LINK_COUNT = 4
-const TOTAL_LINK_COUNT = 48
+const TOTAL_LINK_COUNT = 56
 
 const { track } = useTracking()
 const isExpanded = ref(false)

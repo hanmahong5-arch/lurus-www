@@ -1,68 +1,42 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useReleases } from '../composables/useReleases'
-import ReleaseCard from '../components/Download/ReleaseCard.vue'
-
 const ACEST_DOWNLOAD_URL = '/releases/acest-desktop/v0.2.0/ACEST-Desktop_0.2.0_x64-setup.exe'
 const ACEST_FILE_SIZE = '37.4 MB'
 const ACEST_VERSION = '0.2.0'
 const ACEST_SHA256 = '1e8bdb46fb45fde5b7e9c4b51a8beab31376afe369d214adea4dbcaf25544d26'
 
-const {
-  releases,
-  total,
-  currentPage,
-  pageSize,
-  isLoading,
-  error,
-  fetchReleases,
-} = useReleases()
-
-const availableProducts = [
-  { id: 'acest-desktop', name: 'ACEST Desktop', description: 'AI terminal assistant' },
-  { id: 'lurus-switch', name: 'Lurus Switch', description: 'Wails desktop app' },
-  { id: 'lurus-cli', name: 'Lurus CLI', description: 'TUI CLI tool' },
-]
-
-const selectedProduct = ref<string | undefined>(undefined)
-const includePrerelease = ref(false)
-
-const filteredReleases = computed(() => releases.value)
-
-const totalPages = computed(() => {
-  return Math.ceil(total.value / pageSize.value)
-})
-
-async function loadReleases(page = 1) {
-  await fetchReleases({
-    product_id: selectedProduct.value,
-    release_type: includePrerelease.value ? undefined : 'stable',
-    include_prerelease: includePrerelease.value,
-    page,
-    page_size: 20,
-  })
-}
-
-function selectProduct(productId: string | undefined) {
-  selectedProduct.value = productId
-  loadReleases(1)
-}
-
-function togglePrerelease() {
-  includePrerelease.value = !includePrerelease.value
-  loadReleases(1)
-}
-
-function goToPage(page: number) {
-  if (page < 1 || page > totalPages.value) return
-  loadReleases(page)
-  const el = document.getElementById('all-releases')
-  if (el) el.scrollIntoView({ behavior: 'smooth' })
-}
-
 function downloadAcest() {
   window.location.href = ACEST_DOWNLOAD_URL
 }
+
+const staticReleases = [
+  {
+    product: 'ACEST Desktop',
+    version: 'v0.2.0',
+    platform: 'Windows x64',
+    status: 'available' as const,
+    size: '37.4 MB',
+    url: ACEST_DOWNLOAD_URL,
+    sha256: ACEST_SHA256,
+  },
+  {
+    product: 'Lurus Switch',
+    version: '—',
+    platform: 'Windows / macOS',
+    status: 'coming-soon' as const,
+    size: '—',
+    url: null,
+    sha256: null,
+  },
+  {
+    product: 'Lurus CLI',
+    version: '—',
+    platform: 'Windows / macOS / Linux',
+    status: 'coming-soon' as const,
+    size: '—',
+    url: null,
+    sha256: null,
+  },
+]
 
 // Feature cards data
 const features = [
@@ -457,147 +431,45 @@ onMounted(() => {
           All Releases
         </h2>
 
-        <!-- Product Filter & Controls -->
-        <div class="mb-8 p-4 bg-cream-100 border-2 border-ink-100" style="border-radius: 3px 10px 5px 12px / 12px 5px 10px 3px">
-          <div class="flex flex-wrap items-center gap-4">
-            <!-- Product Tabs -->
-            <div class="flex items-center gap-2 flex-wrap">
-              <button
-                @click="selectProduct(undefined)"
-                :class="[
-                  'px-4 py-2 text-sm font-medium transition-all border-2',
-                  selectedProduct === undefined
-                    ? 'bg-ochre text-cream-50 border-ochre'
-                    : 'bg-cream-50 text-ink-500 border-ink-100 hover:text-ink-900 hover:border-ink-300',
-                ]"
-                style="border-radius: 3px 10px 5px 12px / 12px 5px 10px 3px"
-              >
-                All
-              </button>
-              <button
-                v-for="product in availableProducts"
-                :key="product.id"
-                @click="selectProduct(product.id)"
-                :class="[
-                  'px-4 py-2 text-sm font-medium transition-all border-2',
-                  selectedProduct === product.id
-                    ? 'bg-ochre text-cream-50 border-ochre'
-                    : 'bg-cream-50 text-ink-500 border-ink-100 hover:text-ink-900 hover:border-ink-300',
-                ]"
-                style="border-radius: 3px 10px 5px 12px / 12px 5px 10px 3px"
-              >
-                {{ product.name }}
-              </button>
+        <div class="space-y-4">
+          <div
+            v-for="item in staticReleases"
+            :key="item.product"
+            class="card-sketchy p-6 flex flex-col sm:flex-row sm:items-center gap-4"
+            :class="item.status === 'coming-soon' ? 'opacity-60' : ''"
+          >
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-1">
+                <h3 class="text-lg font-bold text-ink-900 font-hand">{{ item.product }}</h3>
+                <span
+                  class="px-2 py-0.5 text-xs font-medium rounded border"
+                  :class="item.status === 'available'
+                    ? 'text-green-700 bg-green-50 border-green-300'
+                    : 'text-ink-400 bg-cream-200 border-ink-200'"
+                >
+                  {{ item.status === 'available' ? item.version : 'Coming Soon' }}
+                </span>
+              </div>
+              <p class="text-sm text-ink-400">{{ item.platform }}</p>
+              <p v-if="item.size !== '—'" class="text-xs text-ink-300 mt-1">{{ item.size }}</p>
             </div>
-
-            <!-- Prerelease Toggle -->
-            <label class="flex items-center gap-2 ml-auto cursor-pointer">
-              <input
-                type="checkbox"
-                :checked="includePrerelease"
-                @change="togglePrerelease"
-                class="w-4 h-4 rounded border-ink-300 text-ochre focus:ring-ochre focus:ring-offset-0"
-              >
-              <span class="text-sm text-ink-500">Show Pre-release</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Loading State -->
-        <div v-if="isLoading && releases.length === 0" class="text-center py-12">
-          <div class="inline-block w-8 h-8 border-4 border-ochre border-t-transparent rounded-full animate-spin"></div>
-          <p class="mt-4 text-ink-500">Loading...</p>
-        </div>
-
-        <!-- Error State -->
-        <div v-else-if="error" class="text-center py-12">
-          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-50 border-2 border-red-200 mb-4">
-            <svg class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold text-ink-900 mb-2">Failed to load</h3>
-          <p class="text-ink-500 mb-6">{{ error }}</p>
-          <button
-            @click="loadReleases()"
-            class="btn-hand btn-hand-primary"
-          >
-            Retry
-          </button>
-        </div>
-
-        <!-- Empty State -->
-        <div v-else-if="releases.length === 0" class="text-center py-12">
-          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cream-200 border-2 border-ink-100 mb-4">
-            <svg class="w-8 h-8 text-ink-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold text-ink-900 mb-2">No releases</h3>
-          <p class="text-ink-500">No releases found for the current filter</p>
-        </div>
-
-        <!-- Releases -->
-        <div v-else class="space-y-6">
-          <ReleaseCard
-            v-for="(release, index) in filteredReleases"
-            :key="release.id"
-            :release="release"
-            :is-latest="index === 0 && currentPage === 1"
-          />
-        </div>
-
-        <!-- Pagination -->
-        <div v-if="totalPages > 1" class="mt-12 flex items-center justify-center gap-2">
-          <button
-            @click="goToPage(currentPage - 1)"
-            :disabled="currentPage === 1"
-            :class="[
-              'px-4 py-2 font-medium transition-colors border-2',
-              currentPage === 1
-                ? 'bg-cream-100 text-ink-100 border-ink-100 cursor-not-allowed'
-                : 'bg-cream-100 text-ink-700 border-ink-300 hover:bg-cream-200',
-            ]"
-            style="border-radius: 3px 10px 5px 12px / 12px 5px 10px 3px"
-          >
-            Prev
-          </button>
-
-          <div class="flex items-center gap-1">
-            <button
-              v-for="page in totalPages"
-              :key="page"
-              @click="goToPage(page)"
-              :class="[
-                'px-4 py-2 font-medium transition-colors border-2',
-                currentPage === page
-                  ? 'bg-ochre text-cream-50 border-ochre'
-                  : 'bg-cream-100 text-ink-500 border-ink-100 hover:text-ink-900 hover:border-ink-300',
-              ]"
-              style="border-radius: 3px 10px 5px 12px / 12px 5px 10px 3px"
+            <a
+              v-if="item.url"
+              :href="item.url"
+              class="btn-hand btn-hand-primary inline-flex items-center gap-2 text-sm px-5 py-2.5 whitespace-nowrap"
             >
-              {{ page }}
-            </button>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Download
+            </a>
+            <span
+              v-else
+              class="btn-hand inline-flex items-center gap-2 text-sm px-5 py-2.5 opacity-50 cursor-not-allowed whitespace-nowrap"
+            >
+              Coming Soon
+            </span>
           </div>
-
-          <button
-            @click="goToPage(currentPage + 1)"
-            :disabled="currentPage === totalPages"
-            :class="[
-              'px-4 py-2 font-medium transition-colors border-2',
-              currentPage === totalPages
-                ? 'bg-cream-100 text-ink-100 border-ink-100 cursor-not-allowed'
-                : 'bg-cream-100 text-ink-700 border-ink-300 hover:bg-cream-200',
-            ]"
-            style="border-radius: 3px 10px 5px 12px / 12px 5px 10px 3px"
-          >
-            Next
-          </button>
-        </div>
-
-        <!-- Results Info -->
-        <div v-if="!isLoading && releases.length > 0" class="mt-8 text-center text-sm text-ink-300">
-          {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, total) }} / {{ total }}
         </div>
       </div>
     </section>

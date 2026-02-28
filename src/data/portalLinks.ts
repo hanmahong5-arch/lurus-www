@@ -1,6 +1,6 @@
 /**
  * Portal Links Data
- * 6 categories x 8 links = 48 total links
+ * 7 categories x 8 links = 56 total links
  * Updated with the most cutting-edge and authoritative websites in each field
  */
 
@@ -120,6 +120,23 @@ export const portalCategories = [
       { name: 'Westlaw', url: 'https://www.westlaw.com', desc: '国际法律库' },
       { name: 'LexisNexis', url: 'https://www.lexisnexis.com', desc: '国际检索' },
       { name: 'HeinOnline', url: 'https://heinonline.org', desc: '法学期刊' },
+    ]
+  },
+  {
+    id: 'geek-ai',
+    name: '极客阵地',
+    nameEn: 'Geek Hub',
+    color: '#C9A227',
+    colorClass: 'portal-geek',
+    links: [
+      { name: 'LangChain', url: 'https://github.com/langchain-ai/langchain', desc: 'LLM 应用链式框架' },
+      { name: 'mem0', url: 'https://github.com/mem0ai/mem0', desc: 'AI 长期记忆持久层' },
+      { name: 'n8n', url: 'https://github.com/n8n-io/n8n', desc: '可编程 AI 工作流引擎' },
+      { name: 'Dify', url: 'https://github.com/langgenius/dify', desc: 'LLM 应用开发平台' },
+      { name: 'Ollama', url: 'https://github.com/ollama/ollama', desc: '本地大模型一键运行' },
+      { name: 'LlamaIndex', url: 'https://github.com/run-llama/llama_index', desc: 'RAG 数据索引框架' },
+      { name: 'CrewAI', url: 'https://github.com/crewAIInc/crewAI', desc: 'AI 多智能体协作框架' },
+      { name: 'AutoGen', url: 'https://github.com/microsoft/autogen', desc: '微软 Multi-Agent 框架' },
     ]
   },
 ] as const satisfies readonly PortalCategory[]

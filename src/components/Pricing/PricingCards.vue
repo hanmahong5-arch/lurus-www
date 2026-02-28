@@ -28,7 +28,7 @@ onMounted(async () => {
 })
 
 const handleSubscribe = (planCode: string) => {
-  window.location.href = `https://api.lurus.cn/console/subscription?plan=${planCode}`
+  window.location.href = `https://identity.lurus.cn?action=subscribe&plan=${planCode}`
 }
 </script>
 

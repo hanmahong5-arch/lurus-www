@@ -31,13 +31,13 @@ const advantages = [
       <h2 class="text-phi-2xl font-hand font-bold text-ink-900 mb-fib-5 text-center reveal-fade-up">
         我们的优势
       </h2>
-      <div class="grid md:grid-cols-2 gap-fib-4 mb-fib-5">
+      <div class="grid md:grid-cols-2 gap-fib-5 mb-fib-5">
         <div
           v-for="item in advantages"
           :key="item.title"
-          class="border-sketchy bg-cream-50 p-fib-4 hover-breathe reveal-fade-up"
+          class="border-sketchy bg-cream-50 p-fib-5 hover-breathe reveal-fade-up"
         >
-          <div class="w-12 h-12 border-sketchy bg-cream-100 flex items-center justify-center mb-fib-3">
+          <div class="w-12 h-12 border-sketchy bg-cream-100 flex items-center justify-center mb-fib-4">
             <svg class="w-6 h-6 text-ochre" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
             </svg>

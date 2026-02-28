@@ -14,7 +14,6 @@ export const navItems: NavDropdownItem[] = [
       { name: 'GuShen', path: 'https://gushen.lurus.cn', external: true },
       { name: 'Switch', path: '/download' },
       { name: 'Docs', path: 'https://docs.lurus.cn', external: true },
-      { name: 'Deaigc', path: 'https://deaigc.lurus.cn', external: true },
     ],
   },
   {
@@ -25,7 +24,6 @@ export const navItems: NavDropdownItem[] = [
     name: '资源',
     path: '#resources',
     children: [
-      { name: 'Portal', path: '#portal' },
       { name: '文档', path: 'https://docs.lurus.cn', external: true },
     ],
   },
