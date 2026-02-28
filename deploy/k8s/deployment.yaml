@@ -14,6 +14,8 @@ spec:
     metadata:
       labels:
         app: lurus-www
+        app.kubernetes.io/name: lurus-www
+        app.kubernetes.io/part-of: lurus
     spec:
       # Deploy to master node for better performance
       nodeSelector:
