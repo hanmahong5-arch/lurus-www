@@ -22,8 +22,9 @@ describe('PortalLinks - Link Interaction (Story 7.2)', () => {
   describe('external link attributes', () => {
     it('should have correct href matching portalLinks data for each link', () => {
       const links = wrapper.findAll('a.portal-link-btn')
-      // In collapsed mode, 6 categories x 4 preview links = 24
-      expect(links.length).toBe(24)
+      // In collapsed mode: categories × 4 preview links per category
+      const previewLinks = portalCategories.length * 4
+      expect(links.length).toBe(previewLinks)
 
       // Verify first category's first link matches data
       const firstCategory = portalCategories[0]

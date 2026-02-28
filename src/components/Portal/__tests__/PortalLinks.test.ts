@@ -11,6 +11,11 @@ vi.mock('../../../composables/useTracking', () => ({
 }))
 
 
+const PREVIEW_PER_CATEGORY = 4
+const TOTAL_CATEGORIES = portalCategories.length
+const TOTAL_LINKS = portalCategories.reduce((sum, cat) => sum + cat.links.length, 0)
+const PREVIEW_LINKS = TOTAL_CATEGORIES * PREVIEW_PER_CATEGORY
+
 describe('PortalLinks', () => {
   const mountComponent = () => {
     return mount(PortalLinks)
@@ -44,10 +49,10 @@ describe('PortalLinks', () => {
   })
 
   describe('category cards', () => {
-    it('should render exactly 6 category cards', () => {
+    it('should render exactly as many category cards as in data', () => {
       const wrapper = mountComponent()
       const cards = wrapper.findAll('[data-testid="portal-category-card"]')
-      expect(cards).toHaveLength(6)
+      expect(cards).toHaveLength(TOTAL_CATEGORIES)
     })
 
     it('should display Chinese name for each category', () => {
@@ -69,17 +74,16 @@ describe('PortalLinks', () => {
     it('should have a color dot for each category', () => {
       const wrapper = mountComponent()
       const dots = wrapper.findAll('[data-testid="category-color-dot"]')
-      expect(dots).toHaveLength(6)
+      expect(dots).toHaveLength(TOTAL_CATEGORIES)
     })
   })
 
   describe('portal links', () => {
     it('should render portal links in collapsed state (preview mode)', () => {
       const wrapper = mountComponent()
-      // In collapsed mode, each category should show limited links
+      // In collapsed mode, each category shows PREVIEW_PER_CATEGORY links
       const allLinks = wrapper.findAll('a.portal-link-btn')
-      // 6 categories x 4 links in preview = 24
-      expect(allLinks.length).toBe(24)
+      expect(allLinks.length).toBe(PREVIEW_LINKS)
     })
 
     it('should have correct href attributes on links', () => {
@@ -123,13 +127,13 @@ describe('PortalLinks', () => {
       expect(toggle.exists()).toBe(true)
     })
 
-    it('should show all 48 links when expanded', async () => {
+    it('should show all links when expanded', async () => {
       const wrapper = mountComponent()
       const toggle = wrapper.find('[data-testid="portal-expand-toggle"]')
       await toggle.trigger('click')
 
       const allLinks = wrapper.findAll('a.portal-link-btn')
-      expect(allLinks.length).toBe(48)
+      expect(allLinks.length).toBe(TOTAL_LINKS)
     })
 
     it('should collapse back to preview when toggled again', async () => {
@@ -139,12 +143,12 @@ describe('PortalLinks', () => {
       // Expand
       await toggle.trigger('click')
       let allLinks = wrapper.findAll('a.portal-link-btn')
-      expect(allLinks.length).toBe(48)
+      expect(allLinks.length).toBe(TOTAL_LINKS)
 
       // Collapse
       await toggle.trigger('click')
       allLinks = wrapper.findAll('a.portal-link-btn')
-      expect(allLinks.length).toBe(24)
+      expect(allLinks.length).toBe(PREVIEW_LINKS)
     })
   })
 
