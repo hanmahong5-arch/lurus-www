@@ -15,6 +15,7 @@ const createMockProduct = (overrides: Partial<Product> = {}): Product => ({
   bgColor: '#6B8BA4',
   features: ['Unified API', 'Load Balancing', 'Usage Monitoring', 'Multi-tenant'],
   stats: { value: '99.9%', label: 'Availability' },
+  layer: 'infra',
   ...overrides,
 })
 
