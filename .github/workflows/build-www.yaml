@@ -61,6 +61,10 @@ jobs:
         env:
           # VITE_IDENTITY_URL defaults to https://identity.lurus.cn — override only if needed
           VITE_IDENTITY_URL: ${{ vars.VITE_IDENTITY_URL || 'https://identity.lurus.cn' }}
+          # Demo API key for unauthenticated chat widget on www.lurus.cn
+          VITE_DEMO_API_KEY: ${{ secrets.VITE_DEMO_API_KEY }}
+          # Chat feature flag
+          VITE_CHAT_ENABLED: ${{ vars.VITE_CHAT_ENABLED }}
       - name: Check bundle size
         run: node scripts/check-bundle-size.js
       - name: Upload build artifacts
