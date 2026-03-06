@@ -270,9 +270,9 @@ onUnmounted(() => {
 
 /* ── Container ── */
 .arch-container {
-  border: 2px solid var(--color-ink-100);
+  border: 2px solid var(--color-ink-300);
   background: var(--color-cream-100);
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 3px 12px 5px 10px / 10px 5px 12px 3px;
 }
 

@@ -80,8 +80,8 @@ const solutions = [
               <!-- Left: Icon + Title -->
               <div>
                 <div class="text-4xl mb-fib-3">{{ s.icon }}</div>
-                <h3 class="text-phi-xl font-hand font-bold text-ink-900 mb-2">{{ s.title }}</h3>
-                <p class="text-ink-500 text-sm">{{ s.desc }}</p>
+                <h3 class="text-phi-xl font-hand font-bold text-ink-900 mb-fib-3">{{ s.title }}</h3>
+                <p class="text-ink-500 text-phi-base leading-relaxed">{{ s.desc }}</p>
               </div>
 
               <!-- Middle: Use Cases -->

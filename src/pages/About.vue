@@ -102,15 +102,15 @@ const values = [
           <div
             v-for="v in values"
             :key="v.title"
-            class="border-sketchy bg-cream-50 p-fib-4 reveal-fade-up"
+            class="border-sketchy bg-cream-50 p-fib-5 reveal-fade-up"
           >
             <div class="w-12 h-12 border-sketchy bg-cream-100 flex items-center justify-center mb-fib-3">
               <svg class="w-6 h-6 text-ochre" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="v.icon" />
               </svg>
             </div>
-            <h3 class="text-phi-lg font-hand font-bold text-ink-900 mb-2">{{ v.title }}</h3>
-            <p class="text-ink-500 text-sm">{{ v.desc }}</p>
+            <h3 class="text-phi-lg font-hand font-bold text-ink-900 mb-fib-3">{{ v.title }}</h3>
+            <p class="text-ink-500 text-phi-base leading-relaxed">{{ v.desc }}</p>
           </div>
         </div>
       </div>

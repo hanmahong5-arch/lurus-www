@@ -42,8 +42,8 @@ const advantages = [
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
             </svg>
           </div>
-          <h3 class="text-phi-lg font-hand font-bold text-ink-900 mb-2">{{ item.title }}</h3>
-          <p class="text-ink-500 text-sm">{{ item.desc }}</p>
+          <h3 class="text-phi-lg font-hand font-bold text-ink-900 mb-fib-3">{{ item.title }}</h3>
+          <p class="text-ink-500 text-phi-base leading-relaxed">{{ item.desc }}</p>
         </div>
       </div>
 

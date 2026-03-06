@@ -74,7 +74,7 @@ onUnmounted(() => {
             :style="{ transitionDelay: `${idx * 150}ms` }"
           >
             <div class="flex-shrink-0 w-24 text-right">
-              <span class="font-hand font-bold text-ochre text-lg">{{ m.year }}</span>
+              <span class="font-hand font-bold text-ochre text-phi-lg">{{ m.year }}</span>
             </div>
             <div class="flex-shrink-0 w-3 h-3 mt-2 rounded-full bg-ochre border-2 border-cream-50 ring-2 ring-ochre/30 relative z-10 timeline-dot"></div>
             <p class="text-ink-500 flex-1">{{ m.event }}</p>

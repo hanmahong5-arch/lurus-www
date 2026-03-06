@@ -34,10 +34,13 @@ export default {
       },
       // Golden ratio (phi = 1.618) based font sizes
       fontSize: {
-        'phi-base': ['16px', { lineHeight: '1.75' }],
-        'phi-xl': ['26px', { lineHeight: '1.6' }],
-        'phi-2xl': ['42px', { lineHeight: '1.4' }],
-        'phi-3xl': ['68px', { lineHeight: '1.3' }]
+        'phi-sm':   ['10px',  { lineHeight: '1.9'  }],
+        'phi-base': ['16px',  { lineHeight: '1.75' }],
+        'phi-lg':   ['21px',  { lineHeight: '1.65' }],
+        'phi-xl':   ['26px',  { lineHeight: '1.6'  }],
+        'phi-2xl':  ['42px',  { lineHeight: '1.4'  }],
+        'phi-3xl':  ['68px',  { lineHeight: '1.3'  }],
+        'phi-4xl':  ['110px', { lineHeight: '1.1'  }]
       },
       // Fibonacci-based spacing system
       spacing: {

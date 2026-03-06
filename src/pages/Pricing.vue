@@ -28,7 +28,7 @@ import { PRICING_FAQ } from '../config/pricing'
     <section class="py-fib-5 bg-cream-100">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div class="border-sketchy bg-cream-50 p-fib-5">
-          <h3 class="text-phi-xl font-hand font-bold text-ink-900 mb-2">需要更多 Token？随时充值</h3>
+          <h3 class="text-phi-xl font-hand font-bold text-ink-900 mb-fib-3">需要更多 Token？随时充值</h3>
           <p class="text-ink-500 mb-fib-4">套餐配额不够用？可以在控制台直接充值，按需补充额度，即充即用。</p>
           <a
             href="https://api.lurus.cn/console/topup"
