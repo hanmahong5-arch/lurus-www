@@ -11,13 +11,31 @@ defineProps<{
 const isOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 const buttonRef = ref<HTMLButtonElement | null>(null)
+let hoverTimeout: ReturnType<typeof setTimeout> | null = null
 
-const toggle = () => {
-  isOpen.value = !isOpen.value
+const open = () => {
+  if (hoverTimeout) { clearTimeout(hoverTimeout); hoverTimeout = null }
+  isOpen.value = true
 }
 
 const close = () => {
+  if (hoverTimeout) { clearTimeout(hoverTimeout); hoverTimeout = null }
   isOpen.value = false
+}
+
+const toggle = () => {
+  if (isOpen.value) close()
+  else open()
+}
+
+// Hover with delay to prevent flicker
+const handleMouseEnter = () => {
+  if (hoverTimeout) { clearTimeout(hoverTimeout); hoverTimeout = null }
+  isOpen.value = true
+}
+
+const handleMouseLeave = () => {
+  hoverTimeout = setTimeout(() => { isOpen.value = false }, 150)
 }
 
 const handleKeydown = (e: KeyboardEvent) => {
@@ -45,11 +63,12 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
   document.removeEventListener('click', handleClickOutside)
+  if (hoverTimeout) clearTimeout(hoverTimeout)
 })
 </script>
 
 <template>
-  <div ref="dropdownRef" class="relative">
+  <div ref="dropdownRef" class="relative" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
     <button
       ref="buttonRef"
       @click="toggle"
@@ -86,7 +105,7 @@ onUnmounted(() => {
     >
       <div
         v-if="isOpen"
-        class="absolute top-full left-0 mt-2 py-2 min-w-48 bg-cream-50 border-2 border-ink-200 rounded-lg shadow-lg"
+        class="absolute top-full left-0 mt-2 py-2 min-w-48 bg-cream-50 border-2 border-ink-200 rounded-lg shadow-lg z-[60]"
       >
         <template v-for="item in items" :key="item.path">
           <a

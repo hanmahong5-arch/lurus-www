@@ -258,7 +258,7 @@ function handleLogout() {
       >
         <div
           v-if="mobileMenuOpen"
-          class="md:hidden fixed inset-0 top-20 z-40"
+          class="md:hidden fixed inset-0 top-20 z-[55]"
           role="dialog"
           aria-modal="true"
           aria-label="Navigation menu"

@@ -183,7 +183,7 @@ const isVisible = () => !isHeroVisible.value
   right: 24px;
   bottom: 24px;
   bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-  z-index: 50;
+  z-index: 45;
 
   display: flex;
   align-items: center;
