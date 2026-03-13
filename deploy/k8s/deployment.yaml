@@ -17,9 +17,14 @@ spec:
         app.kubernetes.io/name: lurus-www
         app.kubernetes.io/part-of: lurus
     spec:
-      # Deploy to master node for better performance
+      # Deploy to Alibaba Cloud gateway node (ICP备案入口)
       nodeSelector:
-        kubernetes.io/hostname: cloud-ubuntu-1-16c32g
+        lurus.cn/role: www-gateway
+      tolerations:
+        - key: lurus.cn/www-only
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534
