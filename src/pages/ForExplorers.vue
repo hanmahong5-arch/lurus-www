@@ -50,16 +50,6 @@ const products = [
     color: '#8B7A5C',
     iconPath: 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4',
   },
-  {
-    id: 'mail',
-    name: 'Lurus Mail',
-    tagline: '个人邮箱',
-    description: '安全、加密、数据完全自主的个人邮件服务。在中国网络环境下依然保持高送达率，你的通讯数据从不离开你的控制。',
-    features: ['端到端加密传输', '中国网络优化', '多域名支持', '日历与通讯录 (规划中)'],
-    cta: { text: '访问 Mail', href: 'https://mail.lurus.cn', external: true },
-    color: '#8B6B7D',
-    iconPath: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
-  },
 ]
 </script>
 

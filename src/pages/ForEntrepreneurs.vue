@@ -21,16 +21,6 @@ const products = [
     iconPath: 'M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
   },
   {
-    id: 'mail',
-    name: 'Lurus Mail',
-    tagline: '企业邮件',
-    description: '自建企业邮件系统，数据完全自主可控。多域名管理、SPF/DKIM/DMARC 全配置，中国网络环境送达率优化。',
-    features: ['多域名统一管理', 'SPF/DKIM/DMARC 安全防护', '中国网络送达率优化', '日历 + 通讯录 (规划中)', '99% 投递成功率'],
-    cta: { text: '了解更多', href: 'https://mail.lurus.cn', external: true },
-    color: '#8B6B7D',
-    iconPath: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
-  },
-  {
     id: 'switch',
     name: 'Lurus Switch (团队版)',
     tagline: '团队 AI 工具管理',
@@ -74,7 +64,7 @@ const industries = [
           <span class="text-gradient-ochre font-hand">业务增长</span>
         </h1>
         <p class="text-phi-lg text-ink-500 max-w-2xl mx-auto leading-relaxed mb-fib-5 reveal-fade-up">
-          LLM 网关、企业邮件、团队工具管理 — 从第一天开始拥有企业级 AI 基础设施
+          LLM 网关、量化交易、团队工具管理 — 从第一天开始拥有企业级 AI 基础设施
         </p>
         <div class="flex flex-col sm:flex-row gap-fib-3 justify-center reveal-fade-up">
           <a href="https://api.lurus.cn" target="_blank" rel="noopener noreferrer" class="btn-hand btn-hand-primary text-center">
@@ -184,7 +174,7 @@ const industries = [
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal-fade-up">
         <h2 class="text-phi-2xl text-ink-900 mb-fib-3 font-semibold">企业 AI 套餐</h2>
         <p class="text-ink-500 max-w-2xl mx-auto mb-fib-5 leading-relaxed">
-          Lurus API + Mail + Switch (团队版) + Identity SSO — 企业级 AI 基础设施，开箱即用。
+          Lurus API + Switch (团队版) + GuShen Pro + Identity SSO — 企业级 AI 基础设施，开箱即用。
         </p>
         <div class="flex flex-col sm:flex-row gap-fib-3 justify-center">
           <router-link to="/pricing" class="btn-hand btn-hand-primary text-center">查看定价</router-link>

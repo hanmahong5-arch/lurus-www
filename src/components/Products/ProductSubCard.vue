@@ -137,8 +137,4 @@ const isExternalUrl = props.product.url !== '#'
 <style scoped>
 @reference "../../styles/main.css";
 
-/* Webmail card uses deaigc color token */
-.card-webmail {
-  border-color: var(--color-product-deaigc);
-}
 </style>

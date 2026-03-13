@@ -23,7 +23,7 @@ const appProducts = computed(() => products.filter((p) => p.layer === 'app'))
           探索 <span class="text-gradient-ochre underline-doodle">产品生态</span>
         </h2>
         <p class="text-phi-xl text-ink-500 max-w-2xl mx-auto">
-          全栈自建，从 AI 网关到量化交易到企业邮件
+          全栈自建，从 AI 网关到量化交易到桌面助手
         </p>
       </div>
 
@@ -35,7 +35,7 @@ const appProducts = computed(() => products.filter((p) => p.layer === 'app'))
               一个团队，全栈自建
             </h3>
             <p class="text-phi-lg text-ink-500 mb-fib-4 max-w-2xl">
-              从统一 AI 网关到量化交易平台，从企业邮件到桌面客户端，每一行代码都出自同一支团队，确保一致的品质与体验。
+              从统一 AI 网关到量化交易平台，从桌面助手到记忆扩展，每一行代码都出自同一支团队，确保一致的品质与体验。
             </p>
             <div class="flex flex-wrap justify-center lg:justify-start gap-fib-3">
               <span v-for="product in products" :key="product.id" class="inline-flex items-center gap-2 px-3 py-1 border-sketchy-light text-sm text-ink-700">

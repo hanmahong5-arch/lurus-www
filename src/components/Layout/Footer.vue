@@ -10,8 +10,8 @@ const explorers = [
 
 const entrepreneurs = [
   { name: 'Lurus API', href: 'https://api.lurus.cn', description: 'LLM 统一网关' },
-  { name: 'Lurus Mail', href: 'https://mail.lurus.cn', description: '企业邮件' },
   { name: 'GuShen Pro', href: 'https://gushen.lurus.cn', description: '机构量化服务' },
+  { name: 'Lurus Switch', href: '/download', description: '团队工具管理' },
 ]
 
 const builders = [

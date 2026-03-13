@@ -35,13 +35,6 @@ export const navItems: NavDropdownItem[] = [
         path: '/download#memx',
         icon: 'database',
       },
-      {
-        name: 'Lurus Mail',
-        desc: '安全加密个人邮箱',
-        path: 'https://mail.lurus.cn',
-        external: true,
-        icon: 'mail',
-      },
     ],
     footerLink: { name: '查看个人版全部方案 →', path: '/for-explorers' },
   },
@@ -55,13 +48,6 @@ export const navItems: NavDropdownItem[] = [
         path: 'https://api.lurus.cn',
         external: true,
         icon: 'api',
-      },
-      {
-        name: 'Lurus Mail',
-        desc: '企业邮件，多域名管理',
-        path: 'https://mail.lurus.cn',
-        external: true,
-        icon: 'mail',
       },
       {
         name: 'Lurus Switch',

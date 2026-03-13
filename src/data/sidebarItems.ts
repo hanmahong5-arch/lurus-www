@@ -27,7 +27,6 @@ export const sidebarSections: SidebarSection[] = [
       { name: 'Lurus API', path: 'https://api.lurus.cn', icon: 'api', external: true },
       { name: 'GuShen', path: 'https://gushen.lurus.cn', icon: 'chart', external: true },
       { name: 'MemX', path: '/download#memx', icon: 'database', badge: '即将' },
-      { name: 'Lurus Mail', path: 'https://mail.lurus.cn', icon: 'mail', external: true },
     ],
   },
   {

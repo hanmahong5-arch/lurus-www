@@ -19,7 +19,6 @@ const nodes: EcoNode[] = [
   { id: 'acest', name: 'ACEST', desc: 'AI 桌面助手', color: '#5C7A8B', layer: 'app', gridArea: '2 / 1' },
   { id: 'switch', name: 'Switch', desc: 'AI 工具管理器', color: '#C67B5C', layer: 'app', gridArea: '2 / 2' },
   { id: 'gushen', name: 'GuShen', desc: 'AI 量化交易', color: '#7D8B6A', layer: 'app', gridArea: '2 / 3' },
-  { id: 'mail', name: 'Mail', desc: '企业邮件系统', color: '#8B6B7D', layer: 'app', gridArea: '2 / 4' },
 ]
 
 const activeNode = ref<string | null>(null)
@@ -28,14 +27,12 @@ const activeNode = ref<string | null>(null)
 const connections: Array<{ from: string; to: string }> = [
   { from: 'identity', to: 'acest' },
   { from: 'identity', to: 'gushen' },
-  { from: 'identity', to: 'mail' },
   { from: 'identity', to: 'switch' },
   { from: 'api', to: 'acest' },
   { from: 'api', to: 'switch' },
   { from: 'api', to: 'gushen' },
   { from: 'memx', to: 'acest' },
   { from: 'memx', to: 'switch' },
-  { from: 'notify', to: 'mail' },
   { from: 'notify', to: 'gushen' },
 ]
 

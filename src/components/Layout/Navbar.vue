@@ -187,6 +187,19 @@ function handleLogout() {
 
           <!-- CTA Buttons -->
           <div class="hidden md:flex items-center gap-3">
+            <!-- Mail service icon -->
+            <a
+              href="https://mail.lurus.cn"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="relative p-2 text-ink-400 hover:text-ochre transition-colors"
+              aria-label="邮箱服务"
+              title="Lurus Mail"
+            >
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </a>
             <a
               href="https://docs.lurus.cn"
               target="_blank"
@@ -391,6 +404,24 @@ function handleLogout() {
                   </a>
                 </template>
               </template>
+              <!-- Mail service link (mobile) -->
+              <a
+                href="https://mail.lurus.cn"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mobile-nav-link"
+                @click="closeMobileMenu"
+              >
+                <span class="flex items-center gap-3">
+                  <svg class="w-5 h-5 text-ochre shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <span>
+                    <span class="block text-ink-700 font-medium">Lurus Mail</span>
+                    <span class="block text-xs text-ink-400">进入邮箱</span>
+                  </span>
+                </span>
+              </a>
               <hr class="border-ink-100 my-4">
               <template v-if="isLoggedIn && userInfo">
                 <!-- Logged in: Show user info and logout -->

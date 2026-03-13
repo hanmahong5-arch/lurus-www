@@ -2,15 +2,14 @@ import { describe, it, expect } from 'vitest'
 import { products, productIconPaths, curlExample } from './products'
 
 describe('products', () => {
-  it('should export exactly 6 products', () => {
-    expect(products).toHaveLength(6)
+  it('should export exactly 5 products', () => {
+    expect(products).toHaveLength(5)
   })
 
-  it('should contain all core products: api, gushen, webmail, switch, acest, memx', () => {
+  it('should contain all core products: api, gushen, switch, acest, memx', () => {
     const ids = products.map((p) => p.id)
     expect(ids).toContain('api')
     expect(ids).toContain('gushen')
-    expect(ids).toContain('webmail')
     expect(ids).toContain('switch')
     expect(ids).toContain('acest')
     expect(ids).toContain('memx')
@@ -83,13 +82,6 @@ describe('products', () => {
       expect(gushen?.showcase?.fallbackLanguage).toBeTruthy()
       expect(gushen?.showcase?.fallbackAriaLabel).toBeTruthy()
       expect(gushen?.showcase?.screenshotAlt).toBeTruthy()
-    })
-
-    it('Webmail should have features showcase type', () => {
-      const webmail = products.find((p) => p.id === 'webmail')
-      expect(webmail?.showcase?.type).toBe('features')
-      expect(webmail?.showcase?.fallbackFeatures).toBeDefined()
-      expect(webmail?.showcase?.fallbackFeatures?.length).toBeGreaterThan(0)
     })
 
     it('Switch should have features showcase type', () => {
